@@ -1,7 +1,4 @@
-#include <stdio.h>
-#include "sqlite3.h"
-#include <string.h>
-#include <stdlib.h>
+#include "includes.h"
 
 sqlite3* database;
 
