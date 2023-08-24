@@ -1,26 +1,91 @@
 #include "includes.h"
+#include <string.h>
 
 
 void get_all_cocktail();
-void insert_cocktail(char[],double,int);
-void reduce_amount(char[],int);
+void insert_cocktail(char*,double,int);
+void reduce_amount(char*,int);
+void testingConnection(PGconn*);
+void command(PGconn*, char*, PGresult*);
+void checkres(PGresult*);
+
+
+char *feedback = "";
 
 int main(){
+    
+    char *comando = "";
+    //Creo l'oggetto database
     PGconn *conn;
-    conn = PQconnectdb("dbname = elvino user = elvino password = elvino host = 127.0.0.1 port = 5432");
+    PGresult *res;
 
-    if (PQstatus(conn) == CONNECTION_BAD){
-        PQfinish(conn);
-    }
+    //Provo a connettermi al Database
+    conn = PQconnectdb("dbname = dbcocktail user = postgres password = postgres host = localhost port = 5432");
 
-    int ver = PQserverVersion(conn);
+    testingConnection(conn);
 
-    printf("Server version %d\n",ver);
+    comando = "CREATE TABLE IF NOT EXISTS Bruschetta(id INTEGER)";
 
-    PQfinish(conn);
+    command(conn, comando, res);
+    
+
+    
+
+     PQfinish(conn);
 }
 
-void reduce_amount(char nome[], int quantita)
+
+void testingConnection(PGconn* conn){
+    sleep(2);
+    switch (PQstatus(conn))
+    {
+    case CONNECTION_STARTED:
+        feedback = "Connecting...\n";
+        break;
+    case CONNECTION_MADE:
+        feedback = "Connected to server...\n";
+        break;
+    case CONNECTION_BAD:
+        feedback = "connessione non riuscita\n";
+        break;
+    default:
+        feedback = "default\n";
+        break;
+    }
+    printf("Connection status : %s", feedback);
+}
+
+void command(PGconn* conn, char *comando, PGresult* res){
+    res = PQexec(conn, comando);
+    checkres(res);
+}
+
+void checkres(PGresult* res){
+    char *risultato;
+    ExecStatusType ris;
+    ris = PQresultStatus(res);
+    switch (ris)
+    {
+    case PGRES_COMMAND_OK:
+        risultato = "Query Completata";
+        break;
+    case PGRES_EMPTY_QUERY:
+        risultato = "query vuota";
+        break;
+    case PGRES_TUPLES_OK:
+        risultato = "Query completata con ritorno di dati";
+        break;
+    case PGRES_FATAL_ERROR:
+        risultato = "errore fatale\n";
+        break;
+    default:
+        risultato = "operazioe non andata a buon fine";
+        break;
+    }
+    printf(risultato);
+}
+
+void reduce_amount(char *nome, int quantita)
 {
     //TODO
 }

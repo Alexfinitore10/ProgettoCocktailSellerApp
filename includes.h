@@ -12,5 +12,6 @@
 #include <pthread.h>
 #include <math.h> 
 #include <libpq-fe.h>
+#include <string.h>
  
 #endif
