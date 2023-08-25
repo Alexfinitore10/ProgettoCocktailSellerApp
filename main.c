@@ -12,26 +12,32 @@ void checkres(PGresult*);
 
 char *feedback = "";
 
+PGconn *conn;
+PGresult *res;
+
 int main(){
     
-    char *comando = "";
+    char *comando_cliente = "";
+    char *comando_cocktail = "";
+    char *comando_frullato = "";
     //Creo l'oggetto database
-    PGconn *conn;
-    PGresult *res;
+    
 
     //Provo a connettermi al Database
     conn = PQconnectdb("dbname = dbcocktail user = postgres password = postgres host = localhost port = 5432");
 
     testingConnection(conn);
 
-    comando = "CREATE TABLE IF NOT EXISTS Bruschetta(id INTEGER)";
+    comando_cliente = "CREATE TABLE IF NOT EXISTS Cliente(id INTEGER)";
+    comando_cocktail = "CREATE TABLE IF NOT EXISTS Cocktail(id INTEGER)";
+    comando_frullato = "CREATE TABLE IF NOT EXISTS Frullato(id INTEGER)";
 
-    command(conn, comando, res);
+    command(conn, comando_cliente, res);
+    command(conn, comando_cocktail, res);
+    command(conn, comando_frullato, res);
     
 
-    
-
-     PQfinish(conn);
+    PQfinish(conn);
 }
 
 
@@ -40,13 +46,13 @@ void testingConnection(PGconn* conn){
     switch (PQstatus(conn))
     {
     case CONNECTION_STARTED:
-        feedback = "Connecting...\n";
+        feedback = "Connessione in corso...\n";
         break;
     case CONNECTION_MADE:
-        feedback = "Connected to server...\n";
+        feedback = "Connesso al server\n";
         break;
     case CONNECTION_BAD:
-        feedback = "connessione non riuscita\n";
+        feedback = "Connessione fallita";
         break;
     default:
         feedback = "default\n";
@@ -67,19 +73,19 @@ void checkres(PGresult* res){
     switch (ris)
     {
     case PGRES_COMMAND_OK:
-        risultato = "Query Completata";
+        risultato = "Query completata\n";
         break;
     case PGRES_EMPTY_QUERY:
-        risultato = "query vuota";
+        risultato = "Query vuota\n";
         break;
     case PGRES_TUPLES_OK:
-        risultato = "Query completata con ritorno di dati";
+        risultato = "Query completata con ritorno di dati\n";
         break;
     case PGRES_FATAL_ERROR:
-        risultato = "errore fatale\n";
+        risultato = "Errore fatale\n";
         break;
     default:
-        risultato = "operazioe non andata a buon fine";
+        risultato = "Operazione non andata a buon fine\n";
         break;
     }
     printf(risultato);
