@@ -1,67 +1,80 @@
 #include "includes.h"
 #include <string.h>
+#include "Login.h"
 
 
 void get_all_cocktail();
 void insert_cocktail(char*,double,int);
 void reduce_amount(char*,int);
-void testingConnection(PGconn*);
-void command(PGconn*, char*, PGresult*);
+bool testingConnection(PGconn*);
+void command(char*);
 void checkres(PGresult*);
-
+void dbconnection();
 
 char *feedback = "";
 
+//Connessione Al DB
 PGconn *conn;
+
+//Risultato dal database
 PGresult *res;
 
+char *firstdbcommand = "CREATE TABLE IF NOT EXISTS Cliente(id INTEGER PRIMARY KEY, email VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL);\
+                        CREATE TABLE IF NOT EXISTS Cocktail(id INTEGER PRIMARY KEY, nome VARCHAR(255) NOT NULL, ingredienti TEXT NOT NULL, gradazione_alcolica DECIMAL(1,1) NOT NULL);\
+                        CREATE TABLE IF NOT EXISTS Frullato(id INTEGER PRIMARY KEY, nome VARCHAR(255) NOT NULL, ingredienti TEXT NOT NULL, gusto VARCHAR(10) NOT NULL);\
+                        CREATE TABLE IF NOT EXISTS Vendite (\
+                        id INTEGER PRIMARY KEY,\
+                        cliente_id INTEGER,\
+                        cocktail_id INTEGER,\
+                        CONSTRAINT cliente_fk FOREIGN KEY (cliente_id) REFERENCES Cliente (id),\
+                        CONSTRAINT cocktail_fk FOREIGN KEY (cocktail_id) REFERENCES Cocktail (id));";
+
 int main(){
-    
-    char *comando_cliente = "";
-    char *comando_cocktail = "";
-    char *comando_frullato = "";
-    //Creo l'oggetto database
-    
 
-    //Provo a connettermi al Database
-    conn = PQconnectdb("dbname = dbcocktail user = postgres password = postgres host = localhost port = 5432");
-
-    testingConnection(conn);
-
-    comando_cliente = "CREATE TABLE IF NOT EXISTS Cliente(id INTEGER)";
-    comando_cocktail = "CREATE TABLE IF NOT EXISTS Cocktail(id INTEGER)";
-    comando_frullato = "CREATE TABLE IF NOT EXISTS Frullato(id INTEGER)";
-
-    command(conn, comando_cliente, res);
-    command(conn, comando_cocktail, res);
-    command(conn, comando_frullato, res);
-    
+    //chiamo le funzioni per connettermi al database
+    dbconnection();
 
     PQfinish(conn);
 }
 
+void dbconnection(){
+    conn = PQconnectdb("dbname = dbcocktail user = postgres password = postgres host = localhost port = 5432");
+    
+    //Provo a connettermi al Database
+    while (testingConnection(conn) == false){
+        printf("La connessione non e effettuabile, riprovo tra 5 secondi...\n");
+        sleep(5);
+    }
+    //primo comando da eseguire
+    command(firstdbcommand);
 
-void testingConnection(PGconn* conn){
+    
+
+}
+
+
+bool testingConnection(PGconn* conn){
     sleep(2);
+    bool status = false;
     switch (PQstatus(conn))
     {
-    case CONNECTION_STARTED:
-        feedback = "Connessione in corso...\n";
-        break;
-    case CONNECTION_MADE:
+    case CONNECTION_OK:
         feedback = "Connesso al server\n";
+        status = true;
         break;
     case CONNECTION_BAD:
         feedback = "Connessione fallita";
         break;
     default:
-        feedback = "default\n";
+        feedback = "default status\n";
         break;
     }
-    printf("Connection status : %s", feedback);
+    printf("Connection status : %s\n", feedback);
+    return status;
 }
 
-void command(PGconn* conn, char *comando, PGresult* res){
+
+void command(char *comando){
     res = PQexec(conn, comando);
     checkres(res);
 }
@@ -88,7 +101,7 @@ void checkres(PGresult* res){
         risultato = "Operazione non andata a buon fine\n";
         break;
     }
-    printf(risultato);
+    printf("%s",risultato);
 }
 
 void reduce_amount(char *nome, int quantita)
