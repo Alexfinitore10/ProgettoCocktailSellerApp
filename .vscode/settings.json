@@ -1,6 +1,7 @@
 {
     "C_Cpp.errorSquiggles": "disabled",
     "files.associations": {
-        "login.h": "c"
+        "login.h": "c",
+        "socket.h": "c"
     }
 }

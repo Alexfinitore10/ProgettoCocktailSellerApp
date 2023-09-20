@@ -1,6 +1,7 @@
 #include "includes.h"
 #include <string.h>
 #include "Login.h"
+#include "Socket.h"
 
 
 void get_all_cocktail();
@@ -10,6 +11,8 @@ bool testingConnection(PGconn*);
 void command(char*);
 void checkres(PGresult*);
 void dbconnection();
+void signup();
+void opensocket();
 
 char *feedback = "";
 
@@ -32,7 +35,9 @@ char *firstdbcommand = "CREATE TABLE IF NOT EXISTS Cliente(id INTEGER PRIMARY KE
 int main(){
 
     //chiamo le funzioni per connettermi al database
-    dbconnection();
+    dbconnection();    
+    //chiamare la funzione di creazione socket nell'altro file.
+
 
     PQfinish(conn);
 }
@@ -104,6 +109,11 @@ void checkres(PGresult* res){
     printf("%s",risultato);
 }
 
+void signup(){
+
+}
+
+
 void reduce_amount(char *nome, int quantita)
 {
     //TODO
@@ -118,3 +128,4 @@ void insert_cocktail(char nome[], double prezzo, int quantita)
 {
     //TODO
 }
+
