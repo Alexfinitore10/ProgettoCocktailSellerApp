@@ -121,11 +121,18 @@ void reduce_amount(char *nome, int quantita)
 
 void get_all_cocktail()
 {
-    //TODO
+    char *get_all_cocktail_command = "SELECT * FROM Cocktail";
+
+    command(get_all_cocktail_command);
 }
 
 void insert_cocktail(char nome[], double prezzo, int quantita)
 {
-    //TODO
+
+    // char * nome_escaped = PQescapeIdentifier(conn, nome, strlen(nome));
+
+    // char *insert_cocktail_command = "INSERT INTO Cocktail(nome, prezzo, quantita) VALUES ($1, $2, $3)";
+
+    // command(insert_cocktail_command);
 }
 
