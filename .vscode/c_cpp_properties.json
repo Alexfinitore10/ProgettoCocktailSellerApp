@@ -7,7 +7,7 @@
                 "/usr/include/postgresql"
             ],
             "defines": [],
-            "compilerPath": "/usr/bin/clang-15",
+            "compilerPath": "/usr/bin/clang-16",
             "cStandard": "c17",
             "cppStandard": "c++14",
             "intelliSenseMode": "linux-clang-x64"

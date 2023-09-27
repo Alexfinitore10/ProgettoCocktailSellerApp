@@ -1,11 +1,10 @@
 #include "includes.h"
-#include <string.h>
 #include "Login.h"
 #include "Socket.h"
 
 
 void get_all_cocktail();
-void insert_cocktail(char*,double,int);
+void insert_cocktail(char[], char[], double, double, int);
 void reduce_amount(char*,int);
 bool testingConnection(PGconn*);
 void command(char*);
@@ -23,14 +22,14 @@ PGconn *conn;
 PGresult *res;
 
 char *firstdbcommand = "CREATE TABLE IF NOT EXISTS Cliente(id INTEGER PRIMARY KEY, email VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL);\
-                        CREATE TABLE IF NOT EXISTS Cocktail(id INTEGER PRIMARY KEY, nome VARCHAR(255) NOT NULL, ingredienti TEXT NOT NULL, gradazione_alcolica DECIMAL(1,1) NOT NULL);\
+                        CREATE TABLE IF NOT EXISTS Cocktail(nome VARCHAR(255) PRIMARY KEY, ingredienti TEXT NOT NULL, gradazione_alcolica DECIMAL(1,1) NOT NULL, prezzo DOUBLE PRECISION , quantita INTEGER);\
                         CREATE TABLE IF NOT EXISTS Frullato(id INTEGER PRIMARY KEY, nome VARCHAR(255) NOT NULL, ingredienti TEXT NOT NULL, gusto VARCHAR(10) NOT NULL);\
                         CREATE TABLE IF NOT EXISTS Vendite (\
                         id INTEGER PRIMARY KEY,\
                         cliente_id INTEGER,\
-                        cocktail_id INTEGER,\
+                        cocktail_id VARCHAR(255) ,\
                         CONSTRAINT cliente_fk FOREIGN KEY (cliente_id) REFERENCES Cliente (id),\
-                        CONSTRAINT cocktail_fk FOREIGN KEY (cocktail_id) REFERENCES Cocktail (id));";
+                        CONSTRAINT cocktail_fk FOREIGN KEY (cocktail_id) REFERENCES Cocktail (nome));";
 
 int main(){
 
@@ -38,11 +37,15 @@ int main(){
     dbconnection();    
     //chiamare la funzione di creazione socket nell'altro file.
 
+    insert_cocktail("Mojito", "Rum, Lime, Zucchero, Menta", 0.1, 5.0, 10);
 
     PQfinish(conn);
 }
 
+
+
 void dbconnection(){
+
     conn = PQconnectdb("dbname = dbcocktail user = postgres password = postgres host = localhost port = 5432");
     
     //Provo a connettermi al Database
@@ -110,7 +113,7 @@ void checkres(PGresult* res){
 }
 
 void signup(){
-
+    //TODO
 }
 
 
@@ -126,13 +129,31 @@ void get_all_cocktail()
     command(get_all_cocktail_command);
 }
 
-void insert_cocktail(char nome[], double prezzo, int quantita)
+void insert_cocktail(char nome[], char ingredienti[], double gradazione_alcolica ,double prezzo, int quantita)
 {
+    char *insert_cocktail_command = "INSERT INTO Cocktail(nome, ingredienti, gradazione_alcolica, prezzo , quantita) VALUES ($1, $2, $3, $4, $5)";
 
-    // char * nome_escaped = PQescapeIdentifier(conn, nome, strlen(nome));
+    char gradazione_alcolica_string[100];
 
-    // char *insert_cocktail_command = "INSERT INTO Cocktail(nome, prezzo, quantita) VALUES ($1, $2, $3)";
+    sprintf(gradazione_alcolica_string, "%f", gradazione_alcolica);
 
-    // command(insert_cocktail_command);
+    char prezzo_string[100];
+
+    sprintf(prezzo_string, "%f", prezzo);
+
+    char quantita_string[100];
+
+    sprintf(quantita_string, "%d", quantita);
+
+    const char *paramValues[5] = {nome, ingredienti, gradazione_alcolica_string, prezzo_string, quantita_string};
+
+    int paramLengths[5] = {strlen(nome), strlen(ingredienti), strlen(gradazione_alcolica_string), strlen(prezzo_string), strlen(quantita_string)};
+
+    int paramFormats[5] = {0, 0, 0, 0, 0};
+
+    res = PQexecParams(conn, insert_cocktail_command, 5, NULL, paramValues, paramLengths, paramFormats, 0);
+
+    checkres(res);
+    
 }
 
