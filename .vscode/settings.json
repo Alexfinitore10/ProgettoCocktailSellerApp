@@ -4,6 +4,7 @@
         "login.h": "c",
         "socket.h": "c",
         "stdbool.h": "c",
-        "in.h": "c"
+        "in.h": "c",
+        "includes.h": "c"
     }
 }
