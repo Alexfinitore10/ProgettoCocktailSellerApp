@@ -5,6 +5,7 @@
         "socket.h": "c",
         "stdbool.h": "c",
         "in.h": "c",
-        "includes.h": "c"
+        "includes.h": "c",
+        "database.h": "c"
     }
 }

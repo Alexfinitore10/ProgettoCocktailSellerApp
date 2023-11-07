@@ -3,6 +3,8 @@
 
 void createdb_query();
 void get_all_cocktails();
+bool is_drink_in_db(char *);
+int get_cocktail_amount(char *);
 void reduce_amount(char *, int);
 void signup();
 void signin();

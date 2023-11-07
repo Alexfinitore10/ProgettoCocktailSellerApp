@@ -13,9 +13,7 @@ void dbconnection(){
 int main(){
 
     //chiamo le funzioni per connettermi al database
-    dbconnection();    
-    //chiamare la funzione di creazione socket nell'altro file.
-
+    dbconnection();
 
     close_connection();
 }

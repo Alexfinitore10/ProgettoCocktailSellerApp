@@ -29,6 +29,7 @@ void createdb_query(){
     insert_cocktail("Bloody Mary", "Vodka, Succo di pomodoro, Tabasco , Sedano , Sale , Pepe nero , Succo di limone , Salsa Worchestershire", 25.0, 6.0, 13);
     insert_cocktail("White Russian", "Vodka, Liquore al caffè, Ghiaccio , Panna fresca", 25.0, 7.0, 16);
 
+
 }
 
 
@@ -60,9 +61,33 @@ void command(char *comando){
 }
 
 
-void reduce_amount(char *nome, int quantita)
-{
-    //TODO
+void reduce_amount(char *nome, int quantita){
+
+    if(is_drink_in_db(nome) == false){
+        printf("Il cocktail %s non e' presente nel database\n", nome);
+        return;
+    }
+
+    if(get_cocktail_amount(nome) < quantita){
+        printf("Il cocktail %s non e' disponibile\n", nome);
+        return;
+    }
+
+    char *reduce_amount_command = "UPDATE Cocktail SET quantita = quantita - $1 WHERE nome = $2";
+
+    char quantita_string[100];
+
+    sprintf(quantita_string, "%d", quantita);
+
+    const char *paramValues[2] = {quantita_string, nome};
+
+    int paramLengths[2] = {strlen(quantita_string), strlen(nome)};
+
+    int paramFormats[2] = {0, 0};
+
+    PQexecParams(conn, reduce_amount_command, 2, NULL, paramValues, paramLengths, paramFormats, 0);
+
+    
 }
 
 
@@ -89,6 +114,7 @@ void checkres(PGresult* res){
         break;
     }
     printf("%s",risultato);
+
 }
 
 
@@ -120,16 +146,50 @@ void insert_cocktail(char nome[], char ingredienti[], double gradazione_alcolica
 }
 
 
-
-
 void get_all_cocktails(){
     char *get_all_cocktail_command = "SELECT * FROM Cocktail";
 
     command(get_all_cocktail_command);
 }
 
+int get_cocktail_amount(char * nome){
+
+    char *get_cocktail_amount_command = "SELECT quantita FROM Cocktail WHERE nome = $1";
+
+    const char *paramValues[1] = {nome};
+
+    int paramLengths[1] = {strlen(nome)};
+
+    int paramFormats[1] = {0};
+
+    res = PQexecParams(conn, get_cocktail_amount_command, 1, NULL, paramValues, paramLengths, paramFormats, 0);
+
+    checkres(res);
+
+    int quantita = atoi(PQgetvalue(res, 0, 0));
+
+    return quantita;
+}
 
 
+bool is_drink_in_db(char * nome){
+    char *is_drink_in_db_command = "SELECT nome FROM Cocktail WHERE nome = $1";
+
+    const char *paramValues[1] = {nome};
+
+    int paramLengths[1] = {strlen(nome)};
+
+    int paramFormats[1] = {0};
+
+    res = PQexecParams(conn, is_drink_in_db_command, 1, NULL, paramValues, paramLengths, paramFormats, 0);
+
+    if (PQntuples(res) == 0){
+        return false;
+    }
+    else{
+        return true;
+    }
+}
 
 
 void signup(){
