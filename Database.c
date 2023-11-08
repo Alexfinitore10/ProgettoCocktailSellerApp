@@ -2,10 +2,9 @@
 
 PGconn *conn;
 PGresult *res;
-char *feedback = "";
-
-void createdb_query(){
-    char *firstdbcommand = "CREATE TABLE IF NOT EXISTS Cliente(id INTEGER PRIMARY KEY, email VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL);\
+char *feedback = ""; 
+char *error_response = "";
+char *firstdbcommand = "CREATE TABLE IF NOT EXISTS Cliente(id INTEGER PRIMARY KEY, email VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL);\
                         CREATE TABLE IF NOT EXISTS Cocktail(nome VARCHAR(255) PRIMARY KEY, ingredienti VARCHAR(1000) NOT NULL, gradazione_alcolica DOUBLE PRECISION , prezzo DOUBLE PRECISION , quantita INTEGER);\
                         CREATE TABLE IF NOT EXISTS Frullato(id INTEGER PRIMARY KEY, nome VARCHAR(255) NOT NULL, ingredienti VARCHAR(1000) NOT NULL, gusto VARCHAR(10) NOT NULL);\
                         CREATE TABLE IF NOT EXISTS Vendite (\
@@ -15,26 +14,45 @@ void createdb_query(){
                         CONSTRAINT cliente_fk FOREIGN KEY (cliente_id) REFERENCES Cliente (id),\
                         CONSTRAINT cocktail_fk FOREIGN KEY (cocktail_id) REFERENCES Cocktail (nome));";
 
-    conn = PQconnectdb("dbname = dbcocktail user = postgres password = postgres host = localhost port = 5432");
+void createdb_query(){
 
     //Provo a connettermi al Database
-    while (testingConnection(conn) == false){
+    while (testingConnection() == false){
         printf("La connessione non e' effettuabile, riprovo tra 5 secondi...\n");
         sleep(5);
     }
     //primo comando da eseguire
-    command(firstdbcommand);
+    printf("Eseguo la query di costruzione del database\n");
     
-    insert_cocktail("Mojito", "Rum, Lime, Zucchero, Menta", 18.0, 6.0, 10);
-    insert_cocktail("Bloody Mary", "Vodka, Succo di pomodoro, Tabasco , Sedano , Sale , Pepe nero , Succo di limone , Salsa Worchestershire", 25.0, 6.0, 13);
-    insert_cocktail("White Russian", "Vodka, Liquore al caffè, Ghiaccio , Panna fresca", 25.0, 7.0, 16);
+    if (command(firstdbcommand)){
+        printf("Popolo il database...\n");
+        cocktail_population();
+    }
+
+    
+    
 
 
 }
 
+void cocktail_population(){
+    insert_cocktail("Mojito", "Rum, Lime, Zucchero, Menta", 18.0, 6.0, 10);
+    insert_cocktail("Bloody Mary", "Vodka, Succo di pomodoro, Tabasco , Sedano , Sale , Pepe nero , Succo di limone , Salsa Worchestershire", 25.0, 6.0, 13);
+    insert_cocktail("White Russian", "Vodka, Liquore al caffè, Ghiaccio , Panna fresca", 25.0, 7.0, 16);
+    insert_cocktail("Negroni", "Ghiaccio, Gin, Bitter Campari, Vermut Rosso", 28.0, 5.90, 10);
+    insert_cocktail("Daquiri", "Rum, Succo di lime, zucchero, ghiaccio, gocce di maraschino", 18.9, 6.44, 10);
+    insert_cocktail("Dry Martini", "Gin, Scorza di Limone, Vermut Dry, Ghiaccio", 14.4, 7.90, 10);
+    insert_cocktail("Maragarita", "Succo di Lime, Ghiaccio, Triple Sec, Tequila", 25.4, 6.44, 10);
+    insert_cocktail("Manhattan", "rye wisky, vermout roso, gocce di Angostura, buccia di arancia, ghiaccio, ciliegina al Maraschino", 30.0, 5.90, 10);
+    insert_cocktail("Whiskey Sour", "Whisky, Succo di limone, sciroppo di zucchero, albume", 23.0, 4.80, 10);
+}
 
 
-bool testingConnection(PGconn* conn){
+
+
+
+bool testingConnection(){
+    conn = PQconnectdb("dbname = dbcocktail user = postgres password = postgres host = localhost port = 5432");
     sleep(2);
     bool status = false;
     switch (PQstatus(conn))
@@ -55,9 +73,12 @@ bool testingConnection(PGconn* conn){
 }
 
 
-void command(char *comando){
+bool command(char *comando){
+    bool status = false;
     res = PQexec(conn, comando);
-    checkres(res);
+    if (checkres(res)){
+        return true;
+    }else return false;
 }
 
 
@@ -91,20 +112,23 @@ void reduce_amount(char *nome, int quantita){
 }
 
 
-void checkres(PGresult* res){
+bool checkres(PGresult* res){
     char *risultato;
     ExecStatusType ris;
+    bool status = false;
     ris = PQresultStatus(res);
     switch (ris)
     {
     case PGRES_COMMAND_OK:
         risultato = "Query completata\n";
+        status = true;
         break;
     case PGRES_EMPTY_QUERY:
         risultato = "Query vuota\n";
         break;
     case PGRES_TUPLES_OK:
         risultato = "Query completata con ritorno di dati\n";
+        status = true;
         break;
     case PGRES_FATAL_ERROR:
         risultato = "Errore fatale\n";
@@ -113,8 +137,9 @@ void checkres(PGresult* res){
         risultato = "Operazione non andata a buon fine\n";
         break;
     }
-    printf("%s",risultato);
-
+    error_response = PQresultErrorMessage(res);
+    printf("%s: %s",risultato, error_response);
+    return status;
 }
 
 
