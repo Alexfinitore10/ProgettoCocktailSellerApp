@@ -216,17 +216,17 @@ bool is_drink_in_db(char * nome){
     }
 }
 
-bool is_cliente_in_db(char * email , char * password){
+bool is_cliente_in_db(char * email){
     
-    char *is_cliente_in_db_command = "SELECT email FROM Cliente WHERE email = $1 AND password = $2";
+    char *is_cliente_in_db_command = "SELECT email FROM Cliente WHERE email = $1";
 
-    const char *paramValues[2] = {email, password};
+    const char *paramValues[1] = {email};
 
-    int paramLengths[2] = {strlen(email), strlen(password)};
+    int paramLengths[1] = {strlen(email)};
 
-    int paramFormats[2] = {0, 0};
+    int paramFormats[1] = {0};
 
-    res = PQexecParams(conn, is_cliente_in_db_command, 2, NULL, paramValues, paramLengths, paramFormats, 0);
+    res = PQexecParams(conn, is_cliente_in_db_command, 1, NULL, paramValues, paramLengths, paramFormats, 0);
 
     if (PQntuples(res) == 0){
         return false;
@@ -238,7 +238,7 @@ bool is_cliente_in_db(char * email , char * password){
 
 bool signup(char *email, char *password){
     
-    if(is_cliente_in_db(email, password)){
+    if(is_cliente_in_db(email)){
         printf("Registrazione fallita: cliente già registrato\n");
         return false;
     }
@@ -265,21 +265,35 @@ bool signup(char *email, char *password){
     
 }
 
+bool are_credentials_correct(char * email, char * password){
+    char *credentials_command = "SELECT email FROM Cliente WHERE email = $1 AND password = $2";
 
+    const char *paramValues[2] = {email, password};
 
-bool signin(char *email, char *password){
-    if(is_cliente_in_db(email, password)){
-        printf("Accesso effettuato con successo\n");
+    int paramLengths[2] = {strlen(email), strlen(password)};
+
+    int paramFormats[2] = {0, 0};
+
+    res = PQexecParams(conn, credentials_command, 2, NULL, paramValues, paramLengths, paramFormats, 0);
+
+    if (PQntuples(res) == 0){
+        return false;
+    }
+    else{
         return true;
     }
-    else if(is_cliente_in_db(email, password) == false){
-        printf("Accesso fallito: utente non registrato\n");
-        return false;
-    }else{
-        printf("Accesso fallito: %s\n", error_response);
+
+}
+
+bool signin(char *email, char *password){
+    if(are_credentials_correct(email, password)){
+        printf("Login effettuato con successo\n");
+        return true;
+    }
+    else{
+        printf("Login fallito: email o password errati\n");
         return false;
     }
-
 }
 
 void close_connection(){
