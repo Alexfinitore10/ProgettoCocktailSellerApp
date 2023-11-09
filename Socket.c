@@ -41,7 +41,7 @@ void Listen(){
 
 void receiveData(){
     recv(client_fd, buffer, sizeof(buffer), 0);
-    printf("Il client scrive; %s\n", buffer);
+    printf("Il client scrive: %s\n", buffer);
 }
 
 void closeConnection(){

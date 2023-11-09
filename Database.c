@@ -4,14 +4,14 @@ PGconn *conn;
 PGresult *res;
 char *feedback = ""; 
 char *error_response = "";
-char *firstdbcommand = "CREATE TABLE IF NOT EXISTS Cliente(id INTEGER PRIMARY KEY, email VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL);\
+char *firstdbcommand = "CREATE TABLE IF NOT EXISTS Cliente(email VARCHAR(255) PRIMARY KEY, password VARCHAR(255) NOT NULL);\
                         CREATE TABLE IF NOT EXISTS Cocktail(nome VARCHAR(255) PRIMARY KEY, ingredienti VARCHAR(1000) NOT NULL, gradazione_alcolica DOUBLE PRECISION , prezzo DOUBLE PRECISION , quantita INTEGER);\
                         CREATE TABLE IF NOT EXISTS Frullato(id INTEGER PRIMARY KEY, nome VARCHAR(255) NOT NULL, ingredienti VARCHAR(1000) NOT NULL, gusto VARCHAR(10) NOT NULL);\
                         CREATE TABLE IF NOT EXISTS Vendite (\
                         id INTEGER PRIMARY KEY,\
-                        cliente_id INTEGER,\
+                        cliente_id VARCHAR(255),\
                         cocktail_id VARCHAR(255) ,\
-                        CONSTRAINT cliente_fk FOREIGN KEY (cliente_id) REFERENCES Cliente (id),\
+                        CONSTRAINT cliente_fk FOREIGN KEY (cliente_id) REFERENCES Cliente (email),\
                         CONSTRAINT cocktail_fk FOREIGN KEY (cocktail_id) REFERENCES Cocktail (nome));";
 
 void createdb_query(){
@@ -42,7 +42,7 @@ void cocktail_population(){
     insert_cocktail("Negroni", "Ghiaccio, Gin, Bitter Campari, Vermut Rosso", 28.0, 5.90, 10);
     insert_cocktail("Daquiri", "Rum, Succo di lime, zucchero, ghiaccio, gocce di maraschino", 18.9, 6.44, 10);
     insert_cocktail("Dry Martini", "Gin, Scorza di Limone, Vermut Dry, Ghiaccio", 14.4, 7.90, 10);
-    insert_cocktail("Maragarita", "Succo di Lime, Ghiaccio, Triple Sec, Tequila", 25.4, 6.44, 10);
+    insert_cocktail("Margarita", "Succo di Lime, Ghiaccio, Triple Sec, Tequila", 25.4, 6.44, 10);
     insert_cocktail("Manhattan", "rye wisky, vermout roso, gocce di Angostura, buccia di arancia, ghiaccio, ciliegina al Maraschino", 30.0, 5.90, 10);
     insert_cocktail("Whiskey Sour", "Whisky, Succo di limone, sciroppo di zucchero, albume", 23.0, 4.80, 10);
 }
@@ -216,15 +216,70 @@ bool is_drink_in_db(char * nome){
     }
 }
 
+bool is_cliente_in_db(char * email , char * password){
+    
+    char *is_cliente_in_db_command = "SELECT email FROM Cliente WHERE email = $1 AND password = $2";
 
-void signup(){
-    //TODO
+    const char *paramValues[2] = {email, password};
+
+    int paramLengths[2] = {strlen(email), strlen(password)};
+
+    int paramFormats[2] = {0, 0};
+
+    res = PQexecParams(conn, is_cliente_in_db_command, 2, NULL, paramValues, paramLengths, paramFormats, 0);
+
+    if (PQntuples(res) == 0){
+        return false;
+    }
+    else{
+        return true;
+    }
+}
+
+bool signup(char *email, char *password){
+    
+    if(is_cliente_in_db(email, password)){
+        printf("Registrazione fallita: cliente già registrato\n");
+        return false;
+    }
+    
+    char *signup_command = "INSERT INTO Cliente(email, password) VALUES ($1, $2)";
+
+    const char *paramValues[2] = {email, password};
+
+    int paramLengths[2] = {strlen(email), strlen(password)};
+
+    int paramFormats[2] = {0, 0};
+
+    res = PQexecParams(conn, signup_command, 2, NULL, paramValues, paramLengths, paramFormats, 0);
+
+    if(checkres(res)){
+        printf("Registrazione effettuata con successo\n");
+        return true;
+    }
+    else{
+        printf("Registrazione fallita: %s\n", error_response);
+        return false;
+    }
+
+    
 }
 
 
 
-void signin(){
-    //TODO
+bool signin(char *email, char *password){
+    if(is_cliente_in_db(email, password)){
+        printf("Accesso effettuato con successo\n");
+        return true;
+    }
+    else if(is_cliente_in_db(email, password) == false){
+        printf("Accesso fallito: utente non registrato\n");
+        return false;
+    }else{
+        printf("Accesso fallito: %s\n", error_response);
+        return false;
+    }
+
 }
 
 void close_connection(){
