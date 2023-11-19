@@ -11,8 +11,6 @@ void dbconnection(){
 
 
 int main(){
-
-    //chiamo le funzioni per connettermi al database
     dbconnection();
 
     close_connection();

@@ -14,6 +14,9 @@ char *firstdbcommand = "CREATE TABLE IF NOT EXISTS Cliente(email VARCHAR(255) PR
                         CONSTRAINT cliente_fk FOREIGN KEY (cliente_id) REFERENCES Cliente (email),\
                         CONSTRAINT cocktail_fk FOREIGN KEY (cocktail_id) REFERENCES Cocktail (nome));";
 
+
+int id_vendita = 0;
+
 void createdb_query(){
 
     //Provo a connettermi al Database
@@ -196,6 +199,20 @@ int get_cocktail_amount(char * nome){
     return quantita;
 }
 
+int get_id_vendita(){
+    char *get_id_vendita_command = "SELECT id FROM Vendite ORDER BY id DESC LIMIT 1";
+
+    res = PQexec(conn, get_id_vendita_command);
+
+    if(checkres(res) == false){
+        printf("Errore nel recupero dell'id della vendita\n");
+        return -1;
+    }
+
+    int id = atoi(PQgetvalue(res, 0, 0));
+
+    return id;
+}
 
 bool is_drink_in_db(char * nome){
     char *is_drink_in_db_command = "SELECT nome FROM Cocktail WHERE nome = $1";
@@ -292,6 +309,43 @@ bool signin(char *email, char *password){
     }
     else{
         printf("Login fallito: email o password errati\n");
+        return false;
+    }
+}
+
+bool create_sell(char * cliente_id, char * coctail_id){
+    char *create_sell_command = "INSERT INTO Vendite(id, cliente_id, cocktail_id) VALUES ($1, $2, $3)";
+
+    if(is_cliente_in_db(cliente_id) == false){
+        printf("Inserimento vendita fallito: cliente non registrato\n");
+        return false;
+    }
+
+    if(is_drink_in_db(coctail_id) == false){
+        printf("Inserimento vendita fallito: cocktail non presente nel database\n");
+        return false;
+    }
+
+    id_vendita = get_id_vendita() + 1;
+
+    char id_vendita_string[100];
+
+    sprintf(id_vendita_string, "%d", id_vendita);
+
+    const char *paramValues[3] = {id_vendita_string, cliente_id, coctail_id};
+
+    int paramLengths[3] = {strlen(id_vendita_string), strlen(cliente_id), strlen(coctail_id)};
+
+    int paramFormats[3] = {0, 0, 0};
+
+    res = PQexecParams(conn, create_sell_command, 3, NULL, paramValues, paramLengths, paramFormats, 0);
+
+    if(checkres(res)){
+        printf("Inserimento vendita effettuato con successo\n");
+        return true;
+    }
+    else{
+        printf("Inserimento vendita fallito: %s\n", error_response);
         return false;
     }
 }
