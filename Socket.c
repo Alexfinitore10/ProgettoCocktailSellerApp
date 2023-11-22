@@ -1,5 +1,10 @@
-#include "includes.h"
 #include "Socket.h"
+
+int socket_fd, client_fd;
+struct sockaddr_in server_addr, client_addr;
+const char* ip = "127.0.0.1";
+char buffer[1024];
+socklen_t addr_size;
 
 void startSocket(){
     Createsocket();
@@ -33,7 +38,7 @@ void Listen(){
     }else printf("Listening...");
 
     addr_size = sizeof(client_addr);
-    client_fd = (socket_fd, (struct sockaddr*)&client_addr, &addr_size);
+    client_fd = accept(socket_fd, (struct sockaddr*)&client_addr, &addr_size);
     if(client_fd == -1){
         printf("Il server non e riuscito ad accettare la connessione con il client %d", client_addr);
     }else printf("Connessione accettata...");

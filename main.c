@@ -10,10 +10,9 @@ void dbconnection(){
 
 
 
-int main(){
-    dbconnection();
 
-    close_connection();
+int main(){
+    startSocket();
 }
 
 
