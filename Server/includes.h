@@ -14,5 +14,6 @@
 #include <libpq-fe.h>
 #include <string.h>
 #include <stdbool.h>
+#include <sys/types.h>
  
 #endif

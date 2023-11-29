@@ -4,15 +4,11 @@
 #include "Database.h"
 
 
-void dbconnection(){
-    createdb_query();
-}
-
-
 
 
 int main(){
     startSocket();
+    //createdb_query();
 }
 
 

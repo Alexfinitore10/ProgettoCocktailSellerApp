@@ -2,13 +2,11 @@
 
 void startSocket();
 
-void Createsocket();
-
-void Bindsocket();
-
 void Listen();
 
-void receiveData();
+void Accept(int,int);
+
+void* receiveData(void*);
 
 void closeConnection();
 
