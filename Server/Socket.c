@@ -10,9 +10,9 @@ void startSocket(){
 
     int socket_fd, client_fd;
 
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(8080);
-    server_addr.sin_addr.s_addr = inet_addr(ip);
+    printf("aaa\n");
+
+    
 
     socket_fd = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -25,10 +25,18 @@ void startSocket(){
         exit(1);
     }
 
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(5978);
+    server_addr.sin_addr.s_addr = inet_addr(ip);
+    printf("Socket Creata");
+
+    setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, &socket_fd, sizeof(socket_fd));
+
     if (bind(socket_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1) {
         perror("Impossibile associare la socket alla porta");
         exit(1);
     }
+    printf("Bind Fatto");
 
     if (listen(socket_fd, 2) != 0) {
         printf("Il server non e in ascolto");
