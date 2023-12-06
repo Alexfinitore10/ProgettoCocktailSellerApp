@@ -4,7 +4,7 @@ import java.net.*;
 public class Main {
     public static void main(String[] args) {
         try {
-            Socket socket = new Socket("localhost", 8080);
+            Socket socket = new Socket("localhost", 5978);
 
             // Ottiene un'istanza dell'input stream per ricevere dati dal server
             InputStream input = socket.getInputStream();

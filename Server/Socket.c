@@ -9,8 +9,11 @@ void startSocket(){
 
     int socket_fd, client_fd;
 
+<<<<<<< HEAD
     
 
+=======
+>>>>>>> 360e110 (aaaa)
     socket_fd = socket(AF_INET, SOCK_STREAM, 0);
 
     if(setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) < 0){  //Permette di riutilizzare la porta subito dopo aver chiuso il server
@@ -27,7 +30,10 @@ void startSocket(){
     server_addr.sin_addr.s_addr = inet_addr(ip);
     printf("Socket Creata\n");
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 360e110 (aaaa)
     if (bind(socket_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1) {
         perror("Impossibile associare la socket alla porta");
         exit(1);
