@@ -2,15 +2,12 @@
 
 struct sockaddr_in server_addr, client_addr;
 const char* ip = "127.0.0.1";
-char buffer[1024];
 socklen_t addr_size;
 pthread_t tid;
 
 void startSocket(){
 
     int socket_fd, client_fd;
-
-    printf("aaa\n");
 
     
 
@@ -28,19 +25,18 @@ void startSocket(){
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(5978);
     server_addr.sin_addr.s_addr = inet_addr(ip);
-    printf("Socket Creata");
+    printf("Socket Creata\n");
 
-    setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, &socket_fd, sizeof(socket_fd));
 
     if (bind(socket_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1) {
         perror("Impossibile associare la socket alla porta");
         exit(1);
     }
-    printf("Bind Fatto");
+    printf("Bind Fatto\n");
 
     if (listen(socket_fd, 2) != 0) {
         printf("Il server non e in ascolto");
-    }else printf("Listening...");
+    }else printf("Listening...\n");
 
     while(1){
         Accept(client_fd, socket_fd);
@@ -70,6 +66,7 @@ void Accept(int client_fd, int socket_fd){
 
 void * receiveData(void* client_fd_ptr){
     int client_fd = (intptr_t) client_fd_ptr; //Casto il void* in intptr_t e poi in int per poterlo utilizzare
+    char buffer[1024] = {0};
 
     while(1){  //Condizione del while provvisoria: da rivedere
         int n = recv(client_fd, buffer, 1024, 0);
