@@ -74,7 +74,7 @@ void * receiveData(void* client_fd_ptr){
     int client_fd = (intptr_t) client_fd_ptr; //Casto il void* in intptr_t e poi in int per poterlo utilizzare
     char buffer[1024] = {0};
 
-    while(1){  //Condizione del while provvisoria: da rivedere
+    while(1){  
         int n = recv(client_fd, buffer, 1024, 0);
         if(n == 0){
             printf("Il client ha chiuso la connessione\n");
@@ -84,11 +84,26 @@ void * receiveData(void* client_fd_ptr){
             break;
         }else{
             printf("Dati ricevuti: %s\n", buffer);
-            send(client_fd, buffer, n, 0);
+            parseCommand(buffer);
+            //buffer[strcspn(buffer, "\n")] = '\0';
+            
         }
     }
     
     pthread_exit(NULL);
+}
+
+void parseCommand(char* toParse){
+    int commandNumber;
+    char commandNumberString[10] = {0};
+    int firstSeparatorPosition = strcspn(toParse, "`");
+
+    for(int i = 0; i < firstSeparatorPosition; i++){
+        commandNumberString[i] = toParse[i];
+    }
+
+    commandNumber = atoi(commandNumberString);
+
 }
 
 void closeConnection(int socket_fd, int client_fd){

@@ -8,6 +8,8 @@ void Accept(int,int);
 
 void* receiveData(void*);
 
+void parseCommand(char*);
+
 void closeConnection();
 
 
