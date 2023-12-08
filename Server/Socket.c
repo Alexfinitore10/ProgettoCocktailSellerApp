@@ -9,11 +9,6 @@ void startSocket(){
 
     int socket_fd, client_fd;
 
-<<<<<<< HEAD
-    
-
-=======
->>>>>>> 360e110 (aaaa)
     socket_fd = socket(AF_INET, SOCK_STREAM, 0);
 
     if(setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) < 0){  //Permette di riutilizzare la porta subito dopo aver chiuso il server
@@ -30,10 +25,8 @@ void startSocket(){
     server_addr.sin_addr.s_addr = inet_addr(ip);
     printf("Socket Creata\n");
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 360e110 (aaaa)
+
     if (bind(socket_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1) {
         perror("Impossibile associare la socket alla porta");
         exit(1);
@@ -104,7 +97,63 @@ void parseCommand(char* toParse){
 
     commandNumber = atoi(commandNumberString);
 
+    switch(commandNumber){
+        case 0:{
+            printf("Il cliente vuole entrare\n");
+            char credentials[100] = {0};
+            char email[50] = {0};
+            char password[50] = {0};
+
+            for(int i = firstSeparatorPosition; i < strlen(toParse); i++){
+                credentials[i] = toParse[i];
+            }
+
+            printf("Crendenziali: %s\n", credentials);
+
+            int secondSeparatorPosition = strcspn(credentials, "`");
+
+            for(int j = 0;j < secondSeparatorPosition; j++){
+                email[j] = credentials[j];
+            }
+
+            printf("Email: %s\n", email);
+
+            for(int k = secondSeparatorPosition; k < strlen(credentials); k++){
+                password[k] = credentials[k];
+            }
+
+            printf("Password: %s\n", password);
+
+            break;
+        }
+        case 1:{
+            printf("Il cliente vuole registrarsi\n");
+        }
+        case 2:{
+            printf("Il cliente vuole vedere tutti i drink\n");
+        }
+        case 3:{
+            printf("Il cliente vuole vedere tutti i drink di una categoria\n");
+        }
+        case 4:{
+            printf("Il cliente vuole aggiungere al carrello\n");
+        }
+        case 5:{
+            printf("Il cliente vuole vedere il carrello\n");
+        }
+        case 6:{
+            printf("Il cliente vuole eliminare dal carrello\n");
+        }
+        case 7:{
+            printf("Il cliente vuole confermare l'acquisto\n");
+        }
+        default:{
+            printf("Comando non riconosciuto\n");
+        }
+    }
 }
+
+
 
 void closeConnection(int socket_fd, int client_fd){
     close(socket_fd);
