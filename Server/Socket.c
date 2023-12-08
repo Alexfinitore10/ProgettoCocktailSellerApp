@@ -77,8 +77,9 @@ void * receiveData(void* client_fd_ptr){
             break;
         }else{
             printf("Dati ricevuti: %s\n", buffer);
+            buffer[strcspn(buffer, "\n")] = '\0';
             parseCommand(buffer);
-            //buffer[strcspn(buffer, "\n")] = '\0';
+            
             
         }
     }
@@ -86,69 +87,61 @@ void * receiveData(void* client_fd_ptr){
     pthread_exit(NULL);
 }
 
-void parseCommand(char* toParse){
+void parseCommand(char toParse[]){
     int commandNumber;
-    char commandNumberString[10] = {0};
-    int firstSeparatorPosition = strcspn(toParse, "`");
+    char * token;
 
-    for(int i = 0; i < firstSeparatorPosition; i++){
-        commandNumberString[i] = toParse[i];
-    }
+    token = strtok(toParse, "`");
 
-    commandNumber = atoi(commandNumberString);
+    commandNumber = atoi(token);
 
     switch(commandNumber){
         case 0:{
             printf("Il cliente vuole entrare\n");
-            char credentials[100] = {0};
             char email[50] = {0};
             char password[50] = {0};
 
-            for(int i = firstSeparatorPosition; i < strlen(toParse); i++){
-                credentials[i] = toParse[i];
-            }
+            token = strtok(NULL, "`");
 
-            printf("Crendenziali: %s\n", credentials);
+            strcpy(email, token);
 
-            int secondSeparatorPosition = strcspn(credentials, "`");
+            token = strtok(NULL, "`");
 
-            for(int j = 0;j < secondSeparatorPosition; j++){
-                email[j] = credentials[j];
-            }
-
-            printf("Email: %s\n", email);
-
-            for(int k = secondSeparatorPosition; k < strlen(credentials); k++){
-                password[k] = credentials[k];
-            }
-
-            printf("Password: %s\n", password);
-
+            strcpy(password, token);
+            
             break;
         }
         case 1:{
             printf("Il cliente vuole registrarsi\n");
+            break;
         }
         case 2:{
             printf("Il cliente vuole vedere tutti i drink\n");
+            break;
         }
         case 3:{
             printf("Il cliente vuole vedere tutti i drink di una categoria\n");
+            break;
         }
         case 4:{
             printf("Il cliente vuole aggiungere al carrello\n");
+            break;
         }
         case 5:{
             printf("Il cliente vuole vedere il carrello\n");
+            break;
         }
         case 6:{
             printf("Il cliente vuole eliminare dal carrello\n");
+            break;
         }
         case 7:{
             printf("Il cliente vuole confermare l'acquisto\n");
+            break;
         }
         default:{
             printf("Comando non riconosciuto\n");
+            break;
         }
     }
 }

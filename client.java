@@ -15,7 +15,7 @@ public class client {
             PrintWriter writer = new PrintWriter(output, true);
             
             // Invia un messaggio al server
-            writer.println("0`elvino`Elvino");
+            writer.println("0`el.buonanno@libero.it`Giorgio");
 
             // Legge la risposta dal server
             String response = reader.readLine();
