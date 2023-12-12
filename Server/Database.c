@@ -134,7 +134,7 @@ bool checkres(PGresult* res){
         status = true;
         break;
     case PGRES_FATAL_ERROR:
-        risultato = "Errore fatale\n";
+        risultato = "Errore fatale";
         break;
     default:
         risultato = "Operazione non andata a buon fine\n";
@@ -254,6 +254,9 @@ bool is_cliente_in_db(char * email){
 }
 
 bool signup(char *email, char *password){
+
+    printf("Email: %s\n", email);
+    printf("Password: %s\n", password);
     
     if(is_cliente_in_db(email)){
         printf("Registrazione fallita: cliente già registrato\n");

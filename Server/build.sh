@@ -1,2 +1,2 @@
-gcc main.c Socket.c -o main  -I/usr/include/postgresql -lpq
+gcc main.c Socket.c Database.c -o main  -I/usr/include/postgresql -lpq
 #solo per alex

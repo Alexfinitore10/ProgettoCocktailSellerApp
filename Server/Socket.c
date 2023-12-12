@@ -1,4 +1,5 @@
 #include "Socket.h"
+#include "Database.h"
 
 struct sockaddr_in server_addr, client_addr;
 const char* ip = "127.0.0.1";
@@ -78,9 +79,11 @@ void * receiveData(void* client_fd_ptr){
         }else{
             printf("Dati ricevuti: %s\n", buffer);
             buffer[strcspn(buffer, "\n")] = '\0';
-            parseCommand(buffer);
-            
-            
+            if (strlen(buffer) != 0){
+                parseCommand(buffer);
+            }else{printf("Non hai inserito nulla\n");}
+            bzero(buffer, sizeof(buffer));
+            //memset(buffer, '\0', sizeof(buffer));
         }
     }
     
@@ -96,7 +99,7 @@ void parseCommand(char toParse[]){
     commandNumber = atoi(token);
 
     switch(commandNumber){
-        case 0:{
+        case 1:{
             printf("Il cliente vuole entrare\n");
             char email[50] = {0};
             char password[50] = {0};
@@ -108,34 +111,56 @@ void parseCommand(char toParse[]){
             token = strtok(NULL, "`");
 
             strcpy(password, token);
+
+            if(signin(email,password))
+            {
+                printf("Login andato a buon fine\n");
+            }else{printf("Login fallito\n");}
+            
+            //printf("L'email arrivata è: %s\n", email);
+            //printf("La password arrivata è: %s\n", password);
+            
             
             break;
         }
-        case 1:{
-            printf("Il cliente vuole registrarsi\n");
-            break;
-        }
         case 2:{
-            printf("Il cliente vuole vedere tutti i drink\n");
+            printf("Il cliente vuole registrarsi\n");
+            char email[50] = {0};
+            char password[50] = {0};
+
+            token = strtok(NULL, "`");
+
+            strcpy(email, token);
+
+            token = strtok(NULL, "`");
+
+            strcpy(password, token);
+
+            signup(email,password);
+            
             break;
         }
         case 3:{
-            printf("Il cliente vuole vedere tutti i drink di una categoria\n");
+            printf("Il cliente vuole vedere tutti i drink\n");
             break;
         }
         case 4:{
-            printf("Il cliente vuole aggiungere al carrello\n");
+            printf("Il cliente vuole vedere tutti i drink di una categoria\n");
             break;
         }
         case 5:{
-            printf("Il cliente vuole vedere il carrello\n");
+            printf("Il cliente vuole aggiungere al carrello\n");
             break;
         }
         case 6:{
-            printf("Il cliente vuole eliminare dal carrello\n");
+            printf("Il cliente vuole vedere il carrello\n");
             break;
         }
         case 7:{
+            printf("Il cliente vuole eliminare dal carrello\n");
+            break;
+        }
+        case 8:{
             printf("Il cliente vuole confermare l'acquisto\n");
             break;
         }
