@@ -142,6 +142,9 @@ void parseCommand(char toParse[]){
         }
         case 3:{
             printf("Il cliente vuole vedere tutti i drink\n");
+
+            get_all_cocktails();
+
             break;
         }
         case 4:{

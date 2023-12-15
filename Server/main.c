@@ -7,8 +7,8 @@
 
 
 int main(){
+    createdb_query();
     startSocket();
-    //createdb_query();
 }
 
 

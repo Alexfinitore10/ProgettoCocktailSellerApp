@@ -175,9 +175,14 @@ void insert_cocktail(char nome[], char ingredienti[], double gradazione_alcolica
 
 
 void get_all_cocktails(){
-    char *get_all_cocktail_command = "SELECT * FROM Cocktail";
+    char *get_all_cocktail_command = "SELECT nome,prezzo FROM Cocktail";
 
-    command(get_all_cocktail_command);
+    if(command(get_all_cocktail_command)){
+        printQuery(res);
+    }
+    else{
+        printf("Errore nel recupero dei cocktail\n");
+    }
 }
 
 int get_cocktail_amount(char * nome){
@@ -350,6 +355,19 @@ bool create_sell(char * cliente_id, char * coctail_id){
     else{
         printf("Inserimento vendita fallito: %s\n", error_response);
         return false;
+    }
+}
+
+void printQuery(PGresult * res){
+    int nFields = PQnfields(res);
+    int nTuples = PQntuples(res);
+    for (int i = 0; i < nTuples; i++)
+    {
+        for (int j = 0; j < nFields; j++)
+        {
+            printf("%s\t", PQgetvalue(res, i, j));
+        }
+        printf("\n");
     }
 }
 

@@ -18,3 +18,4 @@ void insert_cocktail(char[], char [], double, double, int);
 void close_connection();
 void cocktail_population();
 bool create_sell(char *, char *);
+void printQuery(PGresult *);
