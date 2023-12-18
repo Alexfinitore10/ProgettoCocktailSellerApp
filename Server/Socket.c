@@ -143,7 +143,15 @@ void parseCommand(char toParse[]){
         case 3:{
             printf("Il cliente vuole vedere tutti i drink\n");
 
-            get_all_cocktails();
+            char * cocktails = get_all_cocktails();
+
+            printf("%s\n", cocktails);
+
+            printf("\nSize of cocktails: %d\n", strlen(cocktails));
+
+            printf("\nSize of cocktails with sizeof: %d\n", sizeof(char)*strlen(cocktails));
+
+            free(cocktails);
 
             break;
         }
@@ -172,6 +180,29 @@ void parseCommand(char toParse[]){
             break;
         }
     }
+}
+
+void sendAll(int client_fd, char *str){
+    char buffer[512];
+    int str_len = strlen(str);
+    int bytes_sent = 0;
+
+    // Send the string in parts
+    while (bytes_sent < str_len) {
+        int bytes_to_send;
+        if (str_len - bytes_sent < 512) {
+            bytes_to_send = str_len - bytes_sent;
+        } else {
+            bytes_to_send = 512;
+        }
+        strncpy(buffer, str + bytes_sent, bytes_to_send);
+        write(client_fd, buffer, bytes_to_send);
+        bytes_sent += bytes_to_send;
+    }
+
+    // Send the confirmation message
+    char *message = "dati inviati correttamente";
+    write(client_fd, message, strlen(message));
 }
 
 

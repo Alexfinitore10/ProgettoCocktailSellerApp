@@ -2,7 +2,7 @@
 
 
 void createdb_query();
-void get_all_cocktails();
+char * get_all_cocktails();
 bool is_drink_in_db(char *);
 int get_cocktail_amount(char *);
 int get_id_vendita();
@@ -18,4 +18,4 @@ void insert_cocktail(char[], char [], double, double, int);
 void close_connection();
 void cocktail_population();
 bool create_sell(char *, char *);
-void printQuery(PGresult *);
+char * printQuery(PGresult *);

@@ -48,6 +48,7 @@ void cocktail_population(){
     insert_cocktail("Margarita", "Succo di Lime, Ghiaccio, Triple Sec, Tequila", 25.4, 6.44, 10);
     insert_cocktail("Manhattan", "rye wisky, vermout roso, gocce di Angostura, buccia di arancia, ghiaccio, ciliegina al Maraschino", 30.0, 5.90, 10);
     insert_cocktail("Whiskey Sour", "Whisky, Succo di limone, sciroppo di zucchero, albume", 23.0, 4.80, 10);
+    insert_cocktail("Moscow Mule", "Vodka, Succo di lime, Ginger beer, Ghiaccio", 25.0, 6.44, 10);
 }
 
 
@@ -174,11 +175,12 @@ void insert_cocktail(char nome[], char ingredienti[], double gradazione_alcolica
 }
 
 
-void get_all_cocktails(){
-    char *get_all_cocktail_command = "SELECT nome,prezzo FROM Cocktail";
+char * get_all_cocktails(){
+    char *get_all_cocktail_command = "SELECT * FROM Cocktail";
+    
 
     if(command(get_all_cocktail_command)){
-        printQuery(res);
+        return printQuery(res);
     }
     else{
         printf("Errore nel recupero dei cocktail\n");
@@ -358,17 +360,37 @@ bool create_sell(char * cliente_id, char * coctail_id){
     }
 }
 
-void printQuery(PGresult * res){
+char * printQuery(PGresult * res){
     int nFields = PQnfields(res);
     int nTuples = PQntuples(res);
-    for (int i = 0; i < nTuples; i++)
-    {
-        for (int j = 0; j < nFields; j++)
-        {
-            printf("%s\t", PQgetvalue(res, i, j));
+
+    size_t response_size = 512;
+    char * response = malloc(response_size * sizeof(char));
+    response[0] = '\0';  // Initialize the string
+
+    for (int i = 0; i < nTuples; i++){
+        for (int j = 0; j < nFields; j++){
+            char *value = PQgetvalue(res, i, j);
+            size_t value_len = strlen(value);
+
+            // Check if the response string is about to overflow
+            while (strlen(response) + value_len + 2 > response_size) {
+                // Double the size of the response string
+                response_size *= 2;
+                response = realloc(response, response_size * sizeof(char));
+            }
+
+            // Concatenate the value and a tab character
+            strcat(response, value);
+            strcat(response, "\t");
         }
-        printf("\n");
+        strcat(response, "\n");   
     }
+
+    // Remove the last newline character
+    response[strlen(response) - 1] = '\0';
+
+    return response;
 }
 
 void close_connection(){
