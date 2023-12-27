@@ -387,8 +387,8 @@ char * printQuery(PGresult * res){
         strcat(response, "\n");   
     }
 
-    // Remove the last newline character
-    response[strlen(response) - 1] = '\0';
+    
+    response[strlen(response) - 1] = '`';
 
     return response;
 }

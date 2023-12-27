@@ -80,7 +80,7 @@ void * receiveData(void* client_fd_ptr){
             printf("Dati ricevuti: %s\n", buffer);
             buffer[strcspn(buffer, "\n")] = '\0';
             if (strlen(buffer) != 0){
-                parseCommand(buffer);
+                parseCommand(buffer,client_fd);
             }else{printf("Non hai inserito nulla\n");}
             bzero(buffer, sizeof(buffer));
             //memset(buffer, '\0', sizeof(buffer));
@@ -90,7 +90,7 @@ void * receiveData(void* client_fd_ptr){
     pthread_exit(NULL);
 }
 
-void parseCommand(char toParse[]){
+void parseCommand(char toParse[], int client_fd){
     int commandNumber;
     char * token;
 
@@ -116,9 +116,6 @@ void parseCommand(char toParse[]){
             {
                 printf("Login andato a buon fine\n");
             }else{printf("Login fallito\n");}
-            
-            //printf("L'email arrivata è: %s\n", email);
-            //printf("La password arrivata è: %s\n", password);
             
             
             break;
@@ -147,9 +144,7 @@ void parseCommand(char toParse[]){
 
             printf("%s\n", cocktails);
 
-            printf("\nSize of cocktails: %d\n", strlen(cocktails));
-
-            printf("\nSize of cocktails with sizeof: %d\n", sizeof(char)*strlen(cocktails));
+            sendAll(client_fd, cocktails);
 
             free(cocktails);
 
@@ -201,8 +196,9 @@ void sendAll(int client_fd, char *str){
     }
 
     // Send the confirmation message
-    char *message = "dati inviati correttamente";
-    write(client_fd, message, strlen(message));
+    //char *message = "dati inviati correttamente";
+    printf("\nNumero di byte inviati: %d\n", bytes_sent); 
+    //write(client_fd, message, strlen(message));
 }
 
 

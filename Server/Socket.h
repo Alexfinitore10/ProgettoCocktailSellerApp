@@ -6,9 +6,12 @@ void Accept(int,int);
 
 void* receiveData(void*);
 
-void parseCommand(char[]);
+void parseCommand(char[],int);
+
+void sendAll(int, char *);
 
 void closeConnection(int,int);
+
 
 
  

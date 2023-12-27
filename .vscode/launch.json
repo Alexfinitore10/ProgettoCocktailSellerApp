@@ -2,6 +2,13 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "type": "java",
+      "name": "client",
+      "request": "launch",
+      "mainClass": "client",
+      "projectName": "ProgettoCocktailSellerApp_d893a7c"
+    },
+    {
       "name": "C/C++ Runner: Debug Session",
       "type": "cppdbg",
       "request": "launch",
