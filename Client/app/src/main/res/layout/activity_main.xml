@@ -10,18 +10,20 @@
         android:id="@+id/AppLogo"
         android:layout_width="125dp"
         android:layout_height="129dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="59dp"
         android:scaleType="centerCrop"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/WelcomeTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.156"
         app:srcCompat="@drawable/coctail_app_icon_2" />
 
     <Button
         android:id="@+id/LoginButton"
         android:layout_width="213dp"
         android:layout_height="83dp"
+        android:layout_marginTop="49dp"
         android:backgroundTint="@android:color/holo_orange_dark"
         android:text="Accedi"
         android:textSize="24sp"
@@ -29,13 +31,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.484"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/AppLogo"
-        app:layout_constraintVertical_bias="0.9" />
+        app:layout_constraintTop_toBottomOf="@+id/RegisterButton" />
 
     <Button
         android:id="@+id/RegisterButton"
         android:layout_width="219dp"
         android:layout_height="74dp"
+        android:layout_marginTop="40dp"
         android:backgroundTint="#FD8700"
         android:text="Registrati"
         android:textSize="24sp"
@@ -43,14 +45,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.468"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/AppLogo"
-        app:layout_constraintVertical_bias="0.802" />
+        app:layout_constraintTop_toBottomOf="@+id/WelcomeTextView" />
 
     <TextView
         android:id="@+id/WelcomeTextView"
         android:layout_width="285dp"
         android:layout_height="63dp"
-        android:layout_marginTop="52dp"
+        android:layout_marginTop="10dp"
         android:fontFamily="sans-serif-medium"
         android:text="Benvenuto su Cocktail Shop!"
         android:textSize="22sp"
