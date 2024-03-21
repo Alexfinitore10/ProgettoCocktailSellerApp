@@ -151,11 +151,21 @@ void parseCommand(char toParse[], int client_fd){
             break;
         }
         case 4:{
-            printf("Il cliente vuole vedere tutti i drink di una categoria\n");
+            printf("Il cliente vuole vedere tutti i frullati\n");
+
+            char * shakes = get_all_shakes();
+
+            printf("%s\n", shakes);
+
+            sendAll(client_fd, shakes);
+
+            free(shakes);
+
             break;
         }
         case 5:{
             printf("Il cliente vuole aggiungere al carrello\n");
+            
             break;
         }
         case 6:{

@@ -6,7 +6,7 @@ char *feedback = "";
 char *error_response = "";
 char *firstdbcommand = "CREATE TABLE IF NOT EXISTS Cliente(email VARCHAR(255) PRIMARY KEY, password VARCHAR(255) NOT NULL);\
                         CREATE TABLE IF NOT EXISTS Cocktail(nome VARCHAR(255) PRIMARY KEY, ingredienti VARCHAR(1000) NOT NULL, gradazione_alcolica DOUBLE PRECISION , prezzo DOUBLE PRECISION , quantita INTEGER);\
-                        CREATE TABLE IF NOT EXISTS Frullato(id INTEGER PRIMARY KEY, nome VARCHAR(255) NOT NULL, ingredienti VARCHAR(1000) NOT NULL, gusto VARCHAR(10) NOT NULL);\
+                        CREATE TABLE IF NOT EXISTS Frullato(nome VARCHAR(255) PRIMARY KEY, ingredienti VARCHAR(1000) NOT NULL, prezzo DOUBLE PRECISION , quantita INTEGER);\
                         CREATE TABLE IF NOT EXISTS Vendite (\
                         id INTEGER PRIMARY KEY,\
                         cliente_id VARCHAR(255),\
@@ -29,7 +29,7 @@ void createdb_query(){
     
     if (command(firstdbcommand)){
         printf("Popolo il database...\n");
-        cocktail_population();
+        cocktail_and_shake_population();
     }
 
     
@@ -38,7 +38,7 @@ void createdb_query(){
 
 }
 
-void cocktail_population(){
+void cocktail_and_shake_population(){
     insert_cocktail("Mojito", "Rum, Lime, Zucchero, Menta", 18.0, 6.0, 10);
     insert_cocktail("Bloody Mary", "Vodka, Succo di pomodoro, Tabasco , Sedano , Sale , Pepe nero , Succo di limone , Salsa Worchestershire", 25.0, 6.0, 13);
     insert_cocktail("White Russian", "Vodka, Liquore al caffè, Ghiaccio , Panna fresca", 25.0, 7.0, 16);
@@ -49,6 +49,11 @@ void cocktail_population(){
     insert_cocktail("Manhattan", "rye wisky, vermout roso, gocce di Angostura, buccia di arancia, ghiaccio, ciliegina al Maraschino", 30.0, 5.90, 10);
     insert_cocktail("Whiskey Sour", "Whisky, Succo di limone, sciroppo di zucchero, albume", 23.0, 4.80, 10);
     insert_cocktail("Moscow Mule", "Vodka, Succo di lime, Ginger beer, Ghiaccio", 25.0, 6.44, 10);
+    insert_shake("Frullato di frutta","banana, fragola, kiwi, latte", 3, 5);
+    insert_shake("Frullato tropicale","ananas, mango, succo d'arancia, latte", 4, 10);
+    insert_shake("Frullato di bacche","fragole, mirtilli, lamponi, latte di mandorla", 3.5, 7);
+    insert_shake("Frullato proteico","banana, burro di arachidi, semi di chia, latte, proteine", 5, 4);
+    insert_shake("Frullato esotico","papaya, ananas, latte di cocco, curcuma, pepe nero", 6, 3);
 }
 
 
@@ -86,7 +91,7 @@ bool command(char *comando){
 }
 
 
-void reduce_amount(char *nome, int quantita){
+void reduce_amount_cocktail(char *nome, int quantita){
 
     if(is_drink_in_db(nome) == false){
         printf("Il cocktail %s non e' presente nel database\n", nome);
@@ -115,6 +120,34 @@ void reduce_amount(char *nome, int quantita){
     
 }
 
+void reduce_amount_shake(char *nome, int quantita){
+
+    if(is_shake_in_db(nome) == false){
+        printf("Il frullato %s non e' presente nel database\n", nome);
+        return;
+    }
+
+    if(get_shake_amount(nome) < quantita){
+        printf("Il frullato %s non e' disponibile\n", nome);
+        return;
+    }
+
+    char *reduce_amount_command = "UPDATE Frullato SET quantita = quantita - $1 WHERE nome = $2";
+
+    char quantita_string[100];
+
+    sprintf(quantita_string, "%d", quantita);
+
+    const char *paramValues[2] = {quantita_string, nome};
+
+    int paramLengths[2] = {strlen(quantita_string), strlen(nome)};
+
+    int paramFormats[2] = {0, 0};
+
+    PQexecParams(conn, reduce_amount_command, 2, NULL, paramValues, paramLengths, paramFormats, 0);
+
+    
+}
 
 bool checkres(PGresult* res){
     char *risultato;
@@ -187,6 +220,18 @@ char * get_all_cocktails(){
     }
 }
 
+char * get_all_shakes(){
+    char *get_all_shake_command = "SELECT * FROM Frullato";
+    
+
+    if(command(get_all_shake_command)){
+        return printQuery(res);
+    }
+    else{
+        printf("Errore nel recupero dei frullati\n");
+    }
+}
+
 int get_cocktail_amount(char * nome){
 
     char *get_cocktail_amount_command = "SELECT quantita FROM Cocktail WHERE nome = $1";
@@ -231,6 +276,25 @@ bool is_drink_in_db(char * nome){
     int paramFormats[1] = {0};
 
     res = PQexecParams(conn, is_drink_in_db_command, 1, NULL, paramValues, paramLengths, paramFormats, 0);
+
+    if (PQntuples(res) == 0){
+        return false;
+    }
+    else{
+        return true;
+    }
+}
+
+bool is_shake_in_db(char * nome){
+    char *is_shake_in_db_command = "SELECT nome FROM Frullato WHERE nome = $1";
+
+    const char *paramValues[1] = {nome};
+
+    int paramLengths[1] = {strlen(nome)};
+
+    int paramFormats[1] = {0};
+
+    res = PQexecParams(conn, is_shake_in_db_command, 1, NULL, paramValues, paramLengths, paramFormats, 0);
 
     if (PQntuples(res) == 0){
         return false;
@@ -358,6 +422,48 @@ bool create_sell(char * cliente_id, char * coctail_id){
         printf("Inserimento vendita fallito: %s\n", error_response);
         return false;
     }
+}
+
+void insert_shake(char nome [], char ingredienti [], double prezzo, int quantita){
+    char *insert_shake_command = "INSERT INTO Frullato(nome, ingredienti, prezzo , quantita) VALUES ($1, $2, $3, $4)";
+
+    char prezzo_string[100];
+
+    sprintf(prezzo_string, "%f", prezzo);
+
+    char quantita_string[100];
+
+    sprintf(quantita_string, "%d", quantita);
+
+    const char *paramValues[4] = {nome, ingredienti, prezzo_string, quantita_string};
+
+    int paramLengths[4] = {strlen(nome), strlen(ingredienti), strlen(prezzo_string), strlen(quantita_string)};
+
+    int paramFormats[4] = {0, 0, 0, 0};
+
+    res = PQexecParams(conn, insert_shake_command, 4, NULL, paramValues, paramLengths, paramFormats, 0);
+
+    checkres(res);
+}
+
+int get_shake_amount(char * nome){
+
+    char *get_shake_amount_command = "SELECT quantita FROM Frullato WHERE nome = $1";
+
+    const char *paramValues[1] = {nome};
+
+    int paramLengths[1] = {strlen(nome)};
+
+    int paramFormats[1] = {0};
+
+    res = PQexecParams(conn, get_shake_amount_command, 1, NULL, paramValues, paramLengths, paramFormats, 0);
+
+    checkres(res);
+
+    int quantita = atoi(PQgetvalue(res, 0, 0));
+
+    return quantita;
+
 }
 
 char * printQuery(PGresult * res){
