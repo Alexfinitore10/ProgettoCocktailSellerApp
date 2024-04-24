@@ -1,10 +1,10 @@
 package com.example.cocktailapp;
 
-public class Beverage {
+public class Bevanda {
     private String nome;
     private double prezzo;
 
-    public Beverage(String name, double price) {
+    public Bevanda(String name, double price) {
         this.nome = name;
         this.prezzo = price;
     }
