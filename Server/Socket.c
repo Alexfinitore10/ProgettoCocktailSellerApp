@@ -6,8 +6,7 @@ const char* ip = "127.0.0.1";
 socklen_t addr_size;
 pthread_t tid;
 
-void startSocket(){
-
+void startSocket(){ 
     int socket_fd, client_fd;
 
     socket_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -22,7 +21,7 @@ void startSocket(){
     }
 
     server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(5978);
+    server_addr.sin_port = htons(5979);
     server_addr.sin_addr.s_addr = inet_addr(ip);
     printf("Socket Creata\n");
 
@@ -79,11 +78,13 @@ void * receiveData(void* client_fd_ptr){
         }else{
             printf("Dati ricevuti: %s\n", buffer);
             buffer[strcspn(buffer, "\n")] = '\0';
-            if (strlen(buffer) != 0){
+            if (strlen(buffer) != 0){//check carattere vuoto in stringa da client
                 parseCommand(buffer,client_fd);
-            }else{printf("Non hai inserito nulla\n");}
-            bzero(buffer, sizeof(buffer));
-            //memset(buffer, '\0', sizeof(buffer));
+            }else{
+                printf("Non hai inserito nulla\n");
+            }
+            //bzero(buffer, sizeof(buffer));
+            memset(buffer, '\0', sizeof(buffer));
         }
     }
     
@@ -115,6 +116,7 @@ void parseCommand(char toParse[], int client_fd){
             if(signin(email,password))
             {
                 printf("Login andato a buon fine\n");
+                sendAll(client_fd, "OK");
             }else{printf("Login fallito\n");}
             
             
@@ -133,7 +135,14 @@ void parseCommand(char toParse[], int client_fd){
 
             strcpy(password, token);
 
-            signup(email,password);
+            if(signup(email,password) == true) {
+                //stringa default di ACK
+                sendAll(client_fd, "OK");
+            }else{
+                //stringa default di NOK
+                write(client_fd, "NOK_Registration", 16);
+            }
+            
             
             break;
         }

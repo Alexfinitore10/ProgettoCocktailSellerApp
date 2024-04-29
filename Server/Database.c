@@ -1,7 +1,10 @@
 #include "Database.h"
 
+
+//Variables
 PGconn *conn;
 PGresult *res;
+int id_vendita = 0;
 char *feedback = ""; 
 char *error_response = "";
 char *firstdbcommand = "CREATE TABLE IF NOT EXISTS Cliente(email VARCHAR(255) PRIMARY KEY, password VARCHAR(255) NOT NULL);\
@@ -14,9 +17,7 @@ char *firstdbcommand = "CREATE TABLE IF NOT EXISTS Cliente(email VARCHAR(255) PR
                         CONSTRAINT cliente_fk FOREIGN KEY (cliente_id) REFERENCES Cliente (email),\
                         CONSTRAINT cocktail_fk FOREIGN KEY (cocktail_id) REFERENCES Cocktail (nome));";
 
-
-int id_vendita = 0;
-
+//Creating Database
 void createdb_query(){
 
     //Provo a connettermi al Database
@@ -38,6 +39,7 @@ void createdb_query(){
 
 }
 
+//Populating the DB
 void cocktail_and_shake_population(){
     insert_cocktail("Mojito", "Rum, Lime, Zucchero, Menta", 18.0, 6.0, 10);
     insert_cocktail("Bloody Mary", "Vodka, Succo di pomodoro, Tabasco , Sedano , Sale , Pepe nero , Succo di limone , Salsa Worchestershire", 25.0, 6.0, 13);
@@ -59,7 +61,7 @@ void cocktail_and_shake_population(){
 
 
 
-
+//A test for the reachability of the Database
 bool testingConnection(){
     conn = PQconnectdb("dbname = dbcocktail user = postgres password = postgres host = localhost port = 5432");
     sleep(2);
@@ -81,7 +83,7 @@ bool testingConnection(){
     return status;
 }
 
-
+//Takes a command (String) and returns true or false if it was successful or not
 bool command(char *comando){
     bool status = false;
     res = PQexec(conn, comando);
@@ -91,17 +93,18 @@ bool command(char *comando){
 }
 
 
-void reduce_amount_cocktail(char *nome, int quantita){
+//Funzione di riduzione mandata al Database quando un ordine viene effettuato, controlla anche se può farlo o meno(?) Ovviamente fatta male
+bool reduce_amount_cocktail(char *nome, int quantita){
 
     if(is_drink_in_db(nome) == false){
         printf("Il cocktail %s non e' presente nel database\n", nome);
-        return;
+        return false;//Perchè?
     }
 
     if(get_cocktail_amount(nome) < quantita){
         printf("Il cocktail %s non e' disponibile\n", nome);
-        return;
-    }
+        return false;
+    }else{
 
     char *reduce_amount_command = "UPDATE Cocktail SET quantita = quantita - $1 WHERE nome = $2";
 
@@ -116,21 +119,22 @@ void reduce_amount_cocktail(char *nome, int quantita){
     int paramFormats[2] = {0, 0};
 
     PQexecParams(conn, reduce_amount_command, 2, NULL, paramValues, paramLengths, paramFormats, 0);
-
+       
+    }
     
 }
-
-void reduce_amount_shake(char *nome, int quantita){
+//Same for cocktails
+bool reduce_amount_shake(char *nome, int quantita){
 
     if(is_shake_in_db(nome) == false){
         printf("Il frullato %s non e' presente nel database\n", nome);
-        return;
+        return false;
     }
 
     if(get_shake_amount(nome) < quantita){
         printf("Il frullato %s non e' disponibile\n", nome);
-        return;
-    }
+        return false;
+    }else{
 
     char *reduce_amount_command = "UPDATE Frullato SET quantita = quantita - $1 WHERE nome = $2";
 
@@ -145,10 +149,10 @@ void reduce_amount_shake(char *nome, int quantita){
     int paramFormats[2] = {0, 0};
 
     PQexecParams(conn, reduce_amount_command, 2, NULL, paramValues, paramLengths, paramFormats, 0);
-
-    
+            
+    }
 }
-
+//Checks the result of the query -> Used in line in the "command" function
 bool checkres(PGresult* res){
     char *risultato;
     ExecStatusType ris;
@@ -179,7 +183,7 @@ bool checkres(PGresult* res){
     return status;
 }
 
-
+//Function to insert a cocktail in the DB. It's primarily used in the DB population function (Cocktail and shake_population)
 void insert_cocktail(char nome[], char ingredienti[], double gradazione_alcolica ,double prezzo, int quantita){
     char *insert_cocktail_command = "INSERT INTO Cocktail(nome, ingredienti, gradazione_alcolica, prezzo , quantita) VALUES ($1, $2, $3, $4, $5)";
 
@@ -207,7 +211,7 @@ void insert_cocktail(char nome[], char ingredienti[], double gradazione_alcolica
     
 }
 
-
+//A full Get
 char * get_all_cocktails(){
     char *get_all_cocktail_command = "SELECT * FROM Cocktail";
     
@@ -323,37 +327,49 @@ bool is_cliente_in_db(char * email){
         return true;
     }
 }
-
+//Registrazione utente
 bool signup(char *email, char *password){
 
+    //For testing
     printf("Email: %s\n", email);
     printf("Password: %s\n", password);
+    //For testing
     
-    if(is_cliente_in_db(email)){
+    if(is_cliente_in_db(email)){//Check se è già registrato
         printf("Registrazione fallita: cliente già registrato\n");
         return false;
-    }
+    }else{
     
-    char *signup_command = "INSERT INTO Cliente(email, password) VALUES ($1, $2)";
+        char *signup_command = "INSERT INTO Cliente(email, password) VALUES ($1, $2)";
 
-    const char *paramValues[2] = {email, password};
+        const char *paramValues[2] = {email, password};
 
-    int paramLengths[2] = {strlen(email), strlen(password)};
+        int paramLengths[2] = {strlen(email), strlen(password)};
 
-    int paramFormats[2] = {0, 0};
+        int paramFormats[2] = {0, 0};
 
-    res = PQexecParams(conn, signup_command, 2, NULL, paramValues, paramLengths, paramFormats, 0);
+        res = PQexecParams(conn, signup_command, 2, NULL, paramValues, paramLengths, paramFormats, 0);
 
-    if(checkres(res)){
-        printf("Registrazione effettuata con successo\n");
+        if(checkres(res)){
+            printf("Registrazione effettuata con successo\n");
+            return true;
+        }
+        else{
+            printf("Registrazione fallita: %s\n", error_response);
+            return false;
+        }
+    }
+}
+//Log-in Utente
+bool signin(char *email, char *password){
+    if(are_credentials_correct(email, password)){
+        printf("Login effettuato con successo\n");
         return true;
     }
     else{
-        printf("Registrazione fallita: %s\n", error_response);
+        printf("Login fallito: email o password errati\n");
         return false;
     }
-
-    
 }
 
 bool are_credentials_correct(char * email, char * password){
@@ -376,17 +392,8 @@ bool are_credentials_correct(char * email, char * password){
 
 }
 
-bool signin(char *email, char *password){
-    if(are_credentials_correct(email, password)){
-        printf("Login effettuato con successo\n");
-        return true;
-    }
-    else{
-        printf("Login fallito: email o password errati\n");
-        return false;
-    }
-}
 
+//
 bool create_sell(char * cliente_id, char * coctail_id){
     char *create_sell_command = "INSERT INTO Vendite(id, cliente_id, cocktail_id) VALUES ($1, $2, $3)";
 
