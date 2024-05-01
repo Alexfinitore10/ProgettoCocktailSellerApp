@@ -1,16 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/FragmentCocktail"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".DrinkFragment" >
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="sans-serif-medium"
-        android:text="Cocktail fragment"
-        android:textSize="24sp" />
+    <ScrollView
+        android:id="@+id/DrinkScroller"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/ScrollerLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/BloodyMaryCardView"
+                android:layout_width="match_parent"
+                android:layout_height="331dp"
+                android:layout_marginTop="50dp">
+
+                <ImageView
+                    android:id="@+id/BloodyMaryImage"
+                    android:layout_width="110dp"
+                    android:layout_height="115dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="30dp"
+                    android:src="@drawable/bloodymary" />
+
+                <TextView
+                    android:id="@+id/BloodyMaryTitle"
+                    android:layout_width="180dp"
+                    android:layout_height="58dp"
+                    android:layout_marginStart="175dp"
+                    android:layout_marginTop="70dp"
+                    android:text="Bloody Mary"
+                    android:textAlignment="center"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/BloodyMaryIngredients"
+                    android:layout_width="331dp"
+                    android:layout_height="119dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="180dp"
+                    android:text="Ingredienti: Vodka, Succo di pomodoro, Tabasco , Sedano , Sale , Pepe nero , Succo di limone , Salsa Worchestershire\nGradazione Alcolica: 25.0\nPrezzo: 6€"
+                    android:textColor="#000000"
+                    android:textSize="18sp" />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/MojitoCardView"
+                android:layout_width="match_parent"
+                android:layout_height="311dp"
+                android:layout_marginTop="50dp">
+
+                <ImageView
+                    android:id="@+id/MojitoImage"
+                    android:layout_width="110dp"
+                    android:layout_height="115dp"
+                    android:layout_marginStart="30sp"
+                    android:layout_marginTop="30sp"
+                    android:src="@drawable/mojito" />
+
+                <TextView
+                    android:id="@+id/MojitoTitle"
+                    android:layout_width="143dp"
+                    android:layout_height="60dp"
+                    android:layout_marginStart="175dp"
+                    android:layout_marginTop="70dp"
+                    android:clickable="false"
+                    android:text="Mojito"
+                    android:textAlignment="center"
+                    android:textColor="#000000"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/MojitoIngredients"
+                    android:layout_width="355dp"
+                    android:layout_height="100dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="180dp"
+                    android:text="Ingredienti: Rum, Lime, Zucchero, Menta\nGradazione Alcolica: 18.0\nPrezzo: 6€"
+                    android:textColor="#000000"
+                    android:textSize="18sp" />
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+    </ScrollView>
+
 </FrameLayout>
