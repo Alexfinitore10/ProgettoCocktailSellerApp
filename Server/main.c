@@ -9,6 +9,7 @@
 int main(){
     createdb_query();
     startSocket();
+    //closeConnection();
 }
 
 
