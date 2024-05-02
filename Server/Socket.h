@@ -8,7 +8,7 @@ void* receiveData(void*);//void*
 
 void parseCommand(char[],int);
 
-void sendAll(int, char *);
+int sendAll(int, char *);
 
 void closeConnection(int,int);
 

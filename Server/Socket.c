@@ -140,8 +140,9 @@ void startSocket() {
                 if(signin(email,password))
                 {
                     printf("Login andato a buon fine\n");
-                    char risposta[] = "OK";
-                    int status = send(client_fd, risposta, strlen(risposta), 0);
+                    char risposta[] = "OK\n";
+                    int status = write(client_fd, risposta, strlen(risposta));
+                    //int status = send(client_fd, risposta, strlen(risposta), 0);
                     if ((status == -1))
                     {
                         printf("send error");
