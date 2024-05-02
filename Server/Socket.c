@@ -111,6 +111,7 @@ void startSocket() {
 
     void parseCommand(char toParse[],int client_fd){
         int commandNumber;
+
         char * token;
 
         token = strtok(toParse, "`");
@@ -138,8 +139,10 @@ void startSocket() {
                         printf("send error");
                     }
                     printf("Risposta inviata al client: %s\n", risposta);
+                    break;
                     //sendAll(client_fd, "OK");
                 }else{printf("Login fallito\n");}
+                break;
             }
             case 2:{
                 printf("Il cliente vuole registrarsi\n");
