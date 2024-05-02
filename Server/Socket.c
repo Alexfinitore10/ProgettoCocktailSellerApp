@@ -46,23 +46,25 @@ void startSocket() {
     while (1) {
         // Accettazione di una connessione
         client_addr_len = sizeof(client_addr);
-        new_sockfd = accept(sockfd, (struct sockaddr *)&client_addr, &client_addr_len);
+        new_sockfd = accept(sockfd, (struct sockaddr *)&client_addr, &client_addr_len);//si ferma qua
         if (new_sockfd < 0) {
             perror("accept");
             continue; // Riprova ad accettare una nuova connessione
         }
         //THREADS
-        // printf("Connessione accettata da: %s\n", inet_ntoa(client_addr.sin_addr));
-        // int error
-        // if((error = pthread_create(&tid, NULL, receiveData, new_sockfd)) != 0){  
-        //     printf("Errore nella creazione del thread: %s\n", strerror(error));
-        // }
+        printf("Connessione accettata da: %s\n", inet_ntoa(client_addr.sin_addr));
+        int error;
+        if((error = pthread_create(&tid, NULL, receiveData, &new_sockfd)) != 0){  
+            printf("Errore nella creazione del thread: %s\n", strerror(error));
+            close(new_sockfd);
+            continue;
+        }
         
-        // if((error = pthread_detach(tid)) != 0){  
-        //     printf("Errore nel detach del thread: %s\n", strerror(error));
-        // }
+        if((error = pthread_detach(tid)) != 0){  
+            printf("Errore nel detach del thread: %s\n", strerror(error));
+        }
         //single threaded
-        receiveData(new_sockfd);
+        //receiveData();
 
 
         // Ricezione del messaggio dal client
@@ -81,31 +83,37 @@ void startSocket() {
         
 
         // Chiusura della connessione client
-        close(new_sockfd);
     }
+
+    close(new_sockfd);
 
     // Chiusura del socket server (non necessario in un ciclo infinito)
     close(sockfd);
 
 }
 
-    void receiveData(int client_fd) {
+    void* receiveData(void* client_fd) {
+        printf("Thread Creaton\n");
         char buffer[MAX_BUFFER_SIZE] = {0};
-        int res = recv(client_fd, buffer , MAX_BUFFER_SIZE, 0);
+
+        int client_socket = *((int*)client_fd);
+
+        int res = recv(client_socket, buffer , MAX_BUFFER_SIZE, 0);
+        printf("%d\n",res);
         if(res == -1){
-            printf("Errore nella ricezione dei dati\n");
+            strerror(res);
         }else if(res == 0){
             printf("Il client ha chiuso la connessione\n");
         }else{
             printf("Dati ricevuti: %s\n", buffer);
             //buffer[strcspn(buffer, "\n")] = '\0';
             if (strlen(buffer) != 0){//check carattere vuoto in stringa da client
-                parseCommand(buffer,client_fd);
+                parseCommand(buffer,client_socket);
+                bzero(buffer, sizeof(buffer));
             }else{
                 printf("Il client Non hai inserito nulla\n");
             }
             //bzero(buffer, sizeof(buffer));
-            memset(buffer, '\0', sizeof(buffer));
         }
     }
 
@@ -118,7 +126,7 @@ void startSocket() {
 
         commandNumber = atoi(token);
 
-        printf("Il comando è : %d", commandNumber);
+        printf("Il comando è : %d\n", commandNumber);
 
         switch(commandNumber){
             case 1:{
@@ -132,14 +140,15 @@ void startSocket() {
                 if(signin(email,password))
                 {
                     printf("Login andato a buon fine\n");
-                    char *risposta = "OK";
+                    char risposta[] = "OK";
                     int status = send(client_fd, risposta, strlen(risposta), 0);
                     if ((status == -1))
                     {
                         printf("send error");
+                    }else{
+                        printf("Risposta inviata al client: %s\n", risposta);
+                        printf("bytes inviati: %d su bytes totali: %d\n", status, strlen(risposta));
                     }
-                    printf("Risposta inviata al client: %s\n", risposta);
-                    break;
                     //sendAll(client_fd, "OK");
                 }else{printf("Login fallito\n");}
                 break;
