@@ -28,7 +28,7 @@ public class client {
 
     public void createConnection(){
         try {
-            clientSocket = new Socket("127.0.0.1", 5979);
+            clientSocket = new Socket("127.0.0.1", 5978);
             out = new PrintWriter(clientSocket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         } catch (Exception e) {
@@ -48,12 +48,13 @@ public class client {
    
 
             out.println(dati);
-            Thread.sleep(500);
+            //Thread.sleep(500);
             String risposta = in.readLine();
+            System.out.println(" la risposta è : " + risposta);
             return risposta;
         } catch (IOException e) {
             System.err.println("Errore durante la lettura");
-            return "";   
+            return "";
         }
     }
 

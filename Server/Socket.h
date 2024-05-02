@@ -4,7 +4,7 @@ void startSocket();
 
 void Accept(int,int);
 
-void receiveData(int);//void*
+void* receiveData(void*);//void*
 
 void parseCommand(char[],int);
 
