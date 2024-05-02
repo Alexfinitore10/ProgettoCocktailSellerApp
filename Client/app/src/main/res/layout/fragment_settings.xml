@@ -4,14 +4,4 @@
     android:id="@+id/FragmentSettings"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SettingsFragment">
-
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fontFamily="sans-serif-medium"
-        android:text="settings fragment"
-        android:textSize="24sp" />
-
-</FrameLayout>
+    tools:context=".SettingsFragment"/>

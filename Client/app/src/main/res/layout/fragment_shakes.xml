@@ -1,17 +1,325 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/FragmentShakes"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ShakesFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:id="@+id/FragmentShakes"
+    <ScrollView
+        android:id="@+id/ShakesScroller"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fontFamily="sans-serif-medium"
-        android:text="shakes fragment"
-        android:textSize="24sp" />
+        android:layout_height="match_parent">
 
+        <LinearLayout
+            android:id="@+id/ShakesScrollerLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/EsoticShakeCardView"
+                android:layout_width="match_parent"
+                android:layout_height="311dp"
+                >
+
+                <TextView
+                    android:id="@+id/EsoticShakeTitle"
+                    android:layout_width="126dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="190dp"
+                    android:layout_marginTop="50dp"
+                    android:text="Frullato esotico"
+                    android:textColor="#000000"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/EsoticShakeIngredients"
+                    android:layout_width="336dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="140dp"
+                    android:text="Ingredienti: papaya, ananas, latte di cocco, curcuma, pepe nero\nPrezzo: 5€"
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
+
+                <Spinner
+                    android:id="@+id/EsoticShakeAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="230dp" />
+
+                <TextView
+                    android:id="@+id/EsoticShakeAmountWrite"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="210dp"
+                    android:text="Quantità:" />
+
+                <Button
+                    android:id="@+id/EsoticShakeAddButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="220dp"
+                    android:layout_marginTop="230dp"
+                    android:backgroundTint="#F98500"
+                    android:text="Aggiungi" />
+
+                <ImageView
+                    android:id="@+id/EsoticShakeImage"
+                    android:layout_width="110dp"
+                    android:layout_height="115dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="20dp"
+                    android:src="@drawable/frullato_esotico" />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/ProteinShakeCardView"
+                android:layout_width="match_parent"
+                android:layout_height="311dp"
+                android:layout_marginTop="30dp"
+                >
+
+                <TextView
+                    android:id="@+id/ProteinShakeTitle"
+                    android:layout_width="148dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="190dp"
+                    android:layout_marginTop="50dp"
+                    android:text="Frullato proteico"
+                    android:textColor="#000000"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/ProteinShakeIngredients"
+                    android:layout_width="336dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="140dp"
+                    android:text="Ingredienti: banana, burro di arachidi, semi di chia, latte, proteine\nPrezzo: 5€"
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
+
+                <Spinner
+                    android:id="@+id/ProteinShakeAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="230dp" />
+
+                <TextView
+                    android:id="@+id/ProteinShakeAmountWrite"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="210dp"
+                    android:text="Quantità:" />
+
+                <Button
+                    android:id="@+id/ProteinShakeAddButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="220dp"
+                    android:layout_marginTop="230dp"
+                    android:backgroundTint="#F98500"
+                    android:text="Aggiungi" />
+
+                <ImageView
+                    android:id="@+id/ProteinShakeImage"
+                    android:layout_width="110dp"
+                    android:layout_height="115dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="20dp"
+                    android:src="@drawable/frullato_proteico" />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/BerryShakeCardView"
+                android:layout_width="match_parent"
+                android:layout_height="311dp"
+                android:layout_marginTop="30dp"
+                >
+
+                <TextView
+                    android:id="@+id/BerryShakeTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="190dp"
+                    android:layout_marginTop="50dp"
+                    android:text="Frullato di Bacche"
+                    android:textColor="#000000"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/BerryShakeIngredients"
+                    android:layout_width="321dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="140dp"
+                    android:text="Ingredienti: fragole, mirtilli, lamponi, latte di mandorla\nPrezzo: 3.50€"
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
+
+                <Spinner
+                    android:id="@+id/BerryShakeAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="230dp" />
+
+                <TextView
+                    android:id="@+id/BerryShakeAmountWrite"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="210dp"
+                    android:text="Quantità:" />
+
+                <Button
+                    android:id="@+id/BerryShakeAddButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="220dp"
+                    android:layout_marginTop="230dp"
+                    android:backgroundTint="#F98500"
+                    android:text="Aggiungi" />
+
+                <ImageView
+                    android:id="@+id/BerryShakeImage"
+                    android:layout_width="110dp"
+                    android:layout_height="115dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="20dp"
+                    android:src="@drawable/frullato_di_bacche" />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/FruitShakeCardView"
+                android:layout_width="match_parent"
+                android:layout_height="311dp"
+                android:layout_marginTop="30dp"
+                >
+
+                <TextView
+                    android:id="@+id/FruitShakeTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="190dp"
+                    android:layout_marginTop="50dp"
+                    android:text="Frullato di Frutta"
+                    android:textColor="#000000"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/FruitShakeIngredients"
+                    android:layout_width="321dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="140dp"
+                    android:text="Ingredienti: banana, fragola, kiwi, latte\nPrezzo: 3.50€"
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
+
+                <Spinner
+                    android:id="@+id/FruitShakeAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="230dp" />
+
+                <TextView
+                    android:id="@+id/FruitShakeAmountWrite"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="210dp"
+                    android:text="Quantità:" />
+
+                <Button
+                    android:id="@+id/FruitShakeAddButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="220dp"
+                    android:layout_marginTop="230dp"
+                    android:backgroundTint="#F98500"
+                    android:text="Aggiungi" />
+
+                <ImageView
+                    android:id="@+id/FruitShakeImage"
+                    android:layout_width="110dp"
+                    android:layout_height="115dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="20dp"
+                    android:src="@drawable/frullato_di_frutta" />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/TropicalShakeView"
+                android:layout_width="match_parent"
+                android:layout_height="311dp"
+                android:layout_marginTop="30dp"
+                >
+
+                <TextView
+                    android:id="@+id/TropicalShakeTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="190dp"
+                    android:layout_marginTop="50dp"
+                    android:text="Frullato Tropicale"
+                    android:textColor="#000000"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/TropicalShakeIngredients"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="140dp"
+                    android:text="Ingredienti: ananas, mango, succo d'arancia, latte\nPrezzo: 4€"
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
+
+                <Spinner
+                    android:id="@+id/TropicalShakeAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="230dp" />
+
+                <TextView
+                    android:id="@+id/TropicalShakeAmountWrite"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="210dp"
+                    android:text="Quantità:" />
+
+                <Button
+                    android:id="@+id/TropicalShakeAddButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="220dp"
+                    android:layout_marginTop="230dp"
+                    android:backgroundTint="#F98500"
+                    android:text="Aggiungi" />
+
+                <ImageView
+                    android:id="@+id/TropicalShakeImage"
+                    android:layout_width="110dp"
+                    android:layout_height="115dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="20dp"
+                    android:src="@drawable/frullato_tropicale" />
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+    </ScrollView>
 </FrameLayout>

@@ -17,13 +17,13 @@ public class PagerAdapter extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         switch (position){
             case 0:
-                return new DrinkFragment();
+                return new CocktailFragment();
             case 1:
                 return new ShakesFragment();
             case 2:
                 return new SettingsFragment();
         }
-        return new DrinkFragment();
+        return new CocktailFragment();
     }
 
     @Override

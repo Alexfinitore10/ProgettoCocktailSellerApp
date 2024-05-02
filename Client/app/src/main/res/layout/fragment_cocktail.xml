@@ -5,7 +5,9 @@
     android:id="@+id/FragmentCocktail"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DrinkFragment" >
+    tools:context=".CocktailFragment" >
+
+
 
     <ScrollView
         android:id="@+id/DrinkScroller"
@@ -13,15 +15,495 @@
         android:layout_height="match_parent">
 
         <LinearLayout
-            android:id="@+id/ScrollerLayout"
+            android:id="@+id/DrinkScrollerLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" >
 
             <androidx.cardview.widget.CardView
+                android:id="@+id/MoscowCardView"
+                android:layout_width="match_parent"
+                android:layout_height="311dp">
+
+                <TextView
+                    android:id="@+id/MoscowTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="190dp"
+                    android:layout_marginTop="50dp"
+                    android:text="Moscow Mule"
+                    android:textColor="#000000"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/MoscowIngredients"
+                    android:layout_width="321dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="140dp"
+                    android:text="Ingredienti: Vodka, Succo di lime, Ginger beer, Ghiaccio\nGradazione Alcolica: 25.0\nPrezzo: 6.44€"
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
+
+                <Spinner
+                    android:id="@+id/MoscowAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="260dp" />
+
+                <TextView
+                    android:id="@+id/MoscowAmountWrite"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="240dp"
+                    android:text="Quantità:" />
+
+                <Button
+                    android:id="@+id/MoscowAddButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="220dp"
+                    android:layout_marginTop="260dp"
+                    android:backgroundTint="#F98500"
+                    android:text="Aggiungi" />
+
+                <ImageView
+                    android:id="@+id/MoscowImage"
+                    android:layout_width="110dp"
+                    android:layout_height="115dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="20dp"
+                    android:src="@drawable/moscow_mule" />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/WhiskeySourCardView"
+                android:layout_width="match_parent"
+                android:layout_height="311dp"
+                android:layout_marginTop="40dp">
+
+                <TextView
+                    android:id="@+id/WhiskeySourTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="190dp"
+                    android:layout_marginTop="50dp"
+                    android:text="Whiskey Sour"
+                    android:textColor="#000000"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/WhiskeySourIngredients"
+                    android:layout_width="321dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="140dp"
+                    android:text="Ingredienti: Whiskey, Succo di limone, sciroppo di zucchero, albume\nGradazione Alcolica: 23.0\nPrezzo: 4.80€"
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
+
+                <Spinner
+                    android:id="@+id/WhiskeySourAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="260dp" />
+
+                <TextView
+                    android:id="@+id/WhiskeySourAmountWrite"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="240dp"
+                    android:text="Quantità:" />
+
+                <Button
+                    android:id="@+id/WhiskeySourAddButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="220dp"
+                    android:layout_marginTop="260dp"
+                    android:backgroundTint="#F98500"
+                    android:text="Aggiungi" />
+
+                <ImageView
+                    android:id="@+id/WhiskeySourImage"
+                    android:layout_width="110dp"
+                    android:layout_height="115dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="20dp"
+                    android:src="@drawable/whiskey_sour" />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/ManhattanCardView"
+                android:layout_width="match_parent"
+                android:layout_height="311dp"
+                android:layout_marginTop="40dp">
+
+                <TextView
+                    android:id="@+id/ManhattanTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="190dp"
+                    android:layout_marginTop="50dp"
+                    android:text="Manhattan"
+                    android:textColor="#000000"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/ManhattanIngredients"
+                    android:layout_width="321dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="140dp"
+                    android:text="Ingredienti: Rye whisky, vermout rosso, gocce di Angostura, buccia di arancia, ghiaccio, ciliegina al Maraschino\nGradazione Alcolica: 30.0\nPrezzo: 5.90€"
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
+
+                <Spinner
+                    android:id="@+id/ManhattanAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="260dp" />
+
+                <TextView
+                    android:id="@+id/ManhattanAmountWrite"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="240dp"
+                    android:text="Quantità:" />
+
+                <Button
+                    android:id="@+id/ManhattanaddButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="220dp"
+                    android:layout_marginTop="260dp"
+                    android:backgroundTint="#F98500"
+                    android:text="Aggiungi" />
+
+                <ImageView
+                    android:id="@+id/ManhattanImage"
+                    android:layout_width="110dp"
+                    android:layout_height="115dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="20dp"
+                    android:src="@drawable/manhattan" />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/MargaritaCardView"
+                android:layout_width="match_parent"
+                android:layout_height="311dp"
+                android:layout_marginTop="40dp">
+
+                <TextView
+                    android:id="@+id/MargaritaTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="210dp"
+                    android:layout_marginTop="70dp"
+                    android:text="Margarita"
+                    android:textColor="#000000"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/MargaritaIngredients"
+                    android:layout_width="341dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="160dp"
+                    android:text="Ingredienti: Succo di Lime, Ghiaccio, Triple Sec, Tequila\nGradazione Alcolica: 25.4\nPrezzo: 6.44€"
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
+
+                <Spinner
+                    android:id="@+id/MargaritaAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="260dp" />
+
+                <TextView
+                    android:id="@+id/MargaritaAmountWrite"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="240dp"
+                    android:text="Quantità:" />
+
+                <Button
+                    android:id="@+id/MargaritaaddButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="220dp"
+                    android:layout_marginTop="260dp"
+                    android:backgroundTint="#F98500"
+                    android:text="Aggiungi" />
+
+                <ImageView
+                    android:id="@+id/MargaritaImage"
+                    android:layout_width="110dp"
+                    android:layout_height="115dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="30dp"
+                    android:src="@drawable/margarita" />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/DryMartiniCardView"
+                android:layout_width="match_parent"
+                android:layout_height="311dp"
+                android:layout_marginTop="40dp">
+
+                <TextView
+                    android:id="@+id/DryMartiniTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="210dp"
+                    android:layout_marginTop="70dp"
+                    android:text="Dry Martini"
+                    android:textColor="#000000"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/DryMartiniIngredients"
+                    android:layout_width="341dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="160dp"
+                    android:text="Ingredienti: Gin, Scorza di Limone, Vermut Dry, Ghiaccio\nGradazione Alcolica: 14.4\nPrezzo: 7.90€"
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
+
+                <Spinner
+                    android:id="@+id/DryMartiniAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="260dp" />
+
+                <TextView
+                    android:id="@+id/DryMartiniAmountWrite"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="240dp"
+                    android:text="Quantità:" />
+
+                <Button
+                    android:id="@+id/DryMartiniaddButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="220dp"
+                    android:layout_marginTop="260dp"
+                    android:backgroundTint="#F98500"
+                    android:text="Aggiungi" />
+
+                <ImageView
+                    android:id="@+id/DryMartiniImage"
+                    android:layout_width="110dp"
+                    android:layout_height="115dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="30dp"
+                    android:src="@drawable/dry_martini" />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/DaiquiriCardView"
+                android:layout_width="match_parent"
+                android:layout_height="311dp"
+                android:layout_marginTop="40dp">
+
+                <TextView
+                    android:id="@+id/DaiquiriTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="220dp"
+                    android:layout_marginTop="70dp"
+                    android:text="Daiquiri"
+                    android:textColor="#000000"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/DaiquiriIngredients"
+                    android:layout_width="341dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="160dp"
+                    android:text="Ingredienti: Rum, Succo di lime, zucchero, ghiaccio, gocce di maraschino\nGradazione Alcolica: 18.9\nPrezzo: 6.44€"
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
+
+                <Spinner
+                    android:id="@+id/DaiquiriAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="260dp" />
+
+                <TextView
+                    android:id="@+id/DaiquiriAmountWrite"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="240dp"
+                    android:text="Quantità:" />
+
+                <Button
+                    android:id="@+id/DaiquiriaddButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="220dp"
+                    android:layout_marginTop="260dp"
+                    android:backgroundTint="#F98500"
+                    android:text="Aggiungi" />
+
+                <ImageView
+                    android:id="@+id/DaiquiriImage"
+                    android:layout_width="110dp"
+                    android:layout_height="115dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="30dp"
+                    android:src="@drawable/daiquiri" />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/NegroniCardView"
+                android:layout_width="match_parent"
+                android:layout_height="311dp"
+                android:layout_marginTop="40dp">
+
+                <ImageView
+                    android:id="@+id/NegroniImage"
+                    android:layout_width="110dp"
+                    android:layout_height="115dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="30dp"
+                    android:src="@drawable/negroni" />
+
+                <TextView
+                    android:id="@+id/NegroniTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="220dp"
+                    android:layout_marginTop="70dp"
+                    android:text="Negroni"
+                    android:textColor="#000000"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/NegroniIngredients"
+                    android:layout_width="341dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="160dp"
+                    android:text="Ingredienti: Ghiaccio, Gin, Bitter Campari, Vermut Rosso\nGradazione Alcolica: 28.0\nPrezzo: 5.90€"
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
+
+                <Spinner
+                    android:id="@+id/NegroniAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="260dp" />
+
+                <TextView
+                    android:id="@+id/NegroniAmountWrite"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="240dp"
+                    android:text="Quantità:" />
+
+                <Button
+                    android:id="@+id/NegroniaddButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="220dp"
+                    android:layout_marginTop="260dp"
+                    android:backgroundTint="#F98500"
+                    android:text="Aggiungi" />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/WhiteRussianCardView"
+                android:layout_width="match_parent"
+                android:layout_height="311dp"
+                android:layout_marginTop="50dp">
+
+                <ImageView
+                    android:id="@+id/WhiteRussianImage"
+                    android:layout_width="110dp"
+                    android:layout_height="115dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="30dp"
+                    android:src="@drawable/white_russian" />
+
+                <TextView
+                    android:id="@+id/WhiteRussianTitle"
+                    android:layout_width="168dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="180dp"
+                    android:layout_marginTop="58dp"
+                    android:text="White Russian"
+                    android:textAlignment="center"
+                    android:textColor="#000000"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/WhiteRussianIngredients"
+                    android:layout_width="341dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="160dp"
+                    android:text="Ingredienti: Vodka, Liquore al caffè, Ghiaccio , Panna fresca\nGradazione Alcolica: 25.0\nPrezzo: 7€"
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
+
+                <Spinner
+                    android:id="@+id/WhiteRussianAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="260dp" />
+
+                <TextView
+                    android:id="@+id/WhiteRussianAmountWrite"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="240dp"
+                    android:text="Quantità:" />
+
+                <Button
+                    android:id="@+id/WhiteRussianAddButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="220dp"
+                    android:layout_marginTop="260dp"
+                    android:backgroundTint="#F98500"
+                    android:text="Aggiungi" />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
                 android:id="@+id/BloodyMaryCardView"
                 android:layout_width="match_parent"
-                android:layout_height="331dp"
+                android:layout_height="319dp"
                 android:layout_marginTop="50dp">
 
                 <ImageView
@@ -29,29 +511,54 @@
                     android:layout_width="110dp"
                     android:layout_height="115dp"
                     android:layout_marginStart="30dp"
-                    android:layout_marginTop="30dp"
+                    android:layout_marginTop="20dp"
                     android:src="@drawable/bloodymary" />
 
                 <TextView
                     android:id="@+id/BloodyMaryTitle"
                     android:layout_width="180dp"
-                    android:layout_height="58dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="175dp"
-                    android:layout_marginTop="70dp"
+                    android:layout_marginTop="60dp"
                     android:text="Bloody Mary"
                     android:textAlignment="center"
+                    android:textColor="#000000"
                     android:textSize="24sp"
                     android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/BloodyMaryIngredients"
-                    android:layout_width="331dp"
-                    android:layout_height="119dp"
+                    android:layout_width="310dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
-                    android:layout_marginTop="180dp"
+                    android:layout_marginTop="140dp"
                     android:text="Ingredienti: Vodka, Succo di pomodoro, Tabasco , Sedano , Sale , Pepe nero , Succo di limone , Salsa Worchestershire\nGradazione Alcolica: 25.0\nPrezzo: 6€"
                     android:textColor="#000000"
-                    android:textSize="18sp" />
+                    android:textSize="16sp" />
+
+                <Spinner
+                    android:id="@+id/BloodyMaryAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="260dp" />
+
+                <Button
+                    android:id="@+id/BloodyMaryAddButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="220dp"
+                    android:layout_marginTop="260dp"
+                    android:backgroundTint="#FB8600"
+                    android:text="Aggiungi" />
+
+                <TextView
+                    android:id="@+id/BloodyMaryAmountWrite"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="240dp"
+                    android:text="Quantità:" />
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
@@ -65,15 +572,15 @@
                     android:layout_width="110dp"
                     android:layout_height="115dp"
                     android:layout_marginStart="30sp"
-                    android:layout_marginTop="30sp"
+                    android:layout_marginTop="20sp"
                     android:src="@drawable/mojito" />
 
                 <TextView
                     android:id="@+id/MojitoTitle"
-                    android:layout_width="143dp"
-                    android:layout_height="60dp"
+                    android:layout_width="156dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="175dp"
-                    android:layout_marginTop="70dp"
+                    android:layout_marginTop="60dp"
                     android:clickable="false"
                     android:text="Mojito"
                     android:textAlignment="center"
@@ -84,12 +591,39 @@
                 <TextView
                     android:id="@+id/MojitoIngredients"
                     android:layout_width="355dp"
-                    android:layout_height="100dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
-                    android:layout_marginTop="180dp"
+                    android:layout_marginTop="160dp"
                     android:text="Ingredienti: Rum, Lime, Zucchero, Menta\nGradazione Alcolica: 18.0\nPrezzo: 6€"
                     android:textColor="#000000"
-                    android:textSize="18sp" />
+                    android:textSize="16sp" />
+
+                <Button
+                    android:id="@+id/MojitoAddButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="220dp"
+                    android:layout_marginTop="250dp"
+                    android:backgroundTint="#FD8700"
+                    android:text="Aggiungi" />
+
+                <Spinner
+                    android:id="@+id/MojitoAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="250dp"
+                    android:contextClickable="false"
+                    tools:listitem="@android:layout/simple_list_item_1" />
+
+                <TextView
+                    android:id="@+id/MojitoAmountWrite"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginTop="230dp"
+                    android:text="Quantità:"
+                    android:textColor="#000000" />
             </androidx.cardview.widget.CardView>
         </LinearLayout>
     </ScrollView>
