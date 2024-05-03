@@ -106,34 +106,74 @@ public class client {
     PrintWriter out;
     BufferedReader input;
 
+    Scanner scanner = new Scanner(System.in);
+
     public static void main(String[] args) throws IOException, InterruptedException {
         client c = new client();
 
         // Establish connection with the server
-        c.createConnection();
-
-        String risposta = c.sendData();
-        System.out.println(risposta);
-
-        // Interpret server response
-        if (risposta.equals("OK")) {
-            System.out.println("Registrazione avvenuta con successo!");
-        } else {
-            System.out.println("Errore durante la registrazione: " + risposta);
+        boolean connected = false;
+        int numTries = 0;
+        do {
+            connected = c.createConnection();
+            numTries++;
+            if(!connected){
+                System.out.println("Connessione fallita. Riprovo tra 5 secondi... (" + numTries + "/6)");
+                Thread.sleep(5000);
+            }
+        } while(!connected && numTries < 6);
+        if(!connected){
+            System.err.println("Impossibile stabilire la connessione con il server. Termino il programma.");
+            System.exit(1);
         }
+
+            String risposta;
+            do {
+                risposta=c.menu();
+                if(!risposta.isEmpty()){
+                    risposta = c.sendData();
+                    System.out.println(risposta);
+    
+                    // Interpret server response
+                    if (risposta.equals("OK")) {
+                        System.out.println("Registrazione avvenuta con successo!");
+                    } else {
+                        System.out.println("Errore durante la registrazione: " + risposta);
+                    }
+                } else {
+                    break;
+                }
+            } while (true);
 
         c.closeConnection();
     }
 
-    public void createConnection() {
+    String menu()
+    {
+        String risposta;
+
+        System.out.println("Scegli l'operazione che vuoi eseguire:");
+        System.out.println("1) Registrazione");
+        System.out.println("2)Login");
+        System.out.println("3)Visualizza i Drink");
+        System.out.println("4)Disconnettiti");
+        risposta = scanner.nextLine();
+        return risposta;
+
+
+    }
+
+    public boolean createConnection() {
         try {
             clientSocket = new Socket();
             clientSocket.connect(new InetSocketAddress(address,port), 5000);
             System.out.println("Connected");
             out = new PrintWriter(clientSocket.getOutputStream(), true);
             input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            return true;
         } catch (Exception e) {
             System.err.println("Errore durante la creazione della connessione: " + e.getMessage());
+            return false;
         }
     }
 
@@ -148,7 +188,7 @@ public class client {
             clientSocket.setSoTimeout(5000);
 
             // Read server response
-            String risposta = input.readLin3e();
+            String risposta = input.readLine();
             System.out.println("La risposta è: " + risposta);
             return risposta;
         } catch (IOException e) {

@@ -59,30 +59,12 @@ void startSocket() {
             close(new_sockfd);
             continue;
         }
+        printf("Thread creato con indirizzo: %d\n", tid);
         
         if((error = pthread_detach(tid)) != 0){  
             printf("Errore nel detach del thread: %s\n", strerror(error));
         }
-        //single threaded
-        //receiveData();
-
-
-        // Ricezione del messaggio dal client
-        //int bytes_received = recv(new_sockfd, buffer, MAX_BUFFER_SIZE, 0);
-        // if (bytes_received < 0) {
-        //     perror("recv");
-        //     close(new_sockfd);
-        //     continue; // Riprova con la prossima connessione
-        // }
-
-        // Elaborazione del messaggio ricevuto
-        //printf("Messaggio ricevuto dal client: %s\n", buffer);
-
-        // Invio di una risposta al client
-
-        
-
-        // Chiusura della connessione client
+    
     }
 
     close(new_sockfd);
@@ -93,28 +75,38 @@ void startSocket() {
 }
 
     void* receiveData(void* client_fd) {
-        printf("Thread Creaton\n");
+        printf("Thread Creato\n");
         char buffer[MAX_BUFFER_SIZE] = {0};
+        int res;
 
         int client_socket = *((int*)client_fd);
+        do{
+            printf("While iniziato---\n");
 
-        int res = recv(client_socket, buffer , MAX_BUFFER_SIZE, 0);
-        printf("%d\n",res);
-        if(res == -1){
-            strerror(res);
-        }else if(res == 0){
-            printf("Il client ha chiuso la connessione\n");
-        }else{
-            printf("Dati ricevuti: %s\n", buffer);
-            //buffer[strcspn(buffer, "\n")] = '\0';
-            if (strlen(buffer) != 0){//check carattere vuoto in stringa da client
-                parseCommand(buffer,client_socket);
-                bzero(buffer, sizeof(buffer));
+            res = recv(client_socket, buffer , MAX_BUFFER_SIZE, 0);
+            printf("Il client ha inviato un buffer da: %d bytes quindi...\n",res);
+            if(res == -1){
+                strerror(res);
+            }else if(res == 0){
+                printf("Il client ha chiuso la connessione\n");
+                break;
             }else{
-                printf("Il client Non hai inserito nulla\n");
+                printf("Dati ricevuti: %s\n", buffer);
+                //buffer[strcspn(buffer, "\n")] = '\0';
+                if (strlen(buffer) != 0){//check carattere vuoto in stringa da client
+                    parseCommand(buffer,client_socket);
+                    bzero(buffer, sizeof(buffer));
+                }else{
+                    printf("Il client Non hai inserito nulla\n");
+                }
+                //bzero(buffer, sizeof(buffer));
             }
-            //bzero(buffer, sizeof(buffer));
-        }
+        }while (res != 0 );
+
+        printf("While finito---\n");
+        close(client_socket);
+        
+        printf("Thread Terminato\n");
     }
 
     void parseCommand(char toParse[],int client_fd){
@@ -141,14 +133,15 @@ void startSocket() {
                 {
                     printf("Login andato a buon fine\n");
                     char risposta[] = "OK\n";
-                    int status = write(client_fd, risposta, strlen(risposta));
-                    //int status = send(client_fd, risposta, strlen(risposta), 0);
+                    //int status = write(client_fd, risposta, strlen(risposta));
+                    int status = send(client_fd, risposta, strlen(risposta), 0);
                     if ((status == -1))
                     {
                         printf("send error");
                     }else{
                         printf("Risposta inviata al client: %s\n", risposta);
                         printf("bytes inviati: %d su bytes totali: %d\n", status, strlen(risposta));
+
                     }
                     //sendAll(client_fd, "OK");
                 }else{printf("Login fallito\n");}
@@ -164,6 +157,7 @@ void startSocket() {
                 strcpy(password, token);
                 if(signup(email,password) == true) {
                     //stringa default di ACK
+                    int status = send(client_fd, "OK\n", strlen("OK\n"), 0);
                     //sendAll(client_fd, "OK");
                 }else{
                     //stringa default di NOK
@@ -180,7 +174,7 @@ void startSocket() {
 
                 printf("%s\n", cocktails);
 
-                //sendAll(client_fd, cocktails);
+                
 
                 free(cocktails);
 
