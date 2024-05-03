@@ -14,7 +14,7 @@ char *firstdbcommand = "CREATE TABLE IF NOT EXISTS Cliente(email VARCHAR(255) PR
                         id INTEGER PRIMARY KEY,\
                         cliente_id VARCHAR(255),\
                         cocktail_id VARCHAR(255) ,\
-                        CONSTRAINT cliente_fk FOREIGN KEY (cliente_id) REFERENCES Cliente (email),\
+                        CONSTRAINT cliente_fk FOREIGN KEY (cliente_id) REFERENCES Cliente (email) ,\
                         CONSTRAINT cocktail_fk FOREIGN KEY (cocktail_id) REFERENCES Cocktail (nome));";
 
 //Creating Database
@@ -22,14 +22,14 @@ void createdb_query(){
 
     //Provo a connettermi al Database
     while (testingConnection() == false){
-        printf("La connessione non e' effettuabile, riprovo tra 5 secondi...\n");
+        log_warn("La connessione non e' effettuabile, riprovo tra 5 secondi...\n");
         sleep(5);
     }
     //primo comando da eseguire
-    printf("Eseguo la query di costruzione del database\n");
+    log_debug("Eseguo la query di costruzione del database\n");
     
     if (command(firstdbcommand)){
-        printf("Popolo il database...\n");
+        log_debug("Popolo il database...\n");
         cocktail_and_shake_population();
     }
 
@@ -79,7 +79,7 @@ bool testingConnection(){
         feedback = "default status\n";
         break;
     }
-    printf("Connection status : %s\n", feedback);
+    log_info("Connection to database status : %s\n", feedback);
     return status;
 }
 
@@ -97,12 +97,12 @@ bool command(char *comando){
 bool reduce_amount_cocktail(char *nome, int quantita){
 
     if(is_drink_in_db(nome) == false){
-        printf("Il cocktail %s non e' presente nel database\n", nome);
+        log_error("Il cocktail %s non e' presente nel database\n", nome);
         return false;//Perchè?
     }
 
     if(get_cocktail_amount(nome) < quantita){
-        printf("Il cocktail %s non e' disponibile\n", nome);
+        log_error("Il cocktail %s non e' disponibile\n", nome);
         return false;
     }else{
 
@@ -110,7 +110,7 @@ bool reduce_amount_cocktail(char *nome, int quantita){
 
     char quantita_string[100];
 
-    sprintf(quantita_string, "%d", quantita);
+    log_debug(quantita_string, "%d", quantita);
 
     const char *paramValues[2] = {quantita_string, nome};
 
@@ -127,12 +127,12 @@ bool reduce_amount_cocktail(char *nome, int quantita){
 bool reduce_amount_shake(char *nome, int quantita){
 
     if(is_shake_in_db(nome) == false){
-        printf("Il frullato %s non e' presente nel database\n", nome);
+        log_error("Il frullato %s non e' presente nel database\n", nome);
         return false;
     }
 
     if(get_shake_amount(nome) < quantita){
-        printf("Il frullato %s non e' disponibile\n", nome);
+        log_error("Il frullato %s non e' disponibile\n", nome);
         return false;
     }else{
 
@@ -140,7 +140,7 @@ bool reduce_amount_shake(char *nome, int quantita){
 
     char quantita_string[100];
 
-    sprintf(quantita_string, "%d", quantita);
+    log_debug(quantita_string, "%d", quantita);
 
     const char *paramValues[2] = {quantita_string, nome};
 
@@ -162,30 +162,33 @@ bool checkres(PGresult* res){
     {
     case PGRES_COMMAND_OK:
         risultato = "Query completata\n";
+        log_debug("%s : %s", risultato, PQresultErrorMessage(res));
         status = true;
         break;
     case PGRES_EMPTY_QUERY:
         risultato = "Query vuota\n";
+        log_warn("%s : %s", risultato, PQresultErrorMessage(res));
         break;
     case PGRES_TUPLES_OK:
         risultato = "Query completata con ritorno di dati\n";
+        log_debug("%s : %s", risultato, PQresultErrorMessage(res));
         status = true;
         break;
     case PGRES_FATAL_ERROR:
         risultato = "Errore fatale";
+        log_error("%s : %s", risultato, PQresultErrorMessage(res));
         break;
     default:
         risultato = "Operazione non andata a buon fine\n";
+        log_error("%s : %s", risultato, PQresultErrorMessage(res));
         break;
     }
-    error_response = PQresultErrorMessage(res);
-    printf("%s: %s",risultato, error_response);
     return status;
 }
 
 //Function to insert a cocktail in the DB. It's primarily used in the DB population function (Cocktail and shake_population)
 void insert_cocktail(char nome[], char ingredienti[], double gradazione_alcolica ,double prezzo, int quantita){
-    char *insert_cocktail_command = "INSERT INTO Cocktail(nome, ingredienti, gradazione_alcolica, prezzo , quantita) VALUES ($1, $2, $3, $4, $5)";
+    char *insert_cocktail_command = "INSERT INTO Cocktail(nome, ingredienti, gradazione_alcolica, prezzo , quantita) VALUES ($1, $2, $3, $4, $5)ON CONFLICT (nome) DO NOTHING";
 
     char gradazione_alcolica_string[100];
 
@@ -432,7 +435,7 @@ bool create_sell(char * cliente_id, char * coctail_id){
 }
 
 void insert_shake(char nome [], char ingredienti [], double prezzo, int quantita){
-    char *insert_shake_command = "INSERT INTO Frullato(nome, ingredienti, prezzo , quantita) VALUES ($1, $2, $3, $4)";
+    char *insert_shake_command = "INSERT INTO Frullato(nome, ingredienti, prezzo , quantita) VALUES ($1, $2, $3, $4)ON CONFLICT (nome) DO NOTHING";
 
     char prezzo_string[100];
 

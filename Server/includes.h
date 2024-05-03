@@ -16,5 +16,6 @@
 #include <string.h>
 #include <stdbool.h>
 #include <sys/types.h>
+#include "log.h"
  
 #endif

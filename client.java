@@ -118,10 +118,10 @@ public class client {
             connected = c.createConnection();
             numTries++;
             if(!connected){
-                System.out.println("Connessione fallita. Riprovo tra 5 secondi... (" + numTries + "/6)");
+                System.out.println("Connessione fallita. Riprovo tra 5 secondi... (" + numTries + "/10)");
                 Thread.sleep(5000);
             }
-        } while(!connected && numTries < 6);
+        } while(!connected && numTries < 10);
         if(!connected){
             System.err.println("Impossibile stabilire la connessione con il server. Termino il programma.");
             System.exit(1);
