@@ -159,8 +159,9 @@ void startSocket() {
                 strcpy(password, token);
                 if(signup(email,password) == true) {
                     status = send(client_fd, "OK\n", strlen("OK\n"), 0);
-                    if (status == 0)
+                    if (status > 0)
                     {
+                        log_info("[Server] Registrazione effettuata\n");
                         log_debug("Risposta inviata al client: %s\n", "OK\n");
                     }
                     else
@@ -168,8 +169,8 @@ void startSocket() {
                         log_error("send error: %s", strerror(errno));
                     }
                 }else{
-                    status = send(client_fd, "NOK_Registration", 16, 0);
-                    if (status == 0)
+                    status = send(client_fd, "NOK_Registration\n", 18, 0);
+                    if (status > 0)
                     {
                         log_debug("Risposta inviata al client: %s\n", "NOK_Registration");
                     }

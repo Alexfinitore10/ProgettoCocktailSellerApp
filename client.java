@@ -2,7 +2,6 @@
 // import java.net.*;
 // import java.util.Scanner;
 
-
 // public class client {
 //     //creazione socket del client
 //     Socket clientSocket;
@@ -27,7 +26,6 @@
 
 //             c.closeConnection();
 
-            
 //     }//fine del main
 
 //     public void createConnection(){
@@ -49,7 +47,6 @@
 //             String password = "alex";
 //             String dati = "1`" + email + "`" + password + "`"; // Formato dati personalizzabile
 //             //OutputStreamWriter osw = new OutputStreamWriter(socket.getOutputStream());
-   
 
 //             out.println(dati);
 //             //Thread.sleep(5000);
@@ -117,40 +114,47 @@ public class client {
         do {
             connected = c.createConnection();
             numTries++;
-            if(!connected){
+            if (!connected) {
                 System.out.println("Connessione fallita. Riprovo tra 5 secondi... (" + numTries + "/10)");
                 Thread.sleep(5000);
             }
-        } while(!connected && numTries < 10);
-        if(!connected){
+        } while (!connected && numTries < 10);
+        if (!connected) {
             System.err.println("Impossibile stabilire la connessione con il server. Termino il programma.");
             System.exit(1);
         }
 
-            String risposta;
-            do {
-                risposta=c.menu();
-                if(!risposta.isEmpty()){
-                    risposta = c.sendData();
-                    System.out.println(risposta);
-    
-                    // Interpret server response
-                    if (risposta.equals("OK")) {
-                        System.out.println("Registrazione avvenuta con successo!");
-                    } else {
-                        System.out.println("Errore durante la registrazione: " + risposta);
-                    }
-                } else {
-                    break;
-                }
-            } while (true);
+        String risposta;
+        do {
+            risposta = c.menu();
+            if (!(risposta.isEmpty())) {
+                // receive message
+                String message = c.receive();
+                System.out.println("Risposta dal server: " + message);
+                continue;
+            } else {
+                System.err.println("La stringa ricevuto è vuota. Termino il programma.");
+                break;
+            }
+        } while (true);
 
         c.closeConnection();
     }
 
-    String menu()
-    {
+    String receive() {
+        try {
+            String risposta = input.readLine();
+            return risposta;
+        } catch (Exception e) {
+            System.err.println("Errore durante la lettura del server: " + e.getMessage());
+            return e.getMessage();
+        }
+    }
+
+    String menu() throws SocketException{
         String risposta;
+
+        clientSocket.setSoTimeout(5000);
 
         System.out.println("Scegli l'operazione che vuoi eseguire:");
         System.out.println("1) Registrazione");
@@ -158,15 +162,76 @@ public class client {
         System.out.println("3)Visualizza i Drink");
         System.out.println("4)Disconnettiti");
         risposta = scanner.nextLine();
+        if (!risposta.isEmpty()) {
+            // System.out.println(risposta);
+            // Interpret server response
+            switch (Integer.parseInt(risposta)) {
+                case 1:
+                    registration();
+                    break;
+                case 2:
+                    login();
+                    break;
+                case 3:
+                    visualizzaDrink();
+                    break;
+                case 4:
+                    break;
+                default:
+                    System.out.println("Comando non riconosciuto");
+            }
+        } else {
+            return risposta;
+        }
         return risposta;
 
+    }
 
+    void registration() {
+        try {
+            System.out.print("Inserisci la tua email: ");
+            String email = scanner.nextLine();
+            System.out.print("Inserisci la tua password: ");
+            String password = scanner.nextLine();
+            String dati = "2`" + email + "`" + password;
+            System.out.println("I dati della registrazione che stanno per essere inviati sono: " + dati);
+            out.println(dati);
+            System.out.println("Invio riuscito");
+        } catch (Exception e) {
+            System.err.println("Errore durante l'invio dei dati: " + e.getMessage());
+        }
+    }
+
+    void login() {
+        try {
+            System.out.print("Inserisci la tua email: ");
+            String email = scanner.nextLine();
+            System.out.print("Inserisci la tua password: ");
+            String password = scanner.nextLine();
+            String dati = "1`" + email + "`" + password;
+            System.out.println("I dati del login che stanno per essere inviati sono: " + dati);
+            out.println(dati);
+            System.out.println("Invio riuscito");
+        } catch (Exception e) {
+            System.err.println("Errore nell'invio dei dati per il login" + e.getMessage());
+        }
+    }
+
+    void visualizzaDrink() {
+        try {
+            String dati = "3";
+            System.out.println("I dati della visualizzazione che stanno per essere inviati sono: " + dati);
+            out.println(dati);
+            System.out.println("Invio riuscito");
+        } catch (Exception e) {
+            System.err.println("Errore nell'invio dei dati per la visualizzazione" + e.getMessage());
+        }
     }
 
     public boolean createConnection() {
         try {
             clientSocket = new Socket();
-            clientSocket.connect(new InetSocketAddress(address,port), 5000);
+            clientSocket.connect(new InetSocketAddress(address, port), 5000);
             System.out.println("Connected");
             out = new PrintWriter(clientSocket.getOutputStream(), true);
             input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
