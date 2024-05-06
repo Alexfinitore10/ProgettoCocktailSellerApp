@@ -7,7 +7,7 @@
 
 
 int main(){
-    log_set_level(2);
+    log_set_level(0);
     log_trace("Provo il trace");
     log_debug("Provo il debug");
     log_info("Provo l'info");

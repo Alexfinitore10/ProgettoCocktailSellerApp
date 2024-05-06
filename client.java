@@ -90,6 +90,7 @@
 
 import java.io.*;
 import java.net.*;
+import java.nio.CharBuffer;
 import java.util.Scanner;
 
 public class client {
@@ -104,6 +105,7 @@ public class client {
     BufferedReader input;
 
     Scanner scanner = new Scanner(System.in);
+    StringBuilder stringBuilder = new StringBuilder();
 
     public static void main(String[] args) throws IOException, InterruptedException {
         client c = new client();
@@ -129,9 +131,7 @@ public class client {
             risposta = c.menu();
             if (!(risposta.isEmpty())) {
                 // receive message
-                String message = c.receive();
-                System.out.println("Risposta dal server: " + message);
-                continue;
+
             } else {
                 System.err.println("La stringa ricevuto è vuota. Termino il programma.");
                 break;
@@ -141,9 +141,25 @@ public class client {
         c.closeConnection();
     }
 
-    String receive() {
+    String bufferedReceive() {
         try {
-            String risposta = input.readLine();
+            // devo ottenere prima la lunghezza del buffer
+            int bufferLength = Integer.parseInt(receive());
+
+            // invio al server un messaggio di ack che mi ha fatto ricevere la lunghezza del
+            // buffer
+            out.println("ACK");
+
+            System.out.println("[DEBUG]Lunghezza del buffer da leggere è: " + bufferLength);
+
+            CharBuffer charBuffer = CharBuffer.allocate(bufferLength);
+            // mi aspetto che il server invii il buffer di lunghezza concordata
+            int ric = input.read(charBuffer);
+
+            String risposta = new String(charBuffer.array(), 0, ric);
+
+            System.out.println("La stringa letta dal server è : " + risposta);
+            // elaborazione... però devo vede un attimo
             return risposta;
         } catch (Exception e) {
             System.err.println("Errore durante la lettura del server: " + e.getMessage());
@@ -151,7 +167,18 @@ public class client {
         }
     }
 
-    String menu() throws SocketException{
+    String receive() {
+        try {
+            String risposta = input.readLine();
+            System.out.println("La risposta è: " + risposta);
+            return risposta;
+        } catch (Exception e) {
+            System.err.println("Errore durante la lettura del server: " + e.getMessage());
+            return e.getMessage();
+        }
+    }
+
+    String menu() throws SocketException {
         String risposta;
 
         clientSocket.setSoTimeout(5000);
@@ -174,6 +201,7 @@ public class client {
                     break;
                 case 3:
                     visualizzaDrink();
+                    bufferedReceive();
                     break;
                 case 4:
                     break;

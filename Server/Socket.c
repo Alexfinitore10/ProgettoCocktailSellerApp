@@ -82,7 +82,7 @@ void startSocket() {
 
         int client_socket = *((int*)client_fd);
         do{
-            log_trace("While iniziato---\n");
+            log_trace("Aspetto operazione dal client---\n");
 
             res = recv(client_socket, buffer , MAX_BUFFER_SIZE, 0);
             log_debug("Il client %d ha inviato un buffer da: %d bytes quindi...\n", client_socket,res);
@@ -104,7 +104,7 @@ void startSocket() {
             }
         }while (res != 0 );
 
-        log_trace("While finito---\n");
+        log_trace("Fine operazione ricevuta dal client---\n");
         close(client_socket);
         
         log_debug("Thread Terminato\n");
@@ -185,8 +185,52 @@ void startSocket() {
                 log_info("Il cliente vuole vedere tutti i drink\n");
 
                 char * cocktails = get_all_cocktails();
+                char[] cock_length;
+                cock_length = strlen(cocktails);
 
-                log_debug("%s\n", cocktails);
+                
+
+                //log_info("Ecco tutti i cocktail:%s\n", cocktails);//solo per testing
+                log_debug("Stringa di lunghezza: %d", cock_length);
+                log_info("Invio al server la lunghezza del buffer...");
+
+                
+
+                sleep(500);
+
+                int lunghezza = send(client_fd, cock_length, sizeof(cocktails), 0);//forse non invia il \n
+                if(lunghezza > 0 ){log_info("[Server] Lunghezza inviata al client");}else{log_error("send error: %s", strerror(errno));}
+
+                //ora devo ricevere l'Ack dal client
+
+                char ACK[5] = {0};
+                log_info("Attendo l'ACK dal client...");
+                int receive_ACK = recv(client_fd, ACK, 4, 0);
+                if(receive_ACK > 0){
+                    log_debug("Ho ricevuto: %s", ACK);
+                    if(strcmp(ACK, "ACK\n") == 0){
+                        log_info("ACK ricevuto correttamente");
+
+                        int status = send(client_fd, cocktails, strlen(cocktails), 0);
+                        if (status > 0)
+                        {
+                            log_info("[Server] Dati dei Cocktail inviati al client\n");
+                        }
+                        else
+                        {
+                            log_error("send error: %s", strerror(errno));
+                        }
+                    }else{
+                        log_error("ACK non valido");
+                    }
+                }else{
+                    log_error("Receive error: %s", strerror(errno));
+                }
+
+
+
+
+                
 
                 
 
