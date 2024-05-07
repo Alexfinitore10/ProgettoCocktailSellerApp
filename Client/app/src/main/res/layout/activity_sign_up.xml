@@ -2,7 +2,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/SendSignUpButton"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".SignUpActivity">
@@ -37,14 +36,14 @@
         android:hint="Inserisci Password"
         android:inputType="textPassword"
         android:minHeight="48dp"
-        app:layout_constraintBottom_toTopOf="@+id/SendSignUpButton2"
+        app:layout_constraintBottom_toTopOf="@+id/SendSignUpButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/EmailEditTextSignUp" />
 
     <Button
-        android:id="@+id/SendSignUpButton2"
+        android:id="@+id/SendSignUpButton"
         android:layout_width="147dp"
         android:layout_height="67dp"
         android:layout_marginStart="155dp"
