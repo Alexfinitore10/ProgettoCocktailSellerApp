@@ -143,24 +143,15 @@ public class client {
 
     String bufferedReceive() {
         try {
-            // devo ottenere prima la lunghezza del buffer
-            int bufferLength = Integer.parseInt(receive());
+            CharBuffer charBuffer = CharBuffer.allocate(1024);
 
-            // invio al server un messaggio di ack che mi ha fatto ricevere la lunghezza del
-            // buffer
-            out.println("ACK");
-
-            System.out.println("[DEBUG]Lunghezza del buffer da leggere è: " + bufferLength);
-
-            CharBuffer charBuffer = CharBuffer.allocate(bufferLength);
-            // mi aspetto che il server invii il buffer di lunghezza concordata
             int ric = input.read(charBuffer);
 
-            String risposta = new String(charBuffer.array(), 0, ric);
+            String rispostadato = new String(charBuffer.array(), 0, ric);
 
-            System.out.println("La stringa letta dal server è : " + risposta);
+            System.out.println("La stringa letta dal server è : " + rispostadato);
             // elaborazione... però devo vede un attimo
-            return risposta;
+            return rispostadato;
         } catch (Exception e) {
             System.err.println("Errore durante la lettura del server: " + e.getMessage());
             return e.getMessage();
@@ -169,6 +160,7 @@ public class client {
 
     String receive() {
         try {
+            // ovviamente mi aspetto che sia una stringa con fine
             String risposta = input.readLine();
             System.out.println("La risposta è: " + risposta);
             return risposta;
@@ -179,40 +171,47 @@ public class client {
     }
 
     String menu() throws SocketException {
-        String risposta;
+        String risposta = "";
 
-        clientSocket.setSoTimeout(5000);
+        try {
+            clientSocket.setSoTimeout(5000);
 
-        System.out.println("Scegli l'operazione che vuoi eseguire:");
-        System.out.println("1) Registrazione");
-        System.out.println("2)Login");
-        System.out.println("3)Visualizza i Drink");
-        System.out.println("4)Disconnettiti");
-        risposta = scanner.nextLine();
-        if (!risposta.isEmpty()) {
-            // System.out.println(risposta);
-            // Interpret server response
-            switch (Integer.parseInt(risposta)) {
-                case 1:
-                    registration();
-                    break;
-                case 2:
-                    login();
-                    break;
-                case 3:
-                    visualizzaDrink();
-                    bufferedReceive();
-                    break;
-                case 4:
-                    break;
-                default:
-                    System.out.println("Comando non riconosciuto");
+            System.out.println("Scegli l'operazione che vuoi eseguire:");
+            System.out.println("1) Registrazione");
+            System.out.println("2)Login");
+            System.out.println("3)Visualizza i Drink");
+            System.out.println("4)Disconnettiti");
+            risposta = scanner.nextLine();
+            if (!risposta.isEmpty()) {
+                // System.out.println(risposta);
+                // Interpret server response
+                switch (Integer.parseInt(risposta)) {
+                    case 1:
+                        registration();
+                        receive();
+                        break;
+                    case 2:
+                        login();
+                        receive();
+                        break;
+                    case 3:
+                        visualizzaDrink();
+                        bufferedReceive();
+                        break;
+                    case 4:
+                        break;
+                    default:
+                        System.out.println("Numero non valido");
+                }
+            } else {
+                return risposta;
             }
-        } else {
-            return risposta;
+        } catch (IOException e) {
+            System.err.println("Errore durante l'invio del comando: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            System.err.println("Comando non valido: " + e.getMessage());
         }
         return risposta;
-
     }
 
     void registration() {
@@ -270,6 +269,7 @@ public class client {
         }
     }
 
+    // funzione non piu usata
     public String sendData() throws IOException, InterruptedException {
         try {
             // Send registration data using clientSocket instance
