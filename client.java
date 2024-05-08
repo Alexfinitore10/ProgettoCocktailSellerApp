@@ -10,6 +10,8 @@ import java.security.NoSuchAlgorithmException;
 
 public class client {
 
+    boolean isLogged = false;
+
     // Regex
     String regex = "^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
 
@@ -46,10 +48,18 @@ public class client {
 
         String risposta;
         do {
-            risposta = c.menu();
+            if (c.isLogged == false) {
+                risposta = c.menu();
+            } else {
+                // risposta = c.menuLoggato();
+                continue;
+            }
             if (!(risposta.isEmpty())) {
                 // receive message
-
+                if (risposta.equals("OK")) {
+                    c.isLogged = true;
+                }
+                continue;
             } else {
                 System.err.println("La stringa ricevuto è vuota. Termino il programma.");
                 break;
@@ -90,6 +100,7 @@ public class client {
 
     String menu() throws SocketException {
         String risposta = "";
+        String rispostaServer = "";
 
         try {
             clientSocket.setSoTimeout(5000);
@@ -98,7 +109,8 @@ public class client {
             System.out.println("1) Registrazione");
             System.out.println("2)Login");
             System.out.println("3)Visualizza i Drink");
-            System.out.println("4)Disconnettiti");
+            System.out.println("4)Log-Out");
+            System.out.println("5)Disconnettiti");
             risposta = scanner.nextLine();
             if (!risposta.isEmpty()) {
                 // System.out.println(risposta);
@@ -106,18 +118,24 @@ public class client {
                 switch (Integer.parseInt(risposta)) {
                     case 1:
                         registration();
-                        String rispostaServer = receive();
+                        rispostaServer = receive();
                         parseRispostaRegistrazione(rispostaServer);
                         break;
                     case 2:
                         login();
-                        receive();
+                        rispostaServer = receive();
+                        if (rispostaServer.equals("OK")) {
+                            return "OK";
+                        }
                         break;
                     case 3:
                         visualizzaDrink();
                         bufferedReceive();
                         break;
                     case 4:
+                        // decrementaDrink();
+                    case 5:
+                        closeConnection();
                         break;
                     default:
                         System.out.println("Numero non valido");
@@ -132,6 +150,40 @@ public class client {
         }
         return risposta;
     }
+
+    // String menuLoggato() {
+    // System.out.println("Scegli l'operazione che vuoi eseguire:");
+    // System.out.println("2) Login");
+    // System.out.println("3)Visualizza i Drink");
+    // System.out.println("4)Decrementa i Drink");
+    // System.out.println("5)Logout");
+
+    // try {
+    // String risposta = receive();
+    // switch (Integer.parseInt(risposta)) {
+    // case 2:
+    // risposta = receive();
+    // if (risposta.equals("OK")) {
+    // return "OK";
+    // }
+    // break;
+    // case 3:
+    // bufferedReceive();
+    // break;
+    // case 4:
+    // // decrementaDrink();
+    // case 5:
+    // closeConnection();
+    // break;
+    // default:
+    // System.out.println("Numero non valido");
+    // }
+    // } catch (IOException e) {
+    // System.err.println("Errore durante l'invio del comando: " + e.getMessage());
+    // } catch (NumberFormatException e) {
+    // System.err.println("Comando non valido: " + e.getMessage());
+    // }
+    // }
 
     void registration() {
         try {
@@ -166,7 +218,7 @@ public class client {
                 System.out.print("Inserisci la tua email: ");
                 email = scanner.nextLine();
             } while (checkEmailRegex(email) == false);
-            
+
             System.out.print("Inserisci la tua password: ");
             String password = scanner.nextLine();
 
@@ -176,7 +228,7 @@ public class client {
                 throw new Exception("Errore durante l'hashing della password");
             }
 
-            System.out.println("Hashed Password : "+ password);
+            System.out.println("Hashed Password : " + password);
 
             String dati = "1`" + email + "`" + password;
             System.out.println("I dati del login che stanno per essere inviati sono: " + dati);

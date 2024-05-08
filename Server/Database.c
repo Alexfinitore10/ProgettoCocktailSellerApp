@@ -7,7 +7,7 @@ int id_vendita = 0;
 char *feedback = "";
 char *error_response = "";
 char *firstdbcommand =
-    "CREATE TABLE IF NOT EXISTS Cliente(email VARCHAR(255) PRIMARY KEY, password VARCHAR(255) NOT NULL);\
+    "CREATE TABLE IF NOT EXISTS Cliente(email VARCHAR(255) PRIMARY KEY, password VARCHAR(255) NOT NULL, isLogged BOOLEAN NOT NULL DEFAULT false);\
                         CREATE TABLE IF NOT EXISTS Cocktail(nome VARCHAR(255) PRIMARY KEY, ingredienti VARCHAR(1000) NOT NULL, gradazione_alcolica DOUBLE PRECISION , prezzo DOUBLE PRECISION , quantita INTEGER);\
                         CREATE TABLE IF NOT EXISTS Frullato(nome VARCHAR(255) PRIMARY KEY, ingredienti VARCHAR(1000) NOT NULL, prezzo DOUBLE PRECISION , quantita INTEGER);\
                         CREATE TABLE IF NOT EXISTS Vendite (\
