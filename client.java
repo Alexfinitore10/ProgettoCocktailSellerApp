@@ -1,99 +1,17 @@
-// import java.io.*;
-// import java.net.*;
-// import java.util.Scanner;
-
-// public class client {
-//     //creazione socket del client
-//     Socket clientSocket;
-//     String address = "127.0.0.1";
-//     int port = 5978;
-//     Socket socket;
-//     //buffer di uscita ed entrata
-//     PrintWriter out;
-//     BufferedReader input;
-//     public static void main(String[] args) throws IOException, InterruptedException{
-//             client c = new client();
-//             c.createConnection();
-//             String risposta = c.sendData();
-//             System.out.println(risposta);
-
-//             // Interpretazione della risposta
-//             if (risposta.equals("OK")) {
-//                 System.out.println("Registrazione avvenuta con successo!");
-//             } else {
-//                 System.out.println("Errore durante la registrazione: " + risposta);
-//             }
-
-//             c.closeConnection();
-
-//     }//fine del main
-
-//     public void createConnection(){
-//         try {
-//             clientSocket = new Socket("127.0.0.1", 5978);
-//             out = new PrintWriter(clientSocket.getOutputStream(), true);
-//             input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-//         } catch (Exception e) {
-//             // TODO: handle exception
-//             System.err.println("Errore durante la creazione della connessione: " + e.getMessage());
-//         }
-//     }
-
-//     public String sendData() throws IOException, InterruptedException{
-//         clientSocket.setSoTimeout(5000);
-//         try {
-//             // Invio dei dati di registrazione
-//             String email = "alexciacciarella@gmail.com";
-//             String password = "alex";
-//             String dati = "1`" + email + "`" + password + "`"; // Formato dati personalizzabile
-//             //OutputStreamWriter osw = new OutputStreamWriter(socket.getOutputStream());
-
-//             out.println(dati);
-//             //Thread.sleep(5000);
-//             String risposta = input.readLine();
-//             System.out.println(" la risposta è : " + risposta);
-//             return risposta;
-//         } catch (IOException e) {
-//             System.err.println("Errore durante la lettura");
-//             return "";
-//         }
-//     }
-
-//     public void closeConnection(){
-//         try {
-//             out.close();
-//             input.close();
-//             clientSocket.close();
-//         } catch (Exception e) {
-//             // TODO: handle exception
-//             System.err.println("Errore durante la chiusura della connessione: " + e.getMessage());
-//         }
-//     }
-
-//     public void newCreateConnection(){
-//             try {
-//                 socket = new Socket();
-//                 socket.connect(new InetSocketAddress(address, port), 5000); //Timeout 5 sec for to avoid stuck
-//                 System.out.println("Connected");
-
-//                 Scanner scanner = new Scanner(System.in);
-
-//                 input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-//                 out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
-//             } catch (IOException e) {
-//                 // TODO Auto-generated catch block
-//                 e.printStackTrace();
-//             }
-
-//     }
-// }
-
 import java.io.*;
 import java.net.*;
 import java.nio.CharBuffer;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
+import java.util.regex.*;
+import java.util.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class client {
+
+    // Regex
+    String regex = "^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
 
     // Socket for client communication
     Socket clientSocket;
@@ -188,7 +106,8 @@ public class client {
                 switch (Integer.parseInt(risposta)) {
                     case 1:
                         registration();
-                        receive();
+                        String rispostaServer = receive();
+                        parseRispostaRegistrazione(rispostaServer);
                         break;
                     case 2:
                         login();
@@ -216,10 +135,21 @@ public class client {
 
     void registration() {
         try {
-            System.out.print("Inserisci la tua email: ");
-            String email = scanner.nextLine();
+            String email;
+            do {
+                System.out.print("Inserisci la tua email: ");
+                email = scanner.nextLine();
+            } while (checkEmailRegex(email) == false);
+
             System.out.print("Inserisci la tua password: ");
             String password = scanner.nextLine();
+
+            // hashing della password
+            password = hash(password);
+            if (password.isEmpty()) {
+                throw new Exception("Errore durante l'hashing della password");
+            }
+
             String dati = "2`" + email + "`" + password;
             System.out.println("I dati della registrazione che stanno per essere inviati sono: " + dati);
             out.println(dati);
@@ -231,16 +161,65 @@ public class client {
 
     void login() {
         try {
-            System.out.print("Inserisci la tua email: ");
-            String email = scanner.nextLine();
+            String email;
+            do {
+                System.out.print("Inserisci la tua email: ");
+                email = scanner.nextLine();
+            } while (checkEmailRegex(email) == false);
+            
             System.out.print("Inserisci la tua password: ");
             String password = scanner.nextLine();
+
+            // hashing della password
+            password = hash(password);
+            if (password.isEmpty()) {
+                throw new Exception("Errore durante l'hashing della password");
+            }
+
+            System.out.println("Hashed Password : "+ password);
+
             String dati = "1`" + email + "`" + password;
             System.out.println("I dati del login che stanno per essere inviati sono: " + dati);
             out.println(dati);
             System.out.println("Invio riuscito");
+        } catch (NoSuchElementException ex) {
+            System.err.println("Mancano dei dati per il login");
+        } catch (IllegalStateException e) {
+            System.err.println("Scanner in stato inconsistente");
         } catch (Exception e) {
-            System.err.println("Errore nell'invio dei dati per il login" + e.getMessage());
+            System.err.println("Errore sconosciuto durante l'invio dei dati per il login: " + e.getMessage());
+        }
+
+    }
+
+    boolean checkEmailRegex(String email) {
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(email);
+        if (matcher.matches()) {
+            System.out.println("Email valida per la regex");
+            return true;
+        } else {
+            System.out.println("Email non valida per la regex");
+            return false;
+        }
+    }
+
+    void parseRispostaRegistrazione(String risposta) {
+        switch (risposta) {
+            case "NOK_Already":
+                System.out.println("Registrazione fallita, Utente già registrato");
+                break;
+            case "OK":
+                System.out.println("Registrazione riuscita con successo");
+                break;
+            case "NOK_Registration":
+                System.out.println("Errore di registrazione causato dal Server");
+                break;
+            case "NOK_Unknown":
+                System.out.println("Errore Generico");
+                break;
+            default:
+                System.out.println("Risposta dal server non valida");
         }
     }
 
@@ -303,5 +282,18 @@ public class client {
         } catch (Exception e) {
             System.err.println("Errore durante la chiusura della connessione: " + e.getMessage());
         }
+    }
+
+    public String hash(String password) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        md.update(password.getBytes());
+        byte[] digest = md.digest();
+        StringBuilder sb = new StringBuilder();
+        for (byte b : digest) {
+            sb.append(String.format("%02x", b));
+        }
+        String myHash = sb.toString().toUpperCase();
+        System.out.println("La password hashata è: " + myHash);
+        return myHash;
     }
 }

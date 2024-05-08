@@ -140,7 +140,7 @@ void parseCommand(char toParse[], int client_fd) {
       char risposta[] = "OK\n";
       // int status = write(client_fd, risposta, strlen(risposta));
       int status = send(client_fd, risposta, strlen(risposta), 0);
-      if ((status == -1)) {
+      if (status == -1) {
         log_error("send error");
       } else {
         log_debug("Risposta inviata al client: %s\n", risposta);
@@ -150,9 +150,16 @@ void parseCommand(char toParse[], int client_fd) {
       // sendAll(client_fd, "OK");
     } else {
       log_error("Login fallito\n");
+      int status = send(client_fd, "NOK_Login\n", strlen("NOK_Login\n"), 0);
+      if (status == -1) {
+        log_error("send error");
+      } else {
+        log_debug("Risposta inviata al client: %s\n", "NOK_Login\n");
+        log_debug("bytes inviati: %d su bytes totali: %d\n", status,
+                  strlen("NOK_Login\n"));
+      }
+      break;
     }
-    break;
-  }
   case 2: {
     log_info("Il cliente vuole registrarsi\n");
     char email[50] = {0};
@@ -162,24 +169,41 @@ void parseCommand(char toParse[], int client_fd) {
     strcpy(email, token);
     token = strtok(NULL, "`");
     strcpy(password, token);
-    if (signup(email, password) == true) {
+    char reg_status = signup(email, password);
+    switch (reg_status) {
+    case 'A':
+      status = send(client_fd, "NOK_Already\n", 15, 0);
+      if (status > 0) {
+        log_debug("Risposta inviata al client: %s\n", "NOK_Already");
+      } else {
+        log_error("send error: %s", strerror(errno));
+      }
+      break;
+    case 'T':
       status = send(client_fd, "OK\n", strlen("OK\n"), 0);
       if (status > 0) {
-        log_info("[Server] Registrazione effettuata\n");
         log_debug("Risposta inviata al client: %s\n", "OK\n");
       } else {
         log_error("send error: %s", strerror(errno));
       }
-    } else {
+      break;
+    case 'F':
       status = send(client_fd, "NOK_Registration\n", 18, 0);
+      if (status > 0) {
+        log_debug("Risposta inviata al client: %s\n", "NOK_Registration\n");
+      } else {
+        log_error("send error: %s", strerror(errno));
+      }
+    default:
+      status = send(client_fd, "NOK_Unknown\n", 18, 0);
       if (status > 0) {
         log_debug("Risposta inviata al client: %s\n", "NOK_Registration");
       } else {
         log_error("send error: %s", strerror(errno));
       }
     }
-    break;
-  }
+
+  } break;
   case 3: {
     log_info("Il cliente vuole vedere tutti i drink\n");
 
@@ -253,6 +277,7 @@ void parseCommand(char toParse[], int client_fd) {
   default: {
     log_warn("Comando non riconosciuto\n");
     break;
+  }
   }
   }
 }
