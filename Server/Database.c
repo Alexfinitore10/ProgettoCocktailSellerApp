@@ -1,4 +1,6 @@
 #include "Database.h"
+#include "log.h"
+#include <stdio.h>
 
 // Variables
 PGconn *conn;
@@ -36,42 +38,41 @@ void createdb_query() {
 
 // Populating the DB
 void cocktail_and_shake_population() {
-  insert_cocktail("Mojito", "Rum, Lime, Zucchero, Menta", 18.0, 6.0, 10);
+  insert_cocktail("Mojito", "Rum;Lime;Zucchero;Menta", 18.0, 6.0, 10);
   insert_cocktail("Bloody Mary",
-                  "Vodka, Succo di pomodoro, Tabasco , Sedano , Sale , Pepe "
-                  "nero , Succo di limone , Salsa Worchestershire",
+                  "Vodka;Succo di pomodoro;Tabasco;Sedano;Sale;Pepe;"
+                  "nero;Succo di limone;Salsa Worchestershire",
                   25.0, 6.0, 13);
   insert_cocktail("White Russian",
-                  "Vodka, Liquore al caffè, Ghiaccio , Panna fresca", 25.0, 7.0,
+                  "Vodka;Liquore al caffè;Ghiaccio;Panna fresca", 25.0, 7.0,
                   16);
-  insert_cocktail("Negroni", "Ghiaccio, Gin, Bitter Campari, Vermut Rosso",
-                  28.0, 5.90, 10);
+  insert_cocktail("Negroni", "Ghiaccio;Gin;Bitter Campari;Vermut Rosso", 28.0,
+                  5.90, 10);
   insert_cocktail("Daquiri",
-                  "Rum, Succo di lime, zucchero, ghiaccio, gocce di maraschino",
+                  "Rum;Succo di lime;zucchero;ghiaccio;gocce di maraschino",
                   18.9, 6.44, 10);
-  insert_cocktail("Dry Martini", "Gin, Scorza di Limone, Vermut Dry, Ghiaccio",
+  insert_cocktail("Dry Martini", "Gin;Scorza di Limone;Vermut Dry;Ghiaccio",
                   14.4, 7.90, 10);
-  insert_cocktail("Margarita", "Succo di Lime, Ghiaccio, Triple Sec, Tequila",
+  insert_cocktail("Margarita", "Succo di Lime;Ghiaccio;Triple Sec;Tequila",
                   25.4, 6.44, 10);
   insert_cocktail("Manhattan",
-                  "rye wisky, vermout roso, gocce di Angostura, buccia di "
-                  "arancia, ghiaccio, ciliegina al Maraschino",
+                  "rye wisky;vermout roso;gocce di Angostura;buccia di "
+                  "arancia;ghiaccio;ciliegina al Maraschino",
                   30.0, 5.90, 10);
   insert_cocktail("Whiskey Sour",
-                  "Whisky, Succo di limone, sciroppo di zucchero, albume", 23.0,
+                  "Whisky;Succo di limone;sciroppo di zucchero;albume", 23.0,
                   4.80, 10);
-  insert_cocktail("Moscow Mule", "Vodka, Succo di lime, Ginger beer, Ghiaccio",
+  insert_cocktail("Moscow Mule", "Vodka;Succo di lime;Ginger beer;Ghiaccio",
                   25.0, 6.44, 10);
-  insert_shake("Frullato di frutta", "banana, fragola, kiwi, latte", 3, 5);
-  insert_shake("Frullato tropicale", "ananas, mango, succo d'arancia, latte", 4,
+  insert_shake("Frullato di frutta", "banana;fragola;kiwi;latte", 3, 5);
+  insert_shake("Frullato tropicale", "ananas;mango;succo d'arancia;latte", 4,
                10);
   insert_shake("Frullato di bacche",
-               "fragole, mirtilli, lamponi, latte di mandorla", 3.5, 7);
+               "fragole;mirtilli;lamponi;latte di mandorla", 3.5, 7);
   insert_shake("Frullato proteico",
-               "banana, burro di arachidi, semi di chia, latte, proteine", 5,
-               4);
+               "banana;burro di arachidi;semi di chia;latte;proteine", 5, 4);
   insert_shake("Frullato esotico",
-               "papaya, ananas, latte di cocco, curcuma, pepe nero", 6, 3);
+               "papaya;ananas;latte di cocco;curcuma;pepe nero", 6, 3);
 }
 
 // A test for the reachability of the Database
@@ -238,10 +239,15 @@ void insert_cocktail(char nome[], char ingredienti[],
 
 // A full Get
 char *get_all_cocktails() {
-  char *get_all_cocktail_command = "SELECT * FROM Cocktail";
+  char *get_all_cocktail_command =
+      "SELECT CONCAT(nome, ', [', ingredienti, '], ', gradazione_alcolica, ', ', prezzo, ', ', quantita)\
+   AS informazioni FROM cocktail";
 
   if (command(get_all_cocktail_command)) {
-    return printQuery(res);
+    // return printQuery(res);
+    char *value = printQuery(res);
+    log_debug(value);
+    return value;
   } else {
     printf("Errore nel recupero dei cocktail\n");
   }
@@ -532,9 +538,13 @@ char *printQuery(PGresult *res) {
     strcat(response, "\n");
   }
 
-  response[strlen(response) - 1] = '`';
+  // response[strlen(response) - 1] = '`';
 
   return response;
 }
 
 void close_connection() { PQfinish(conn); }
+
+// char[1000] ingredienti = sprintf("%s;")
+// sprintf("%s, [%s], %f, %f, %d", nome, ingredienti, gradazione_alcolica,
+// prezzo, quantita)

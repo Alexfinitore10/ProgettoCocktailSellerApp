@@ -6,6 +6,20 @@
       "name": "client",
       "request": "launch",
       "mainClass": "client",
+      "projectName": ""
+    },
+    {
+      "type": "java",
+      "name": "Cocktail",
+      "request": "launch",
+      "mainClass": "Cocktail",
+      "projectName": ""
+    },
+    {
+      "type": "java",
+      "name": "client",
+      "request": "launch",
+      "mainClass": "client",
       "projectName": "ProgettoCocktailSellerApp_d893a7c"
     },
     {
