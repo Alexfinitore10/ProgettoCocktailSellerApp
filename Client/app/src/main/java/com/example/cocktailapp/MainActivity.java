@@ -21,17 +21,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        Runnable RunClientStarterMain = () -> {
-//            client = Client.getIstanza();
-//        };
-//
-//        try {
-//            Thread ClientStarterMain = new Thread(RunClientStarterMain);
-//            ClientStarterMain.start();
-//            ClientStarterMain.join();
-//        } catch (InterruptedException e) {
-//            Log.e("MainActivity thread","Errore nella join del thread:" +e.getMessage());
-//        }
+        Runnable RunClientStarterMain = () -> {
+            client = Client.getIstanza();
+        };
+
+        try {
+            Thread ClientStarterMain = new Thread(RunClientStarterMain);
+            ClientStarterMain.start();
+            ClientStarterMain.join();
+        } catch (InterruptedException e) {
+            Log.e("MainActivity thread","Errore nella join del thread:" +e.getMessage());
+        }
 
         signupButton = findViewById(R.id.RegisterButton);
 

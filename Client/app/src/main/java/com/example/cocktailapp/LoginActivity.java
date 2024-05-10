@@ -8,6 +8,7 @@ import android.util.Log;
 import android.widget.*;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
 public class LoginActivity extends AppCompatActivity {
     private Button sendLoginButton;
@@ -21,39 +22,49 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-       // client = Client.getIstanza();
+        client = Client.getIstanza();
         sendLoginButton = findViewById(R.id.SendLogInButton);
         EmailEditText = findViewById(R.id.EmailEditText);
         PasswordEditText = findViewById(R.id.PasswordEditText);
 
 
         sendLoginButton.setOnClickListener(v -> {
-//            String email = EmailEditText.getText().toString();
-//            String password = PasswordEditText.getText().toString();
+            String email = EmailEditText.getText().toString();
+            String password = PasswordEditText.getText().toString();
 
-//            Runnable LoginTask = () -> risposta = sendLogin(client, email, password);
+            Runnable LoginTask = () -> risposta = sendLogin(client, email, password);
 
-//            try {
-//                Thread LoginThread = new Thread(LoginTask);
-//                LoginThread.start();
-//                LoginThread.join();
-//            } catch (InterruptedException e) {
-//                Log.e("LoginActivity thread","Errore nella join del thread:" +e.getMessage());
-//            }
+            try {
+                Thread LoginThread = new Thread(LoginTask);
+                LoginThread.start();
+                LoginThread.join();
+            } catch (InterruptedException e) {
+                Log.e("LoginActivity thread","Errore nella join del thread:" +e.getMessage());
+            }
 
 
-//            if(risposta.equals("OK")){
-//                Toast.makeText(this, "Login effettuato", Toast.LENGTH_SHORT).show();
+            if(risposta.equals("OK")){
+                Toast.makeText(this, "Login effettuato", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(this,ShopActivity.class));
-//            }else{
-//                Toast.makeText(this, "Login fallito: email o password errati", Toast.LENGTH_SHORT).show();
-//            }
+            }else{
+                Toast.makeText(this, "Login fallito: email o password errati", Toast.LENGTH_SHORT).show();
+            }
 
         });
     }
 
-    private String sendLogin(Client client, String email, String password) {
-        String dati = "1`"+email+"`"+password+"`";
+    private String sendLogin(Client client, String input_email, String input_password) {
+
+        String password;
+
+        try {
+            password = client.hash(input_password);
+        } catch (NoSuchAlgorithmException e) {
+            Log.e("sendLogin", "Errore nella hashing della password:" +e.getMessage());
+            return  "";
+        }
+
+        String dati = "1`"+input_email+"`"+password+"`";
         String risposta = "";
 
         try {

@@ -1,14 +1,24 @@
 package com.example.cocktailapp;
 
-import android.util.Log;
+import android.util.*;
+
 
 import java.io.*;
 import java.net.*;
 import java.nio.CharBuffer;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class Client {
+    boolean isLogged = false;
+    //Regex
+    String regex = "^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
+
+    StringBuilder stringBuilder = new StringBuilder();
     private static Client istanza;
     // Socket for client communication
     private Socket clientSocket;
@@ -36,6 +46,7 @@ public class Client {
         }else{
             Log.v("Client","Connessione stabilita con il server.");
         }
+
     }
 
     public static Client getIstanza() {
@@ -48,18 +59,6 @@ public class Client {
         }
         return istanza;
     }
-
-
-//       public static synchronized Client getIstanza() {
-//            if (istanza == null) {
-//                try {
-//                    istanza = new Client();
-//                } catch (InterruptedException e) {
-//                    Log.e("Client","Errore durante la creazione dell'istanza del client: " + e.getMessage());
-//                }
-//            }
-//            return istanza;
-//        }
 
 
     private boolean createConnection() {
@@ -117,6 +116,31 @@ public class Client {
             Log.e("Client","Errore durante la lettura del server: " + e.getMessage());
             return e.getMessage();
         }
+    }
+
+    boolean checkEmailRegex(String email) {
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(email);
+        if (matcher.matches()) {
+            System.out.println("Email valida per la regex");
+            return true;
+        } else {
+            System.out.println("Email non valida per la regex");
+            return false;
+        }
+    }
+
+    public String hash(String password) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        md.update(password.getBytes());
+        byte[] digest = md.digest();
+        StringBuilder sb = new StringBuilder();
+        for (byte b : digest) {
+            sb.append(String.format("%02x", b));
+        }
+        String myHash = sb.toString().toUpperCase();
+        System.out.println("La password hashata è: " + myHash);
+        return myHash;
     }
 
 
