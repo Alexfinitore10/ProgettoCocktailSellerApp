@@ -1,1 +1,1 @@
-valgrind  --leak-check=full --show-leak-kinds=all ./main
+./build.sh && valgrind  --leak-check=full --show-leak-kinds=all ./main

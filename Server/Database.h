@@ -28,5 +28,6 @@ bool are_credentials_correct(char *, char *);
 // SignIns
 char signup(char *, char *);
 bool signin(char *, char *);
+bool logoff(const char *);
 // Sells
 bool create_sell(char *, char *);

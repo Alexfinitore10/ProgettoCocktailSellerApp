@@ -15,7 +15,8 @@ void closeConnection(int,int);
 
 void startSocket();
 void *receiveData(void *client_fd);
-void parseCommand(char toParse[], int client_fd);
+void parseCommand(char toParse[], const int client_fd);
+void disconnessione(char *buffer);
 
 // Function prototypes for each case in the switch statement
 void handle_signin(int client_fd, char *email, char *password);

@@ -289,15 +289,20 @@ void parseCommand(char toParse[], int client_fd) {
 
 #include "Database.h"
 #include "Socket.h"
+#include "dictionary.h"
 #include "log.h"
 #include <stdio.h>
 #include <string.h>
+#include <sys/socket.h>
 
 #define PORT 5978            // Porta del server
 #define MAX_BUFFER_SIZE 1024 // Dimensione massima del buffer
 #define IP "127.0.0.1"       // Indirizzo IP del server
 
+Dictionary *dict;
+
 void startSocket() {
+  dict = create_dictionary();
   int sockfd, new_sockfd;                      // Descrittori del socket
   struct sockaddr_in server_addr, client_addr; // Strutture per gli indirizzi
   socklen_t
@@ -378,12 +383,19 @@ void *receiveData(void *client_fd) {
     log_trace("Aspetto operazione dal client---\n");
 
     res = recv(client_socket, buffer, MAX_BUFFER_SIZE, 0);
+
     log_debug("Il client %d ha inviato un buffer da: %d bytes quindi...\n",
               client_socket, res);
     if (res == -1) {
       log_error("%d", res);
-    } else if (res == 0) {
-      log_info("Il client ha chiuso la connessione\n");
+    } else if (res == 0) { // TODO: implement client disconnection
+
+      log_info("Il client numero: %d ha chiuso la connessione", client_socket);
+      log_debug("L'utente che si è disconesso ha questa mail: %s",
+                search_dictionary(dict, client_socket));
+
+      logoff(search_dictionary(dict, client_socket));
+      remove_dictionary(dict, client_socket);
       break;
     } else {
       log_debug("Dati ricevuti: %s\n", buffer);
@@ -392,7 +404,7 @@ void *receiveData(void *client_fd) {
         parseCommand(buffer, client_socket);
         bzero(buffer, sizeof(buffer));
       } else {
-        log_debug("Il client Non hai inserito nulla\n");
+        log_debug("Il client Non ha inserito nulla\n");
       }
       // bzero(buffer, sizeof(buffer));
     }
@@ -404,7 +416,7 @@ void *receiveData(void *client_fd) {
   log_debug("Thread Terminato\n");
 }
 
-void parseCommand(char toParse[], int client_fd) {
+void parseCommand(char toParse[], const int client_fd) {
   int commandNumber;
 
   char *token;
@@ -433,7 +445,10 @@ void parseCommand(char toParse[], int client_fd) {
     break;
   }
   case 6: {
-    log_info("Il cliente vuole vedere il carrello\n");
+    log_info("Il cliente vuole disconnettersi\n");
+    logoff(search_dictionary(dict, client_fd));
+    remove_dictionary(dict, client_fd);
+    send(client_fd, "5\n", sizeof("5\n"), 0);
     break;
   }
   case 7: {
@@ -444,6 +459,10 @@ void parseCommand(char toParse[], int client_fd) {
     log_info("Il cliente vuole confermare l'acquisto\n");
     break;
   }
+  case 9: {
+
+    break;
+  }
   default:
     log_warn("Comando non riconosciuto\n");
     break;
@@ -452,9 +471,12 @@ void parseCommand(char toParse[], int client_fd) {
 
 // Implementations for each function
 
-void handle_signin(int client_fd, char *email, char *password) {
+void disconnessione(char *buffer) {}
+
+void handle_signin(int client_fd, char *password, char *email) {
   if (signin(email, password)) {
     log_info("[Server] Login andato a buon fine\n");
+    insert_dictionary(dict, client_fd, email);
     char risposta[] = "OK\n";
     int status = send(client_fd, risposta, strlen(risposta), 0);
     if (status == -1) {
@@ -477,7 +499,8 @@ void handle_signin(int client_fd, char *email, char *password) {
   }
 }
 
-void handle_signup(int client_fd, char *email, char *password) {
+void handle_signup(int client_fd, char *password, char *email) {
+  log_debug("Email: {%s}, Password: {%s}\n", email, password);
   char reg_status = signup(email, password);
   int status;
   switch (reg_status) {

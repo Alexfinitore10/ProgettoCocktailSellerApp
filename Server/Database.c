@@ -246,7 +246,6 @@ char *get_all_cocktails() {
   if (command(get_all_cocktail_command)) {
     // return printQuery(res);
     char *value = printQuery(res);
-    log_debug(value);
     return value;
   } else {
     printf("Errore nel recupero dei cocktail\n");
@@ -394,10 +393,37 @@ char signup(char *email, char *password) {
 // Log-in Utente
 bool signin(char *email, char *password) {
   if (are_credentials_correct(email, password)) {
-    printf("Login effettuato con successo\n");
-    return true;
+    char *isLogged = "UPDATE Cliente SET isLogged = true WHERE email = $1";
+    const char *paramValues[1] = {email};
+    int paramLengths[1] = {strlen(email)};
+    int paramFormats[1] = {0};
+    res = PQexecParams(conn, isLogged, 1, NULL, paramValues, paramLengths,
+                       paramFormats, 0);
+    if (checkres(res)) {
+      log_info("Login effettuato con successo\n");
+      return true;
+    } else {
+      log_error("Login fallito: %s\n", error_response);
+      return false;
+    }
   } else {
     printf("Login fallito: email o password errati\n");
+    return false;
+  }
+}
+
+bool logoff(const char *email) {
+  char *isLogged = "UPDATE Cliente SET isLogged = false WHERE email = $1";
+  const char *paramValues[1] = {email};
+  int paramLengths[1] = {strlen(email)};
+  int paramFormats[1] = {0};
+  res = PQexecParams(conn, isLogged, 1, NULL, paramValues, paramLengths,
+                      paramFormats, 0);
+  if (checkres(res)) {
+    log_info("Logout effettuato");
+    return true;
+  } else {
+    log_error("Impossibile effettuare il logout");
     return false;
   }
 }
