@@ -78,10 +78,10 @@ public class NewCocktailFragment extends Fragment {
 
         list = new ArrayList<>();
 
-        recyclerView = view.findViewById(R.id.cocktailRecyclerView);
-        list.add(new DrinkLayoutClass("Mojito","Rum, Lime, Zucchero, Menta","18.0","6.0","10"));
-        list.add(new DrinkLayoutClass("Bloody Mary","Vodka, Succo di pomodoro, Tabasco , Sedano , Sale , Pepe nero , Succo di limone , Salsa Worchestershire","25.0","6.0","13"));
-        list.add(new DrinkLayoutClass("White Russian","Vodka, Liquore al caffè, Ghiaccio , Panna fresca","25.0","7.0","16"));
+        recyclerView = view.findViewById(R.id.CocktailRecyclerView);
+        list.add(new DrinkLayoutClass("Mojito","Rum, Lime, Zucchero, Menta",18.0,6.0,10));
+        list.add(new DrinkLayoutClass("Bloody Mary","Vodka, Succo di pomodoro, Tabasco , Sedano , Sale , Pepe nero , Succo di limone , Salsa Worchestershire",25.0,6.0,13));
+        list.add(new DrinkLayoutClass("White Russian","Vodka, Liquore al caffè, Ghiaccio , Panna fresca",25.0,7.0,16));
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new RecyclerViewAdapter(list,getContext());

@@ -4,13 +4,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
+
+import java.io.IOException;
 
 
 public class MainActivity extends AppCompatActivity {
     private Button loginButton;
     private Button signupButton;
-    protected Client client;
+    private Client client;
 
 
     @Override
@@ -18,7 +21,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        client = Client.getIstanza();
+//        Runnable RunClientStarterMain = () -> {
+//            client = Client.getIstanza();
+//        };
+//
+//        try {
+//            Thread ClientStarterMain = new Thread(RunClientStarterMain);
+//            ClientStarterMain.start();
+//            ClientStarterMain.join();
+//        } catch (InterruptedException e) {
+//            Log.e("MainActivity thread","Errore nella join del thread:" +e.getMessage());
+//        }
 
         signupButton = findViewById(R.id.RegisterButton);
 
@@ -33,9 +46,5 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        //client.closeConnection();
-    }
+
 }

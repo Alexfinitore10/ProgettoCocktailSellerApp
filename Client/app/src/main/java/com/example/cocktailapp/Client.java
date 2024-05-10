@@ -4,6 +4,7 @@ import android.util.Log;
 
 import java.io.*;
 import java.net.*;
+import java.nio.CharBuffer;
 import java.util.concurrent.TimeUnit;
 
 
@@ -49,7 +50,16 @@ public class Client {
     }
 
 
-
+//       public static synchronized Client getIstanza() {
+//            if (istanza == null) {
+//                try {
+//                    istanza = new Client();
+//                } catch (InterruptedException e) {
+//                    Log.e("Client","Errore durante la creazione dell'istanza del client: " + e.getMessage());
+//                }
+//            }
+//            return istanza;
+//        }
 
 
     private boolean createConnection() {
@@ -65,34 +75,48 @@ public class Client {
         }
     }
 
-    public int sendData(String dati) throws IOException, InterruptedException{
+    public int sendData(String dati){
+        out.println(dati);
+        Log.v("Client","Messaggio inviato");
         try {
-            out.println(dati);
-            Log.v("Client","Messaggio inviato");
-            clientSocket.setSoTimeout(5000);
             return clientSocket.getSendBufferSize();
-        } catch (IOException e) {
-            if (e instanceof SocketTimeoutException) {
-                Log.e("Client","Timeout durante la lettura dalla socket");
-            } else {
-                Log.e("Client","Errore durante la lettura: " + e.getMessage());
-            }
+        } catch (SocketException e) {
+            Log.e("Client","Non riesco a capie quanti byte sono stati inviati: " + e.getMessage());
+            return -1;
         }
-        return clientSocket.getSendBufferSize();
     }
 
-    public int receiveData(String receiver) throws IOException, InterruptedException{
+    public String receiveData() throws IOException, InterruptedException{
+        String data = "";
         try{
-            input.readLine();
-            return clientSocket.getReceiveBufferSize();
+            clientSocket.setSoTimeout(5000);
+            data = input.readLine();
+            return data;
         }catch (IOException e){
             if (e instanceof SocketTimeoutException) {
-                Log.e("Client","Timeout durante la lettura dalla socket");
+                Log.e("Client","Errore durante la ricezione del messaggio: " + e.getMessage());
             } else {
                 Log.e("Client","Errore durante la lettura: " + e.getMessage());
             }
         }
-        return clientSocket.getReceiveBufferSize();
+        return data;
+    }
+
+    public String bufferedReceive() {
+        try {
+            CharBuffer charBuffer = CharBuffer.allocate(1024);
+
+            int ric = input.read(charBuffer);
+
+            String rispostadato = new String(charBuffer.array(), 0, ric);
+
+            Log.d("Client", "La stringa letta dal server è : " + rispostadato);
+            // elaborazione... però devo vede un attimo
+            return rispostadato;
+        } catch (Exception e) {
+            Log.e("Client","Errore durante la lettura del server: " + e.getMessage());
+            return e.getMessage();
+        }
     }
 
 
@@ -101,6 +125,7 @@ public class Client {
             out.close();
             input.close();
             clientSocket.close();
+            Log.v("Client","Connessione chiusa con il server.");
         } catch (Exception e) {
             Log.e("Client","Loggo un errore nella chiusura del client: " +e.getMessage());
         }

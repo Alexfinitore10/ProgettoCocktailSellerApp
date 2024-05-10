@@ -1,13 +1,12 @@
 package com.example.cocktailapp;
- // ora c'è tutto giusto? sì mi trovo, ci sono degli errori che non so a cosa sono dovuti ma forse sono cazzate
-public class DrinkLayoutClass {
 
-    private String nome,ingredienti,gradazione_alcolica,prezzo,quantità;
+public class DrinkLayoutClass {
+    private String nome,ingredienti;
     private double gradazione_alcolica;
     private double prezzo;
-    
+    private int quantità;
 
-    public DrinkLayoutClass(String nome, String ingredienti, String gradazione_alcolica, String prezzo, String quantità) {
+    public DrinkLayoutClass(String nome, String ingredienti, double gradazione_alcolica, double prezzo, int quantità) {
         this.nome = nome;
         this.ingredienti = ingredienti;
         this.gradazione_alcolica = gradazione_alcolica;
@@ -31,27 +30,27 @@ public class DrinkLayoutClass {
         this.ingredienti = ingredienti;
     }
 
-    public String getGradazione_alcolica() {
+    public double getGradazione_alcolica() {
         return gradazione_alcolica;
     }
 
-    public void setGradazione_alcolica(String gradazione_alcolica) {
+    public void setGradazione_alcolica(double gradazione_alcolica) {
         this.gradazione_alcolica = gradazione_alcolica;
     }
 
-    public String getPrezzo() {
+    public double getPrezzo() {
         return prezzo;
     }
 
-    public void setPrezzo(String prezzo) {
+    public void setPrezzo(double prezzo) {
         this.prezzo = prezzo;
     }
 
-    public String getQuantità() {
+    public int getQuantità() {
         return quantità;
     }
 
-    public void setQuantità(String quantità) {
+    public void setQuantità(int quantità) {
         this.quantità = quantità;
     }
 }
