@@ -18,11 +18,5 @@ public class Carrello {
         bevande.remove(bevanda);
     }
 
-    public double getCostoTotale() {
-        double costoTotale = 0;
-        for (Bevanda bevanda : bevande) {
-            costoTotale += bevanda.getPrezzo();
-        }
-        return costoTotale;
-    }
+
 }

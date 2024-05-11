@@ -1,29 +1,18 @@
 package com.example.cocktailapp;
 
-import androidx.annotation.NonNull;
-
 import java.util.List;
 
-public abstract class Bevanda {
+public class ShakesLayoutClass {
     private String nome;
-    private double prezzo;
     private List<String> ingredienti;
+    private double prezzo;
     private int quantità;
 
-    public Bevanda(String nome, double prezzo, List<String> ingredienti, int quantità) {
+    public ShakesLayoutClass(String nome, List<String> ingredienti, double prezzo, int quantità) {
         this.nome = nome;
-        this.prezzo = prezzo;
         this.ingredienti = ingredienti;
+        this.prezzo = prezzo;
         this.quantità = quantità;
-    }
-
-    protected Bevanda() {
-    }
-
-    @NonNull
-    @Override
-    public String toString() {
-        return super.toString();
     }
 
     public String getNome() {
@@ -34,20 +23,20 @@ public abstract class Bevanda {
         this.nome = nome;
     }
 
-    public double getPrezzo() {
-        return prezzo;
-    }
-
-    public void setPrezzo(double prezzo) {
-        this.prezzo = prezzo;
-    }
-
     public List<String> getIngredienti() {
         return ingredienti;
     }
 
     public void setIngredienti(List<String> ingredienti) {
         this.ingredienti = ingredienti;
+    }
+
+    public double getPrezzo() {
+        return prezzo;
+    }
+
+    public void setPrezzo(double prezzo) {
+        this.prezzo = prezzo;
     }
 
     public int getQuantità() {
@@ -58,6 +47,3 @@ public abstract class Bevanda {
         this.quantità = quantità;
     }
 }
-
-
-

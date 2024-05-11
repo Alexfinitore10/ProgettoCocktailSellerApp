@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,9 +21,13 @@ import java.util.ArrayList;
  * create an instance of this fragment.
  */
 public class NewCocktailFragment extends Fragment {
-    private RecyclerViewAdapter adapter;
-    private ArrayList<DrinkLayoutClass> list;
+    private CocktailRecyclerViewAdapter adapter;
+    private ArrayList<CocktailLayoutClass> list;
     private RecyclerView recyclerView;
+    private Client client;
+    private ArrayList<Cocktail> cocktails;
+    private String allCocktails;
+    private Cocktail newCocktail;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -76,16 +81,52 @@ public class NewCocktailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        client = Client.getIstanza();
         list = new ArrayList<>();
+        cocktails = new ArrayList<>();
+        newCocktail = new Cocktail();
+
+
+        Runnable getCocktailsTask = () -> {
+            allCocktails = getAllCocktails(client);
+        };
+        Thread getCocktailsThread = new Thread(getCocktailsTask);
+        getCocktailsThread.start();
+
+        try {
+            getCocktailsThread.join();
+        } catch (InterruptedException e) {
+            Log.e("onViewCreated","Errore nella join del thread: " + e.getMessage());
+        }
+
+
+
+//        newCocktail = Cocktail.parseString(allCocktails);
+//        cocktails.add(newCocktail);
+
+
 
         recyclerView = view.findViewById(R.id.CocktailRecyclerView);
-        list.add(new DrinkLayoutClass("Mojito","Rum, Lime, Zucchero, Menta",18.0,6.0,10));
-        list.add(new DrinkLayoutClass("Bloody Mary","Vodka, Succo di pomodoro, Tabasco , Sedano , Sale , Pepe nero , Succo di limone , Salsa Worchestershire",25.0,6.0,13));
-        list.add(new DrinkLayoutClass("White Russian","Vodka, Liquore al caffè, Ghiaccio , Panna fresca",25.0,7.0,16));
+
+//        for(Cocktail temp: cocktails){
+//            list.add(new DrinkLayoutClass(temp.getNome(),temp.getIngredienti(),temp.getGradazione_alcolica(),temp.getPrezzo(),temp.getQuantità()));
+//        }
+
+
+//        list.add(new CocktailLayoutClass("Mojito","Rum, Lime, Zucchero, Menta",18.0,6.0,10));
+//        list.add(new CocktailLayoutClass("Bloody Mary","Vodka, Succo di pomodoro, Tabasco , Sedano , Sale , Pepe nero , Succo di limone , Salsa Worchestershire",25.0,6.0,13));
+//        list.add(new CocktailLayoutClass("White Russian","Vodka, Liquore al caffè, Ghiaccio , Panna fresca",25.0,7.0,16));
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new RecyclerViewAdapter(list,getContext());
+        adapter = new CocktailRecyclerViewAdapter(list,getContext());
         recyclerView.setAdapter(adapter);
 
     }
+
+    private String getAllCocktails(Client client){
+        String command = "3";
+        client.sendData(command);
+        return client.bufferedReceive();
+    }
 }
+

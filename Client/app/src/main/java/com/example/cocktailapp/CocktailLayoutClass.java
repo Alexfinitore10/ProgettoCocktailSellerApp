@@ -1,12 +1,15 @@
 package com.example.cocktailapp;
 
-public class DrinkLayoutClass {
-    private String nome,ingredienti;
+import java.util.List;
+
+public class CocktailLayoutClass {
+    private String nome;
+    private List<String> ingredienti;
     private double gradazione_alcolica;
     private double prezzo;
     private int quantità;
 
-    public DrinkLayoutClass(String nome, String ingredienti, double gradazione_alcolica, double prezzo, int quantità) {
+    public CocktailLayoutClass(String nome, List<String> ingredienti, double gradazione_alcolica, double prezzo, int quantità) {
         this.nome = nome;
         this.ingredienti = ingredienti;
         this.gradazione_alcolica = gradazione_alcolica;
@@ -22,11 +25,11 @@ public class DrinkLayoutClass {
         this.nome = nome;
     }
 
-    public String getIngredienti() {
+    public List<String> getIngredienti() {
         return ingredienti;
     }
 
-    public void setIngredienti(String ingredienti) {
+    public void setIngredienti(List<String> ingredienti) {
         this.ingredienti = ingredienti;
     }
 

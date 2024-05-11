@@ -23,7 +23,7 @@ public class PagerAdapter extends FragmentStateAdapter {
             case 0:
                 return new NewCocktailFragment();
             case 1:
-                return new ShakesFragment();
+                return new NewShakesFragment();
             case 2:
                 return new SettingsFragment();
         }
