@@ -294,6 +294,7 @@ void parseCommand(char toParse[], int client_fd) {
 #include <stdio.h>
 #include <string.h>
 #include <sys/socket.h>
+#include <unistd.h>
 
 #define PORT 5978            // Porta del server
 #define MAX_BUFFER_SIZE 1024 // Dimensione massima del buffer
@@ -389,24 +390,10 @@ void *receiveData(void *client_fd) {
     if (res == -1) {
       log_error("%d", res);
     } else if (res == 0) { // TODO: implement client disconnection
-
-      log_info("Il client numero: %d ha chiuso la connessione", client_socket);
-      log_debug("L'utente che si è disconesso ha questa mail: %s",
-                search_dictionary(dict, client_socket));
-
-      logoff(search_dictionary(dict, client_socket));
-      remove_dictionary(dict, client_socket);
+      handle_client_disconnection(client_socket); // disconnessione
       break;
     } else {
-      log_debug("Dati ricevuti: %s\n", buffer);
-      // buffer[strcspn(buffer, "\n")] = '\0';
-      if (strlen(buffer) != 0) { // check carattere vuoto in stringa da client
-        parseCommand(buffer, client_socket);
-        bzero(buffer, sizeof(buffer));
-      } else {
-        log_debug("Il client Non ha inserito nulla\n");
-      }
-      // bzero(buffer, sizeof(buffer));
+      handle_data_received(buffer, client_socket);
     }
   } while (res != 0);
 
@@ -416,7 +403,7 @@ void *receiveData(void *client_fd) {
   log_debug("Thread Terminato\n");
 }
 
-void parseCommand(char toParse[], const int client_fd) {
+int parseCommand(char toParse[], const int client_fd) {
   int commandNumber;
 
   char *token;
@@ -436,7 +423,6 @@ void parseCommand(char toParse[], const int client_fd) {
     break;
   case 3:
     handle_get_all_cocktails(client_fd);
-    break;
   case 4:
     handle_get_all_shakes(client_fd);
     break;
@@ -448,8 +434,7 @@ void parseCommand(char toParse[], const int client_fd) {
     log_info("Il cliente vuole disconnettersi\n");
     logoff(search_dictionary(dict, client_fd));
     remove_dictionary(dict, client_fd);
-    send(client_fd, "5\n", sizeof("5\n"), 0);
-    break;
+    return 0;
   }
   case 7: {
     log_info("Il cliente vuole eliminare dal carrello\n");
@@ -469,9 +454,36 @@ void parseCommand(char toParse[], const int client_fd) {
   }
 }
 
-// Implementations for each function
+int handle_data_received(char *buffer, const int client_socket) {
+  log_debug("Dati ricevuti: %s\n", buffer);
 
-void disconnessione(char *buffer) {}
+  if (strlen(buffer) != 0) { // check carattere vuoto in stringa da client
+    int res = parseCommand(buffer, client_socket);
+    bzero(buffer, MAX_BUFFER_SIZE);
+    if (res == 0) {
+      return 0;
+    } else {
+      return 1;
+    }
+  } else {
+    log_debug("Il client Non ha inserito nulla\n");
+    return 1;
+  }
+}
+
+// Implementations for each function
+void handle_client_disconnection(int client_socket) {
+  log_info("Il client numero: %d ha chiuso la connessione", client_socket);
+
+  if (search_dictionary(dict, client_socket) == NULL) {
+    log_info("L'utente non è loggato, quindi non può disconnettersi");
+  } else {
+    log_debug("L'utente che si è disconesso ha questa mail: %s",
+              search_dictionary(dict, client_socket));
+    logoff(search_dictionary(dict, client_socket));
+    remove_dictionary(dict, client_socket);
+  }
+}
 
 void handle_signin(int client_fd, char *password, char *email) {
   if (signin(email, password)) {
