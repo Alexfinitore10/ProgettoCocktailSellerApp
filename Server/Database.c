@@ -418,7 +418,7 @@ bool logoff(const char *email) {
   int paramLengths[1] = {strlen(email)};
   int paramFormats[1] = {0};
   res = PQexecParams(conn, isLogged, 1, NULL, paramValues, paramLengths,
-                      paramFormats, 0);
+                     paramFormats, 0);
   if (checkres(res)) {
     log_info("Logout effettuato");
     return true;
@@ -429,6 +429,7 @@ bool logoff(const char *email) {
 }
 
 bool are_credentials_correct(char *email, char *password) {
+  log_debug("email: %s, password: %s\n", email, password);
   char *credentials_command =
       "SELECT email FROM Cliente WHERE email = $1 AND password = $2";
 

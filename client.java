@@ -110,7 +110,7 @@ public class client {
                 System.err.println("La stringa ricevuto è vuota. Termino il programma.");
                 break;
             }
-        } while (true);
+        } while (connected);
 
         c.closeConnection();
     }
@@ -118,7 +118,6 @@ public class client {
     String bufferedReceive() {
         try {
             CharBuffer charBuffer = CharBuffer.allocate(1024);
-
             int ric = input.read(charBuffer);
 
             String rispostadato = new String(charBuffer.array(), 0, ric);
@@ -127,7 +126,7 @@ public class client {
             // elaborazione... però devo vede un attimo
             return rispostadato;
         } catch (Exception e) {
-            System.err.println("Errore durante la lettura del server: " + e.getMessage());
+            System.err.println("Errore durante la lettura del server: a rigo 130 " + e.getMessage());
             return e.getMessage();
         }
     }
@@ -151,52 +150,68 @@ public class client {
         try {
             clientSocket.setSoTimeout(5000);
 
-            System.out.println("1) Visualizza Drink");
-            System.out.println("2) Visualizza Fruit Shakes");
-            System.out.println("3) Aggiungi al carrello");
-            System.out.println("4) Vedi carrello");
-            System.out.println("5) Conferma Acquisto");
-            System.out.println("6) Esci");
+            while (true) {
+                System.out.println("1) Visualizza Drink");
+                System.out.println("2) Visualizza Fruit Shakes");
+                System.out.println("3) Aggiungi al carrello");
+                System.out.println("4) Vedi carrello");
+                System.out.println("5) Conferma Acquisto");
+                System.out.println("6) Esci");
 
-            Scanner scanner = new Scanner(System.in);
-            risposta = scanner.nextLine();
+                Scanner scanner = new Scanner(System.in);
+                risposta = scanner.nextLine();
+
+                if (risposta.matches("[1-6]+")) {
+                    break;
+                }
+
+                System.out.println("Inserimento non valido. Riprova");
+            }
+
+            switch (Integer.parseInt(risposta)) {
+                case 1:
+                    risposta = "3";// drinks
+                    break;
+                case 2:
+                    risposta = "4";// shakes
+                    break;
+                default:
+                    break;
+            }
 
             out.println(risposta);
 
-            rispostaServer = receive();
+            // rispostaServer = receive();// ricevo il case
 
-            if (!risposta.isEmpty()) {
-                switch (Integer.parseInt(rispostaServer)) {
-                    case 1:
-                        visualizzaDrink();
-                        String bufferCock = bufferedReceive();
-                        ArrayList<Cocktail> drink = new ArrayList<>();
-                        for (String c : bufferCock.split("\\n")) {
-                            drink.add(Cocktail.parseString(c));
-                        }
-                        break;
-                    case 2:
-                        visualizzaShakes();
-                        String bufferShake = bufferedReceive();
-                        ArrayList<Cocktail> shake = new ArrayList<>();
-                        for (String c : bufferShake.split("\\n")) {
-                            shake.add(Cocktail.parseString(c));
-                        }
-                        break;
-                    case 3:
-                        break;
-                    case 6:
-                        out.println("9");
-                        closeConnection();
-                        break;
-                    default:
-                        break;
-                }
+            switch (Integer.parseInt(risposta)) {
+                case 3:
+                    // visualizzaDrink();// manda comando
+                    String bufferCock = bufferedReceive();
+                    ArrayList<Cocktail> drink = new ArrayList<>();
+                    for (String c : bufferCock.split("\\n")) {
+                        drink.add(Cocktail.parseString(c));
+                    }
+                    break;
+                case 4:
+                    visualizzaShakes();
+                    String bufferShake = bufferedReceive();
+                    ArrayList<Cocktail> shake = new ArrayList<>();
+                    for (String c : bufferShake.split("\\n")) {
+                        shake.add(Cocktail.parseString(c));
+                    }
+                    break;
+                case 6:
+                    out.println("6");
+                    isLogged = false;
+                    System.out.println("Logout effettuato... Ritorno al menu");
+                    break;
+                default:
+                    break;
             }
 
             return rispostaServer;
         } catch (IOException e) {
-            System.err.println("Errore durante la lettura: " + e.getMessage());
+            System.err.println("IOException durante la lettura: " + e.getMessage());
             return null;
         } catch (Exception e) {
             System.err.println("Errore durante la lettura: " + e.getMessage());
@@ -243,12 +258,14 @@ public class client {
                         // System.out.println("Arraylist:" + drink);
                         break;
                     case 4:
-                        // decrementaDrink();
+                        System.out.println("L'utente non è loggato, quindi non può disconnettersi");
+                        break;
                     case 5:
                         closeConnection();
-                        return "";
+                        break;
                     default:
                         System.out.println("Numero non valido");
+                        break;
                 }
             } else {
                 return risposta;
