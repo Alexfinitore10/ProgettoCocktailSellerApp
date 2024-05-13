@@ -4,4 +4,10 @@
     android:id="@+id/FragmentSettings"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SettingsFragment"/>
+    tools:context=".CartFragment">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/CartRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</FrameLayout>

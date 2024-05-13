@@ -5,10 +5,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.example.cocktailapp.CocktailFragment;
-import com.example.cocktailapp.SettingsFragment;
-import com.example.cocktailapp.ShakesFragment;
-
 public class PagerAdapter extends FragmentStateAdapter {
 
 
@@ -25,7 +21,7 @@ public class PagerAdapter extends FragmentStateAdapter {
             case 1:
                 return new NewShakesFragment();
             case 2:
-                return new SettingsFragment();
+                return new CartFragment();
         }
         return new CocktailFragment();
     }

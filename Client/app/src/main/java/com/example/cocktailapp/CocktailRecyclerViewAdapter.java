@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -12,15 +13,22 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 
 public class CocktailRecyclerViewAdapter extends RecyclerView.Adapter <CocktailRecyclerViewAdapter.ViewHolder> {
     private ArrayList<CocktailLayoutClass> drinkLayoutArrayList;
     private Context context;
+    private ArrayList<Cocktail> cocktailList;
 
-    public CocktailRecyclerViewAdapter(ArrayList<CocktailLayoutClass> drinkLayoutArrayList, Context context) {
+
+
+
+    public CocktailRecyclerViewAdapter(ArrayList<CocktailLayoutClass> drinkLayoutArrayList, Context context,ArrayList<Cocktail> cocktailList) {
         this.drinkLayoutArrayList = drinkLayoutArrayList;
         this.context = context;
+        this.cocktailList = cocktailList;
     }
 
     @NonNull
@@ -65,9 +73,33 @@ public class CocktailRecyclerViewAdapter extends RecyclerView.Adapter <CocktailR
             alcoholVolume = itemView.findViewById(R.id.alcohol_volume);
             cocktailIngredients = itemView.findViewById(R.id.cocktail_ingredients);
 
+            SpinnerInitializer(amountSpinner,context);
+
             addButton.setOnClickListener(v -> {
                 Log.d("onBindViewHolder: ","Sto nel addButton listener");
             });
         }
+
+        private void SpinnerInitializer(Spinner amountSpinner,Context context) {
+            List<Integer> amounts_list = new ArrayList<>();
+            for (int i = 1; i <= cocktailList.size(); i++) {
+                amounts_list.add(i);
+            }
+            // Create a Spinner adapter
+            ArrayAdapter<Integer> adapter = new ArrayAdapter<>(
+                    context,   
+                    android.R.layout.simple_spinner_item,
+                    amounts_list
+            );
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+            // Set the adapter to the Spinner
+            amountSpinner.setAdapter(adapter);
+        }
+
     }
+
+
+
+
 }

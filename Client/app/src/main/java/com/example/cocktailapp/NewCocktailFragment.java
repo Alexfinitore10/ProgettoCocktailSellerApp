@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -67,6 +68,7 @@ public class NewCocktailFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
+
     }
 
     @Override
@@ -83,7 +85,6 @@ public class NewCocktailFragment extends Fragment {
         client = Client.getIstanza();
         list = new ArrayList<>();
         cocktails = new ArrayList<>();
-
 
         Runnable getCocktailsTask = () -> allCocktails = getAllCocktails(client);
         Thread getCocktailsThread = new Thread(getCocktailsTask);
@@ -102,12 +103,13 @@ public class NewCocktailFragment extends Fragment {
             cocktails.add(Cocktail.parseString(c));
         }
 
+
         for (Cocktail c : cocktails) {
-            list.add(new CocktailLayoutClass(c.getNome(),c.getIngredienti(),c.getGradazione_alcolica(),c.getPrezzo(),c.getQuantità()));
+            list.add(new CocktailLayoutClass(c.getNome(),c.getIngredienti(),c.getGradazione_alcolica(),c.getPrezzo(),c.getQuantita()));
         }
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new CocktailRecyclerViewAdapter(list,getContext());
+        adapter = new CocktailRecyclerViewAdapter(list,getContext(),cocktails);
         recyclerView.setAdapter(adapter);
 
     }
@@ -117,5 +119,7 @@ public class NewCocktailFragment extends Fragment {
         client.sendData(command);
         return client.bufferedReceive();
     }
+
+
 }
 

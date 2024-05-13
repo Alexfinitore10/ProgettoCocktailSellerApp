@@ -8,13 +8,13 @@ public abstract class Bevanda {
     private String nome;
     private double prezzo;
     private List<String> ingredienti;
-    private int quantità;
+    private int quantita;
 
-    public Bevanda(String nome, double prezzo, List<String> ingredienti, int quantità) {
+    public Bevanda(String nome, double prezzo, List<String> ingredienti, int quantita) {
         this.nome = nome;
         this.prezzo = prezzo;
         this.ingredienti = ingredienti;
-        this.quantità = quantità;
+        this.quantita = quantita;
     }
 
     protected Bevanda() {
@@ -50,12 +50,12 @@ public abstract class Bevanda {
         this.ingredienti = ingredienti;
     }
 
-    public int getQuantità() {
-        return quantità;
+    public int getQuantita() {
+        return quantita;
     }
 
-    public void setQuantità(int quantità) {
-        this.quantità = quantità;
+    public void setQuantita(int quantita) {
+        this.quantita = quantita;
     }
 }
 
