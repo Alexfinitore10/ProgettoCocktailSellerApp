@@ -49,7 +49,8 @@ public class Cocktail {
 
     // Metodo main per testare la classe
     public static void main(String[] args) {
-        String input = "Mojito , [Rum; Lime ; Zucchero ; Menta], 18        , 6 , 10 ";
+        //String input = "Mojito , [Rum; Lime ; Zucchero ; Menta], 18        , 6 , 10 ";
+        String input = "Mojito , [Rum; Lime ; Zucchero ; Menta], 18       , 6 , 10\nNegroni , [Ghiaccio;Gin;Bitter Campari;Vermut Rosso], 28       , 5.9 , 10 ";
         Cocktail mojito = Cocktail.parseString(input);
         System.out.println(mojito);
     }

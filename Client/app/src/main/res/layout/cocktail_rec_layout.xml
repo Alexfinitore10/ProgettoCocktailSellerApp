@@ -1,15 +1,11 @@
-
-
-<androidx.cardview.widget.CardView
-    android:id="@+id/drinkCardView"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cocktailCardView"
     android:layout_width="match_parent"
-    android:layout_height="300dp"
-    app:cardCornerRadius="10dp"
-    app:cardElevation="10dp"
+    android:layout_height="400dp"
     android:layout_margin="5dp"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-
+    app:cardCornerRadius="10dp"
+    app:cardElevation="10dp">
 
 
     <Button
@@ -17,32 +13,34 @@
         android:layout_width="125dp"
         android:layout_height="55dp"
         android:layout_marginStart="215dp"
-        android:layout_marginTop="230dp"
+        android:layout_marginTop="330dp"
         android:backgroundTint="#F98500"
         android:text="Aggiungi"
-        android:textSize="18sp"/>
+        android:textSize="18sp" />
 
     <Spinner
         android:id="@+id/amountSpinner"
         android:layout_width="125dp"
         android:layout_height="50dp"
-        android:layout_marginTop="230dp"
-        android:layout_marginStart="30dp"/>
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="330dp" />
 
     <LinearLayout
+        android:id="@+id/cocktailMainLayout"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="300dp"
         android:orientation="horizontal">
 
         <ImageView
             android:id="@+id/cocktail_image"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:layout_weight="0"
             android:layout_marginEnd="8dp"
+            android:layout_weight="0"
             android:scaleType="centerCrop" />
 
         <LinearLayout
+            android:id="@+id/cocktailSecondLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_toEndOf="@+id/cocktail_image"
@@ -53,7 +51,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
-                android:text="Title"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 android:textColor="@color/black"
                 android:textSize="20sp"
@@ -64,26 +61,22 @@
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
                 android:padding="8dp"
-                android:text="Prezzo:"
                 android:textColor="@color/black"
-                android:textSize="14sp"
-                />
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/alcohol_volume"
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
                 android:padding="8dp"
-                android:text="Gradazione Alcolica:"
                 android:textColor="@color/black"
                 android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/cocktail_ingredients"
                 android:layout_width="match_parent"
-                android:layout_height="65dp"
+                android:layout_height="165dp"
                 android:padding="8dp"
-                android:text="Ingredienti:"
                 android:textColor="@color/black"
                 android:textSize="14sp" />
 

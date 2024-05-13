@@ -33,10 +33,17 @@ public class CocktailRecyclerViewAdapter extends RecyclerView.Adapter <CocktailR
     @Override
     public void onBindViewHolder(@NonNull CocktailRecyclerViewAdapter.ViewHolder holder, int position) {
         CocktailLayoutClass cocktailLayoutClass = drinkLayoutArrayList.get(position);
-        holder.cocktailName.setText(cocktailLayoutClass.getNome().toString());
-        holder.cocktailPrice.setText(String.valueOf(cocktailLayoutClass.getPrezzo()));
-        holder.alcoholVolume.setText(String.valueOf(cocktailLayoutClass.getGradazione_alcolica()));
-        holder.cocktailIngredients.setText(cocktailLayoutClass.getIngredienti().toString());
+        String ingredienti = cocktailLayoutClass.getIngredienti().toString();
+        String PrezzoCocktail = String.valueOf(cocktailLayoutClass.getPrezzo());
+        String GradazioneAlcolica = String.valueOf(cocktailLayoutClass.getGradazione_alcolica());
+        PrezzoCocktail = String.format("%.2f",cocktailLayoutClass.getPrezzo());
+        GradazioneAlcolica = String.format("%.2f",cocktailLayoutClass.getGradazione_alcolica());
+        ingredienti = ingredienti.substring(1,ingredienti.length()-1);
+
+        holder.cocktailName.setText(cocktailLayoutClass.getNome());
+        holder.cocktailPrice.setText("Prezzo: "+ PrezzoCocktail+"€");
+        holder.alcoholVolume.setText("Gradazione Alcolica: "+GradazioneAlcolica+"%");
+        holder.cocktailIngredients.setText("Ingredienti: "+ingredienti);
     }
 
     @Override

@@ -27,7 +27,6 @@ public class NewCocktailFragment extends Fragment {
     private Client client;
     private ArrayList<Cocktail> cocktails;
     private String allCocktails;
-    private Cocktail newCocktail;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -84,12 +83,9 @@ public class NewCocktailFragment extends Fragment {
         client = Client.getIstanza();
         list = new ArrayList<>();
         cocktails = new ArrayList<>();
-        newCocktail = new Cocktail();
 
 
-        Runnable getCocktailsTask = () -> {
-            allCocktails = getAllCocktails(client);
-        };
+        Runnable getCocktailsTask = () -> allCocktails = getAllCocktails(client);
         Thread getCocktailsThread = new Thread(getCocktailsTask);
         getCocktailsThread.start();
 
@@ -100,22 +96,15 @@ public class NewCocktailFragment extends Fragment {
         }
 
 
-
-//        newCocktail = Cocktail.parseString(allCocktails);
-//        cocktails.add(newCocktail);
-
-
-
         recyclerView = view.findViewById(R.id.CocktailRecyclerView);
 
-//        for(Cocktail temp: cocktails){
-//            list.add(new DrinkLayoutClass(temp.getNome(),temp.getIngredienti(),temp.getGradazione_alcolica(),temp.getPrezzo(),temp.getQuantità()));
-//        }
+        for (String c : allCocktails.split("\\n")) {
+            cocktails.add(Cocktail.parseString(c));
+        }
 
-
-//        list.add(new CocktailLayoutClass("Mojito","Rum, Lime, Zucchero, Menta",18.0,6.0,10));
-//        list.add(new CocktailLayoutClass("Bloody Mary","Vodka, Succo di pomodoro, Tabasco , Sedano , Sale , Pepe nero , Succo di limone , Salsa Worchestershire",25.0,6.0,13));
-//        list.add(new CocktailLayoutClass("White Russian","Vodka, Liquore al caffè, Ghiaccio , Panna fresca",25.0,7.0,16));
+        for (Cocktail c : cocktails) {
+            list.add(new CocktailLayoutClass(c.getNome(),c.getIngredienti(),c.getGradazione_alcolica(),c.getPrezzo(),c.getQuantità()));
+        }
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new CocktailRecyclerViewAdapter(list,getContext());

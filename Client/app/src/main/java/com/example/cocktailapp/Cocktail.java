@@ -1,5 +1,7 @@
 package com.example.cocktailapp;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,23 +22,24 @@ public class Cocktail extends Bevanda {
         return gradazione_alcolica;
     }
 
-    // Metodo per parsare la stringa e creare un oggetto Cocktail
+
     public static Cocktail parseString(String input) {
         String[] parts = input.split(", ");
-
+    
         String nome = parts[0].trim();
-
+    
         // Rimuovi le parentesi quadre dagli ingredienti
         String ingredientiString = parts[1].substring(1, parts[1].length() - 1).trim();
         String[] ingredientiArray = ingredientiString.split(";");
-
-        float gradazioneAlcolica = Float.parseFloat(parts[2].trim());
-        float prezzo = Float.parseFloat(parts[3].trim());
+    
+        double gradazioneAlcolica = Double.parseDouble(parts[2].trim());
+        double prezzo = Double.parseDouble(parts[3].trim());
         int quantita = Integer.parseInt(parts[4].trim());
-
-        return new Cocktail(nome, prezzo, Arrays.asList(ingredientiArray), quantita,gradazioneAlcolica);
+    
+        return new Cocktail(nome, prezzo, Arrays.asList(ingredientiArray), quantita, gradazioneAlcolica);
     }
 
+    
     @Override
     public String toString() {
         return super.toString() + "Gradazione alcolica: " + gradazione_alcolica;
