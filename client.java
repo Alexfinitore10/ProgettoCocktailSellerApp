@@ -8,7 +8,7 @@ import java.util.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-class Cocktail {
+/* class Cocktail {
     private String nome;
     private List<String> ingredienti;
     private float gradazioneAlcolica;
@@ -52,7 +52,7 @@ class Cocktail {
                 ", quantita=" + quantita +
                 '}';
     }
-}
+} */
 
 public class client {
 
@@ -178,8 +178,11 @@ public class client {
                 default:
                     break;
             }
-
-            out.println(risposta);
+            if (risposta == "6") {
+                out.println("");
+            } else {
+                out.println(risposta);
+            }
 
             // rispostaServer = receive();// ricevo il case
 
@@ -193,15 +196,15 @@ public class client {
                     }
                     break;
                 case 4:
-                    visualizzaShakes();
+                    // visualizzaShakes();
                     String bufferShake = bufferedReceive();
-                    ArrayList<Cocktail> shake = new ArrayList<>();
+                    ArrayList<Shake> shake = new ArrayList<>();
                     for (String c : bufferShake.split("\\n")) {
-                        shake.add(Cocktail.parseString(c));
+                        shake.add(Shake.parseString(c));
                     }
+
                     break;
                 case 6:
-                    out.println("6");
                     isLogged = false;
                     System.out.println("Logout effettuato... Ritorno al menu");
                     break;
@@ -231,7 +234,7 @@ public class client {
             System.out.println("2)Login");
             System.out.println("3)Visualizza i Drink");
             System.out.println("4)Log-Out");
-            System.out.println("5)Disconnettiti");
+            System.out.println("5)Esci dall'applicativo");
             risposta = scanner.nextLine();
             if (!risposta.isEmpty()) {
                 // Interpret server response
@@ -261,8 +264,7 @@ public class client {
                         System.out.println("L'utente non è loggato, quindi non può disconnettersi");
                         break;
                     case 5:
-                        closeConnection();
-                        break;
+                        return "";
                     default:
                         System.out.println("Numero non valido");
                         break;
