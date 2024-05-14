@@ -253,7 +253,9 @@ char *get_all_cocktails() {
 }
 
 char *get_all_shakes() {
-  char *get_all_shake_command = "SELECT * FROM Frullato";
+  char *get_all_shake_command =
+      "SELECT CONCAT(nome, ', [', ingredienti, '], ', prezzo, ', ', quantita)\
+   AS informazioni FROM frullato";
 
   if (command(get_all_shake_command)) {
     return printQuery(res);
@@ -413,6 +415,7 @@ bool signin(char *email, char *password) {
 }
 
 bool logoff(const char *email) {
+  log_debug("email: %s", email);
   char *isLogged = "UPDATE Cliente SET isLogged = false WHERE email = $1";
   const char *paramValues[1] = {email};
   int paramLengths[1] = {strlen(email)};

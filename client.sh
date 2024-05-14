@@ -1,1 +1,1 @@
-javac client.java && java client
+javac Cocktail.java Shake.java client.java && java client

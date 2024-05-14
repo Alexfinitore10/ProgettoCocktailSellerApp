@@ -547,7 +547,7 @@ void handle_get_all_cocktails(int client_fd) {
     charArray[i] = cocktails[i];
   }
 
-  charArray[length + 1] = '\n';
+  // charArray[length + 1] = '\n';
 
   log_debug("L'array in characters è : %s", charArray);
 
@@ -572,9 +572,22 @@ void handle_get_all_shakes(int client_fd) {
 
   char *shakes = get_all_shakes();
 
-  log_debug("%s\n", shakes);
+  size_t length = strlen(shakes);
 
-  // sendAll(client_fd, shakes);
+  log_debug("L'array in characters è : %s", shakes);
+
+  // log_info("Ecco tutti i cocktail:%s\n", cocktails);//solo per testing
+  log_debug("Stringa di lunghezza: %d", length);
+
+  int status = send(client_fd, shakes, strlen(shakes), 0);
+
+  if (status > 0) {
+    log_info("[Server] Dati dei Cocktail inviati al client\n");
+  } else {
+    log_error("send error: %s", strerror(errno));
+  }
+
+  log_debug("Stringa inviata e puntatore liberato");
 
   free(shakes);
 }
