@@ -1,7 +1,13 @@
 package com.example.cocktailapp;
 
+
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -28,6 +34,8 @@ public class NewCocktailFragment extends Fragment {
     private Client client;
     private ArrayList<Cocktail> cocktails;
     private String allCocktails;
+    private int backButtonCount = 0;
+
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -68,6 +76,7 @@ public class NewCocktailFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
+        // Register for back button callbacks
 
     }
 
@@ -85,6 +94,21 @@ public class NewCocktailFragment extends Fragment {
         client = Client.getIstanza();
         list = new ArrayList<>();
         cocktails = new ArrayList<>();
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                // Increment the back button count
+                backButtonCount++;
+
+                // Show the pop-up dialog if the back button has been pressed 3 times
+                if (backButtonCount == 3) {
+                    showLogoutDialog(client);
+                    backButtonCount = 0;
+                }
+
+            }
+        });
 
         Runnable getCocktailsTask = () -> allCocktails = getAllCocktails(client);
         Thread getCocktailsThread = new Thread(getCocktailsTask);
@@ -112,6 +136,8 @@ public class NewCocktailFragment extends Fragment {
         adapter = new CocktailRecyclerViewAdapter(list,getContext(),cocktails);
         recyclerView.setAdapter(adapter);
 
+
+
     }
 
     private String getAllCocktails(Client client){
@@ -119,6 +145,34 @@ public class NewCocktailFragment extends Fragment {
         client.sendData(command);
         return client.bufferedReceive();
     }
+
+    private void showLogoutDialog(Client client) {
+        // Create a pop-up dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Log Out")
+                .setMessage("Vuoi davvero disconnetterti?")
+                .setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        client.setLogged(false);
+                        startActivity(new Intent(getActivity(), LoginActivity.class));
+                    }
+                })
+                .setNegativeButton("No", null);
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        // Change the color of the positive button
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.parseColor("#F98500"));
+
+        // Change the color of the negative button
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.parseColor("#F98500"));
+
+
+    }
+
+
 
 
 }

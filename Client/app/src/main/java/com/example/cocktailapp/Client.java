@@ -154,4 +154,8 @@ public class Client {
             Log.e("Client","Loggo un errore nella chiusura del client: " +e.getMessage());
         }
     }
+
+    public void setLogged(boolean logged) {
+        isLogged = logged;
+    }
 }

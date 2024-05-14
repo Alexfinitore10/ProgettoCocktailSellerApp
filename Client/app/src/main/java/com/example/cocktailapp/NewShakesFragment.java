@@ -1,7 +1,12 @@
 package com.example.cocktailapp;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -23,6 +28,8 @@ public class NewShakesFragment extends Fragment {
     private ShakesRecyclerViewAdapter adapter;
     private ArrayList<ShakesLayoutClass> list;
     private RecyclerView recyclerView;
+    private int backButtonCount = 0;
+    private Client client;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -76,6 +83,22 @@ public class NewShakesFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         list = new ArrayList<>();
+        client = Client.getIstanza();
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                // Increment the back button count
+                backButtonCount++;
+
+                // Show the pop-up dialog if the back button has been pressed 3 times
+                if (backButtonCount == 3) {
+                    showLogoutDialog(client);
+                    backButtonCount = 0;
+                }
+
+            }
+        });
 
         recyclerView = view.findViewById(R.id.ShakesRecyclerView);
 
@@ -84,5 +107,31 @@ public class NewShakesFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new ShakesRecyclerViewAdapter(list,getContext());
         recyclerView.setAdapter(adapter);
+    }
+
+    private void showLogoutDialog(Client client) {
+        // Create a pop-up dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Log Out")
+                .setMessage("Vuoi davvero disconnetterti?")
+                .setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        client.setLogged(false);
+                        startActivity(new Intent(getActivity(), LoginActivity.class));
+                    }
+                })
+                .setNegativeButton("No", null);
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        // Change the color of the positive button
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.parseColor("#F98500"));
+
+        // Change the color of the negative button
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.parseColor("#F98500"));
+
+
     }
 }

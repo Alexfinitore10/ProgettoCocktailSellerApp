@@ -44,6 +44,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
             if(risposta.equals("OK")){
+                client.setLogged(true);
                 Toast.makeText(this, "Login effettuato", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(this,ShopActivity.class));
             }else{
