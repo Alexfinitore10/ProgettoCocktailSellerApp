@@ -423,6 +423,7 @@ int parseCommand(char toParse[], const int client_fd) {
     break;
   case 3:
     handle_get_all_cocktails(client_fd);
+    break;
   case 4:
     handle_get_all_shakes(client_fd);
     break;

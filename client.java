@@ -56,6 +56,9 @@ import java.security.NoSuchAlgorithmException;
 
 public class client {
 
+    // glio carrello
+    carrello c = new carrello();
+
     boolean isLogged = false;
 
     // Regex
@@ -153,9 +156,9 @@ public class client {
             while (true) {
                 System.out.println("1) Visualizza Drink");
                 System.out.println("2) Visualizza Fruit Shakes");
-                System.out.println("3) Aggiungi al carrello");
-                System.out.println("4) Vedi carrello");
-                System.out.println("5) Conferma Acquisto");
+                System.out.println("3) Aggiungi Cocktail");
+                System.out.println("4) Aggiungi Shake");
+                System.out.println("5) Visualizza Carrello");
                 System.out.println("6) Esci");
 
                 Scanner scanner = new Scanner(System.in);
@@ -175,12 +178,19 @@ public class client {
                 case 2:
                     risposta = "4";// shakes
                     break;
+                case 3:
+                    risposta = "5";// aggiungi cocktail al carrello
+                    break;
+                case 4:
+                    risposta = "9";// aggiungi shake al carrello
+                    break;
+                case 5:
+                    risposta = "7";// visualizza carrello
+                    break;
                 default:
                     break;
             }
-            if (risposta == "6") {
-                out.println("");
-            } else {
+            if (!risposta.equals("5") && !risposta.equals("7") && !risposta.equals("9")) {
                 out.println(risposta);
             }
 
@@ -189,24 +199,28 @@ public class client {
             switch (Integer.parseInt(risposta)) {
                 case 3:
                     // visualizzaDrink();// manda comando
-                    String bufferCock = bufferedReceive();
-                    ArrayList<Cocktail> drink = new ArrayList<>();
-                    for (String c : bufferCock.split("\\n")) {
-                        drink.add(Cocktail.parseString(c));
-                    }
+                    receiveAndParseCocktail();// sta funzione returna
                     break;
                 case 4:
                     // visualizzaShakes();
-                    String bufferShake = bufferedReceive();
-                    ArrayList<Shake> shake = new ArrayList<>();
-                    for (String c : bufferShake.split("\\n")) {
-                        shake.add(Shake.parseString(c));
-                    }
-
+                    receiveAndParseShake();
                     break;
-                case 6:
+                case 5:
+                    // aggiungiCocktailAlCarrello
+                    System.out.println("Il cliente vuole aggiungere un cocktail al carrello");
+                    chooseCocktail();
+                    c.viewItems();
+                    break;
+                case 6:// Disconnessione
                     isLogged = false;
                     System.out.println("Logout effettuato... Ritorno al menu");
+                    break;
+                case 7:// Vedi Carrello
+                    c.viewItems();
+                    break;
+                case 9:// Inserisci Shake al carrello
+                    chooseShake();
+                    c.viewItems();
                     break;
                 default:
                     break;
@@ -219,6 +233,68 @@ public class client {
         } catch (Exception e) {
             System.err.println("Errore durante la lettura: " + e.getMessage());
             return null;
+        }
+    }
+
+    ArrayList<Shake> receiveAndParseShake() {
+        String bufferShake = bufferedReceive();
+        ArrayList<Shake> shake = new ArrayList<>();
+        for (String c : bufferShake.split("\\n")) {
+            shake.add(Shake.parseString(c));
+        }
+        return shake;
+    }
+
+    ArrayList<Cocktail> receiveAndParseCocktail() {
+        String bufferCock = bufferedReceive();
+        ArrayList<Cocktail> drink = new ArrayList<>();
+        for (String c : bufferCock.split("\\n")) {
+            drink.add(Cocktail.parseString(c));
+        }
+        System.out.println("Returno il drink");
+        return drink;
+    }
+
+    void chooseCocktail() {
+        try {
+            out.println("3");// 1
+            Thread.sleep(500);
+            ArrayList<Cocktail> cock = receiveAndParseCocktail();
+            System.out.println("Scegli un cocktail:");
+            int i = 0;
+            for (i = 0; i < cock.size(); i++) {
+                System.out.println(i + ")" + cock.get(i).getNome());
+            }
+            int indiceCocktail = scanner.nextInt();
+            if (indiceCocktail < cock.size()) {
+                c.addCocktail(cock.get(indiceCocktail));
+                System.out.println("Il cocktail è stato inserito nel carrello, ecco il nuovo carrello:");
+            } else {
+                System.out.println("Cocktail non disponibile");
+            }
+        } catch (Exception e) {
+            System.err.println("IOException durante la lettura: " + e.getMessage());
+        }
+    }
+
+    void chooseShake() {
+        try {
+            out.println("4");
+            ArrayList<Shake> shake = receiveAndParseShake();
+            System.out.println("Scegli un frullato:");
+            int i = 0;
+            for (i = 0; i < shake.size(); i++) {
+                System.out.println(i + ")" + shake.get(i).getNome());
+            }
+            int indiceShake = scanner.nextInt();
+            if (indiceShake < shake.size()) {
+                c.addShake(shake.get(indiceShake));
+                System.out.println("Lo shake è stato inserito nel carrello, ecco il nuovo carrello:");
+            } else {
+                System.out.println("Frullato non disponibile");
+            }
+        } catch (Exception e) {
+            System.err.println("IOException durante la lettura: " + e.getMessage());
         }
     }
 

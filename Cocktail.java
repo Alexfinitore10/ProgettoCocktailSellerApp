@@ -18,6 +18,48 @@ public class Cocktail {
         this.quantita = quantita;
     }
 
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public List<String> getIngredienti() {
+        return ingredienti;
+    }
+
+    public void setIngredienti(List<String> ingredienti) {
+        this.ingredienti = ingredienti;
+    }
+
+    public float getGradazioneAlcolica() {
+        return gradazioneAlcolica;
+    }
+
+    public void setGradazioneAlcolica(float gradazioneAlcolica) {
+        this.gradazioneAlcolica = gradazioneAlcolica;
+    }
+
+    public float getPrezzo() {
+        return prezzo;
+    }
+
+    public void setPrezzo(float prezzo) {
+        this.prezzo = prezzo;
+    }
+
+    public int getQuantita() {
+        return quantita;
+    }
+
+    public void setQuantita(int quantita) {
+        this.quantita = quantita;
+    }
+
+
     // Metodo per parsare la stringa e creare un oggetto Cocktail
     public static Cocktail parseString(String input) {
         String[] parts = input.split(", ");
@@ -34,6 +76,8 @@ public class Cocktail {
 
         return new Cocktail(nome, Arrays.asList(ingredientiArray), gradazioneAlcolica, prezzo, quantita);
     }
+
+    
 
     // Metodo toString per rappresentazione testuale dell'oggetto
     @Override
