@@ -117,7 +117,7 @@ public class NewCocktailFragment extends Fragment {
         try {
             getCocktailsThread.join();
         } catch (InterruptedException e) {
-            Log.e("onViewCreated","Errore nella join del thread: " + e.getMessage());
+            Log.e("onViewCreated NewCocktailFragment","Errore nella join del thread: " + e.getMessage());
         }
 
 

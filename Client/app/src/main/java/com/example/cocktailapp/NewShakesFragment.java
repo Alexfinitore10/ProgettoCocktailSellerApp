@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +31,8 @@ public class NewShakesFragment extends Fragment {
     private RecyclerView recyclerView;
     private int backButtonCount = 0;
     private Client client;
+    private ArrayList<Shake> shakes;
+    private String allShakes;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -82,8 +85,9 @@ public class NewShakesFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        list = new ArrayList<>();
         client = Client.getIstanza();
+        list = new ArrayList<>();
+        shakes = new ArrayList<>();
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
@@ -100,14 +104,33 @@ public class NewShakesFragment extends Fragment {
             }
         });
 
+        Runnable getShakesTask = () -> allShakes = getAllShakes(client);
+        Thread getShakesThread = new Thread(getShakesTask);
+        getShakesThread.start();
+
+        try{
+            getShakesThread.join();
+        }catch(InterruptedException e){
+            Log.e("onViewCreated NewShakesFragment","Errore nella join del thread: " + e.getMessage());
+        }
+
         recyclerView = view.findViewById(R.id.ShakesRecyclerView);
 
-        //list.add(new ShakesLayoutClass("Frullato di frutta","banana,fragola,kiwi,latte",3,5));
+        for (String s : allShakes.split("\\n")) {
+            shakes.add(Shake.parseString(s));
+        }
+
+        for(Shake s : shakes){
+            list.add(new ShakesLayoutClass(s.getNome(),s.getIngredienti(),s.getPrezzo(),s.getQuantita()));
+        }
+
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new ShakesRecyclerViewAdapter(list,getContext());
+        adapter = new ShakesRecyclerViewAdapter(list,getContext(),shakes);
         recyclerView.setAdapter(adapter);
     }
+
+
 
     private void showLogoutDialog(Client client) {
         // Create a pop-up dialog
@@ -133,5 +156,11 @@ public class NewShakesFragment extends Fragment {
         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.parseColor("#F98500"));
 
 
+    }
+
+    private String getAllShakes(Client client) {
+        String command = "4";
+        client.sendData(command);
+        return client.bufferedReceive();
     }
 }

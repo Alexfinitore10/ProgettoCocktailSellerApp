@@ -22,7 +22,7 @@ public class CocktailRecyclerViewAdapter extends RecyclerView.Adapter <CocktailR
     private Context context;
     private ArrayList<Cocktail> cocktailList;
 
-
+    
 
 
     public CocktailRecyclerViewAdapter(ArrayList<CocktailLayoutClass> drinkLayoutArrayList, Context context,ArrayList<Cocktail> cocktailList) {
@@ -52,6 +52,9 @@ public class CocktailRecyclerViewAdapter extends RecyclerView.Adapter <CocktailR
         holder.cocktailPrice.setText("Prezzo: "+ PrezzoCocktail+"€");
         holder.alcoholVolume.setText("Gradazione Alcolica: "+GradazioneAlcolica+"%");
         holder.cocktailIngredients.setText("Ingredienti: "+ingredienti);
+
+        holder.SpinnerInitializer(holder.amountSpinner, position, holder.itemView.getContext());
+
     }
 
     @Override
@@ -62,39 +65,42 @@ public class CocktailRecyclerViewAdapter extends RecyclerView.Adapter <CocktailR
     public class ViewHolder extends RecyclerView.ViewHolder {
         private Button addButton;
         private Spinner amountSpinner;
+
         TextView cocktailName, cocktailPrice, alcoholVolume, cocktailIngredients;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             addButton = itemView.findViewById(R.id.addButton);
-            amountSpinner = itemView.findViewById(R.id.amountSpinner);
             cocktailName = itemView.findViewById(R.id.cocktail_name);
             cocktailPrice = itemView.findViewById(R.id.cocktail_price);
             alcoholVolume = itemView.findViewById(R.id.alcohol_volume);
             cocktailIngredients = itemView.findViewById(R.id.cocktail_ingredients);
+            amountSpinner = itemView.findViewById(R.id.amountSpinner);
 
-            SpinnerInitializer(amountSpinner,context);
+
+            
 
             addButton.setOnClickListener(v -> {
                 Log.d("onBindViewHolder: ","Sto nel addButton listener");
             });
         }
 
-        private void SpinnerInitializer(Spinner amountSpinner,Context context) {
+        void SpinnerInitializer(Spinner spinner,int position,Context context) {
+            int amount = cocktailList.get(position).getQuantita();
+        
+
             List<Integer> amounts_list = new ArrayList<>();
-            for (int i = 1; i <= cocktailList.size(); i++) {
+            for (int i = 1; i <= amount; i++) {
                 amounts_list.add(i);
             }
-            // Create a Spinner adapter
-            ArrayAdapter<Integer> adapter = new ArrayAdapter<>(
-                    context,   
-                    android.R.layout.simple_spinner_item,
-                    amounts_list
-            );
+        
+
+            ArrayAdapter<Integer> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, amounts_list);
+        
+
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-            // Set the adapter to the Spinner
-            amountSpinner.setAdapter(adapter);
+            spinner.setAdapter(adapter);
         }
 
     }
