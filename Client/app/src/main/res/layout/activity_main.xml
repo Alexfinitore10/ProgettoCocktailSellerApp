@@ -17,7 +17,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/coctail_app_icon_2" />
+        app:srcCompat="@drawable/cocktail_app_icon" />
 
     <Button
         android:id="@+id/LoginButton"

@@ -1,19 +1,24 @@
 package com.example.cocktailapp;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -21,6 +26,13 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class ShakesFragment extends Fragment {
+    private ShakesRecyclerViewAdapter adapter;
+    private ArrayList<ShakesLayoutClass> list;
+    private RecyclerView recyclerView;
+    private int backButtonCount = 0;
+    private Client client;
+    private ArrayList<Shake> shakes;
+    private String allShakes;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -30,11 +42,6 @@ public class ShakesFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private Spinner FruitShakeAmount;
-    private Spinner TropicalShakeAmount;
-    private Spinner BerryShakeAmount;
-    private Spinner ProteinShakeAmount;
-    private Spinner EsoticShakeAmount;
 
     public ShakesFragment() {
         // Required empty public constructor
@@ -46,7 +53,7 @@ public class ShakesFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment ShakesFragment.
+     * @return A new instance of fragment NewShakesFragment.
      */
     // TODO: Rename and change types and number of parameters
     public static ShakesFragment newInstance(String param1, String param2) {
@@ -78,105 +85,82 @@ public class ShakesFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        FruitShakeAmount = view.findViewById(R.id.FruitShakeAmount);
-        TropicalShakeAmount = view.findViewById(R.id.TropicalShakeAmount);
-        BerryShakeAmount = view.findViewById(R.id.BerryShakeAmount);
-        ProteinShakeAmount = view.findViewById(R.id.ProteinShakeAmount);
-        EsoticShakeAmount = view.findViewById(R.id.EsoticShakeAmount);
+        client = Client.getIstanza();
+        list = new ArrayList<>();
+        shakes = new ArrayList<>();
 
-        fruitShakeSpinnerInitializer(FruitShakeAmount);
-        tropicalShakeSpinnerInitializer(TropicalShakeAmount);
-        berryShakeSpinnerInitializer(BerryShakeAmount);
-        proteinShakeSpinnerInitializer(ProteinShakeAmount);
-        esoticShakeSpinnerInitializer(EsoticShakeAmount);
-    }
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                // Increment the back button count
+                backButtonCount++;
 
+                // Show the pop-up dialog if the back button has been pressed 3 times
+                if (backButtonCount == 3) {
+                    showLogoutDialog(client);
+                    backButtonCount = 0;
+                }
 
-    private void fruitShakeSpinnerInitializer(Spinner fruitShakeAmount) {
-        // Create a list of integers from 1 to 10
-        List<Integer> fruitShakeAmounts = new ArrayList<>();
-        for (int i = 1; i <= 10; i++) {
-            fruitShakeAmounts.add(i);
+            }
+        });
+
+        Runnable getShakesTask = () -> allShakes = getAllShakes(client);
+        Thread getShakesThread = new Thread(getShakesTask);
+        getShakesThread.start();
+
+        try{
+            getShakesThread.join();
+        }catch(InterruptedException e){
+            Log.e("onViewCreated ShakesFragment","Errore nella join del thread: " + e.getMessage());
         }
 
-        // Create a Spinner adapter
-        ArrayAdapter<Integer> adapter = new ArrayAdapter<>(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                fruitShakeAmounts
-        );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        recyclerView = view.findViewById(R.id.ShakesRecyclerView);
 
-        // Set the adapter to the Spinner
-        fruitShakeAmount.setAdapter(adapter);
-    }
-
-    private void tropicalShakeSpinnerInitializer(Spinner tropicalShakeAmount) {
-        List<Integer> tropicalShakeAmounts = new ArrayList<>();
-        for (int i = 1; i <= 10; i++) {
-            tropicalShakeAmounts.add(i);
+        for (String s : allShakes.split("\\n")) {
+            shakes.add(Shake.parseString(s));
         }
 
-        ArrayAdapter<Integer> adapter = new ArrayAdapter<>(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                tropicalShakeAmounts
-        );
-
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        tropicalShakeAmount.setAdapter(adapter);
-
-    }
-
-    private void berryShakeSpinnerInitializer(Spinner berryShakeAmount) {
-        List<Integer> berryShakeAmounts = new ArrayList<>();
-        for (int i = 1; i <= 10; i++) {
-            berryShakeAmounts.add(i);
+        for(Shake s : shakes){
+            list.add(new ShakesLayoutClass(s.getNome(),s.getIngredienti(),s.getPrezzo(),s.getQuantita()));
         }
 
-        ArrayAdapter<Integer> adapter = new ArrayAdapter<>(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                berryShakeAmounts
-        );
 
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        berryShakeAmount.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new ShakesRecyclerViewAdapter(list,getContext(),shakes);
+        recyclerView.setAdapter(adapter);
     }
 
-    private void proteinShakeSpinnerInitializer(Spinner proteinShakeAmount) {
-        List<Integer> proteinShakeAmounts = new ArrayList<>();
-        for (int i = 1; i <= 10; i++) {
-            proteinShakeAmounts.add(i);
-        }
 
-        ArrayAdapter<Integer> adapter = new ArrayAdapter<>(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                proteinShakeAmounts
-        );
 
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    private void showLogoutDialog(Client client) {
+        // Create a pop-up dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Log Out")
+                .setMessage("Vuoi davvero disconnetterti?")
+                .setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        client.setLogged(false);
+                        startActivity(new Intent(getActivity(), LoginActivity.class));
+                    }
+                })
+                .setNegativeButton("No", null);
 
-        proteinShakeAmount.setAdapter(adapter);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        // Change the color of the positive button
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.parseColor("#F98500"));
+
+        // Change the color of the negative button
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.parseColor("#F98500"));
+
+
     }
 
-    private void esoticShakeSpinnerInitializer(Spinner esoticShakeAmount) {
-        List<Integer> esoticShakeAmounts = new ArrayList<>();
-        for (int i = 1; i <= 10; i++) {
-            esoticShakeAmounts.add(i);
-        }
-
-        ArrayAdapter<Integer> adapter = new ArrayAdapter<>(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                esoticShakeAmounts
-        );
-
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        esoticShakeAmount.setAdapter(adapter);
+    private String getAllShakes(Client client) {
+        String command = "4";
+        client.sendData(command);
+        return client.bufferedReceive();
     }
-
 }

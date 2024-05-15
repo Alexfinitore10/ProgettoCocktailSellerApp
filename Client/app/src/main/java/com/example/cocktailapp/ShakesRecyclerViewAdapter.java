@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -39,10 +40,12 @@ public class ShakesRecyclerViewAdapter extends RecyclerView.Adapter<ShakesRecycl
         ShakesLayoutClass shakesLayoutClass = shakeslayoutlist.get(position);
         String ingredienti = shakesLayoutClass.getIngredienti().toString();
         String PrezzoShake = String.valueOf(shakesLayoutClass.getPrezzo());
+        int imageID = getImageID(shakeslayoutlist.get(position).getNome());
 
         PrezzoShake = String.format("%.2f", shakesLayoutClass.getPrezzo());
         ingredienti = ingredienti.substring(1,ingredienti.length()-1);
 
+        holder.imageView.setImageResource(imageID);
         holder.shakeName.setText(shakesLayoutClass.getNome().toString());
         holder.shakePrice.setText("Prezzo: " + PrezzoShake +"€");
         holder.shakeIngredients.setText("Ingredienti: "+ingredienti);
@@ -55,13 +58,39 @@ public class ShakesRecyclerViewAdapter extends RecyclerView.Adapter<ShakesRecycl
         return shakeslayoutlist.size();
     }
 
+    private int getImageID(String nome) {
+        int imageResId;
+        switch (nome) {
+            case "Frullato di frutta":
+                imageResId = R.drawable.frullatodifrutta;
+                break;
+            case "Frullato tropicale":
+                imageResId = R.drawable.frullatotropicale;
+                break;
+            case "Frullato di bacche":
+                imageResId = R.drawable.frullatodibacche;
+                break;
+            case "Frullato proteico":
+                imageResId = R.drawable.frullatoproteico;
+                break;
+            case "Frullato esotico":
+                imageResId = R.drawable.frullatoesotico;
+                break;
+            default:
+                imageResId = R.drawable.cocktail_app_icon; // Replace with your default image resource ID
+        }
+        return imageResId;
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder{
         TextView shakeName, shakePrice, shakeIngredients;
         private Button addButton;
         private Spinner amountSpinner;
+        private ImageView imageView;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
+            imageView = itemView.findViewById(R.id.shake_image);
             addButton = itemView.findViewById(R.id.shakes_addButton);
             amountSpinner = itemView.findViewById(R.id.shakes_amountSpinner);
             shakeName = itemView.findViewById(R.id.shake_name);

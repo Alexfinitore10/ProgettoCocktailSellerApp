@@ -1,22 +1,26 @@
 package com.example.cocktailapp;
 
-import android.app.Activity;
+
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -24,6 +28,13 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class CocktailFragment extends Fragment {
+    private CocktailRecyclerViewAdapter adapter;
+    private ArrayList<CocktailLayoutClass> list;
+    private RecyclerView recyclerView;
+    private Client client;
+    private ArrayList<Cocktail> cocktails;
+    private String allCocktails;
+    private int backButtonCount = 0;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -33,16 +44,6 @@ public class CocktailFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private Spinner MojitoAmount;
-    private Spinner BloodyMaryAmount;
-    private Spinner WhiteRussianAmount;
-    private Spinner NegroniAmount;
-    private Spinner DaiquiriAmount;
-    private Spinner DryMartiniAmount;
-    private Spinner MargaritaAmount;
-    private Spinner ManhattanAmount;
-    private Spinner WhiskeySourAmount;
-    private Spinner MoscowMuleAmount;
 
     public CocktailFragment() {
         // Required empty public constructor
@@ -54,7 +55,7 @@ public class CocktailFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment DrinkFragment.
+     * @return A new instance of fragment NewCocktailFragment.
      */
     // TODO: Rename and change types and number of parameters
     public static CocktailFragment newInstance(String param1, String param2) {
@@ -74,13 +75,14 @@ public class CocktailFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
+        // Register for back button callbacks
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
         return inflater.inflate(R.layout.fragment_cocktail, container, false);
     }
 
@@ -88,228 +90,88 @@ public class CocktailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Initialize the Spinner
-        MojitoAmount = view.findViewById(R.id.MojitoAmount);
-        BloodyMaryAmount = view.findViewById(R.id.BloodyMaryAmount);
-        WhiteRussianAmount = view.findViewById(R.id.WhiteRussianAmount);
-        NegroniAmount = view.findViewById(R.id.NegroniAmount);
-        DaiquiriAmount = view.findViewById(R.id.DaiquiriAmount);
-        DryMartiniAmount = view.findViewById(R.id.DryMartiniAmount);
-        MargaritaAmount = view.findViewById(R.id.MargaritaAmount);
-        ManhattanAmount = view.findViewById(R.id.ManhattanAmount);
-        WhiskeySourAmount = view.findViewById(R.id.WhiskeySourAmount);
-        MoscowMuleAmount = view.findViewById(R.id.MoscowAmount);
+        client = Client.getIstanza();
+        list = new ArrayList<>();
+        cocktails = new ArrayList<>();
 
-        // Call the method to initialize the Spinner
-        mojitoSpinnerInitializer(MojitoAmount);
-        bloodyMarySpinnerInitializer(BloodyMaryAmount);
-        whiteRussianSpinnerInitializer(WhiteRussianAmount);
-        negroniSpinnerInitializer(NegroniAmount);
-        daiquiriSpinnerInitializer(DaiquiriAmount);
-        dryMartiniSpinnerInitializer(DryMartiniAmount);
-        margaritaSpinnerInitializer(MargaritaAmount);
-        manhattanSpinnerInitializer(ManhattanAmount);
-        whiskeySourSpinnerInitializer(WhiskeySourAmount);
-        moscowMuleSpinnerInitializer(MoscowMuleAmount);
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                // Increment the back button count
+                backButtonCount++;
 
-    }
+                // Show the pop-up dialog if the back button has been pressed 3 times
+                if (backButtonCount == 3) {
+                    showLogoutDialog(client);
+                    backButtonCount = 0;
+                }
 
+            }
+        });
 
-    private void mojitoSpinnerInitializer(Spinner mojitoAmount) {
-        // Create a list of integers from 1 to 10
-        List<Integer> mojitoAmounts = new ArrayList<>();
-        for (int i = 1; i <= 10; i++) {
-            mojitoAmounts.add(i);
+        Runnable getCocktailsTask = () -> allCocktails = getAllCocktails(client);
+        Thread getCocktailsThread = new Thread(getCocktailsTask);
+        getCocktailsThread.start();
+
+        try {
+            getCocktailsThread.join();
+        } catch (InterruptedException e) {
+            Log.e("onViewCreated CocktailFragment","Errore nella join del thread: " + e.getMessage());
         }
 
-        // Create a Spinner adapter
-        ArrayAdapter<Integer> adapter = new ArrayAdapter<>(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                mojitoAmounts
-        );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        // Set the adapter to the Spinner
-        mojitoAmount.setAdapter(adapter);
-    }
+        recyclerView = view.findViewById(R.id.CocktailRecyclerView);
 
-    private void bloodyMarySpinnerInitializer(Spinner bloodyMaryAmount) {
-        // Create a list of integers from 1 to 10
-        List<Integer> bloodyMaryAmounts = new ArrayList<>();
-        for (int i = 1; i <= 10; i++) {
-            bloodyMaryAmounts.add(i);
+        for (String c : allCocktails.split("\\n")) {
+            cocktails.add(Cocktail.parseString(c));
         }
 
-        // Create a Spinner adapter
-        ArrayAdapter<Integer> adapter = new ArrayAdapter<>(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                bloodyMaryAmounts
-                );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        // Set the adapter to the Spinner
-        bloodyMaryAmount.setAdapter(adapter);
-    }
-
-    private void whiteRussianSpinnerInitializer(Spinner whiteRussianAmount) {
-        // Create a list of integers from 1 to 10
-        List<Integer> whiteRussianAmounts = new ArrayList<>();
-
-        for (int i = 1; i <= 10; i++) {
-            whiteRussianAmounts.add(i);
+        for (Cocktail c : cocktails) {
+            list.add(new CocktailLayoutClass(c.getNome(),c.getIngredienti(),c.getGradazione_alcolica(),c.getPrezzo(),c.getQuantita()));
         }
 
-        // Create a Spinner adapter
-        ArrayAdapter<Integer> adapter = new ArrayAdapter<>(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                whiteRussianAmounts
-        );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new CocktailRecyclerViewAdapter(list,getContext(),cocktails);
+        recyclerView.setAdapter(adapter);
 
-        // Set the adapter to the Spinner
-        whiteRussianAmount.setAdapter(adapter);
+
+
     }
 
-    private void daiquiriSpinnerInitializer(Spinner daiquiriAmount) {
-        // Create a list of integers from 1 to 10
-        List<Integer> daiquiriAmounts = new ArrayList<>();
-
-        for (int i = 1; i <= 10; i++) {
-            daiquiriAmounts.add(i);
-        }
-
-        // Create a Spinner adapter
-        ArrayAdapter<Integer> adapter = new ArrayAdapter<>(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                daiquiriAmounts
-        );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        // Set the adapter to the Spinner
-        daiquiriAmount.setAdapter(adapter);
+    private String getAllCocktails(Client client){
+        String command = "3";
+        client.sendData(command);
+        return client.bufferedReceive();
     }
 
-    private void negroniSpinnerInitializer(Spinner negroniAmount) {
+    private void showLogoutDialog(Client client) {
+        // Create a pop-up dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Log Out")
+                .setMessage("Vuoi davvero disconnetterti?")
+                .setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        client.setLogged(false);
+                        startActivity(new Intent(getActivity(), LoginActivity.class));
+                    }
+                })
+                .setNegativeButton("No", null);
 
-        // Create a list of integers from 1 to 10
-        List<Integer> negroniAmounts = new ArrayList<>();
-        for (int i = 1; i <= 10; i++) {
-            negroniAmounts.add(i);
-        }
+        AlertDialog dialog = builder.create();
+        dialog.show();
 
-        // Create a Spinner adapter
-        ArrayAdapter<Integer> adapter = new ArrayAdapter<>(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                negroniAmounts
-        );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Change the color of the positive button
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.parseColor("#F98500"));
 
-        // Set the adapter to the Spinner
-        negroniAmount.setAdapter(adapter);
+        // Change the color of the negative button
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.parseColor("#F98500"));
+
+
     }
 
-    private void dryMartiniSpinnerInitializer(Spinner dryMartiniAmount) {
-        // Create a list of integers from 1 to 10
-        List<Integer> dryMartiniAmounts = new ArrayList<>();
 
-        for (int i = 1; i <= 10; i++) {
-            dryMartiniAmounts.add(i);
-        }
 
-        // Create a Spinner adapter
-        ArrayAdapter<Integer> adapter = new ArrayAdapter<>(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                dryMartiniAmounts
-        );
 
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        // Set the adapter to the Spinner
-        dryMartiniAmount.setAdapter(adapter);
-    }
-
-    private void margaritaSpinnerInitializer(Spinner margaritaAmount) {
-        // Create a list of integers from 1 to 10
-        List<Integer> margaritaAmounts = new ArrayList<>();
-        for (int i = 1; i <= 10; i++) {
-            margaritaAmounts.add(i);
-        }
-
-        // Create a Spinner adapter
-        ArrayAdapter<Integer> adapter = new ArrayAdapter<>(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                margaritaAmounts
-        );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        // Set the adapter to the Spinner
-        margaritaAmount.setAdapter(adapter);
-    }
-
-    private void manhattanSpinnerInitializer(Spinner manhattanAmount) {
-        // Create a list of integers from 1 to 10
-        List<Integer> manhattanAmounts = new ArrayList<>();
-
-        for (int i = 1; i <= 10; i++) {
-            manhattanAmounts.add(i);
-        }
-
-        // Create a Spinner adapter
-        ArrayAdapter<Integer> adapter = new ArrayAdapter<>(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                manhattanAmounts
-        );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        // Set the adapter to the Spinner
-        manhattanAmount.setAdapter(adapter);
-    }
-
-    private void whiskeySourSpinnerInitializer(Spinner whiskeySourAmount) {
-        // Create a list of integers from 1 to 10
-        List<Integer> whiskeySourAmounts = new ArrayList<>();
-        for (int i = 1; i <= 10; i++) {
-            whiskeySourAmounts.add(i);
-        }
-
-        // Create a Spinner adapter
-        ArrayAdapter<Integer> adapter = new ArrayAdapter<>(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                whiskeySourAmounts
-                );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        // Set the adapter to the Spinner
-        whiskeySourAmount.setAdapter(adapter);
-    }
-
-    private void moscowMuleSpinnerInitializer(Spinner moscowMuleAmount) {
-        // Create a list of integers from 1 to 10
-        List<Integer> moscowMuleAmounts = new ArrayList<>();
-        for (int i = 1; i <= 10; i++) {
-            moscowMuleAmounts.add(i);
-        }
-
-        // Create a Spinner adapter
-        ArrayAdapter<Integer> adapter = new ArrayAdapter<>(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                moscowMuleAmounts
-                );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        // Set the adapter to the Spinner
-        moscowMuleAmount.setAdapter(adapter);
-    }
 }
-
 

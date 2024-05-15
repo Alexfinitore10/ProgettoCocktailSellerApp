@@ -17,9 +17,9 @@ public class PagerAdapter extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         switch (position){
             case 0:
-                return new NewCocktailFragment();
+                return new CocktailFragment();
             case 1:
-                return new NewShakesFragment();
+                return new ShakesFragment();
             case 2:
                 return new CartFragment();
         }
