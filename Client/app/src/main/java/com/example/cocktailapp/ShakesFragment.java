@@ -89,20 +89,7 @@ public class ShakesFragment extends Fragment {
         list = new ArrayList<>();
         shakes = new ArrayList<>();
 
-        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                // Increment the back button count
-                backButtonCount++;
 
-                // Show the pop-up dialog if the back button has been pressed 3 times
-                if (backButtonCount == 3) {
-                    showLogoutDialog(client);
-                    backButtonCount = 0;
-                }
-
-            }
-        });
 
         Runnable getShakesTask = () -> allShakes = getAllShakes(client);
         Thread getShakesThread = new Thread(getShakesTask);
@@ -132,31 +119,6 @@ public class ShakesFragment extends Fragment {
 
 
 
-    private void showLogoutDialog(Client client) {
-        // Create a pop-up dialog
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Log Out")
-                .setMessage("Vuoi davvero disconnetterti?")
-                .setPositiveButton("Si", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        client.setLogged(false);
-                        startActivity(new Intent(getActivity(), LoginActivity.class));
-                    }
-                })
-                .setNegativeButton("No", null);
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
-
-        // Change the color of the positive button
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.parseColor("#F98500"));
-
-        // Change the color of the negative button
-        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.parseColor("#F98500"));
-
-
-    }
 
     private String getAllShakes(Client client) {
         String command = "4";

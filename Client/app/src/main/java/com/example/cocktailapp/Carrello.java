@@ -59,8 +59,8 @@ public class Carrello {
 
 
     // Calcola il totale del carrello
-    public float calculateTotal() {
-        float total = 0;
+    public double calculateTotal() {
+        double total = 0;
 
         // Calcola il totale dei cocktail
         for (Cocktail cocktail : cocktails) {

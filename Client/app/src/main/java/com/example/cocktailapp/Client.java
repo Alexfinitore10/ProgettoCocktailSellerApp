@@ -146,6 +146,7 @@ public class Client {
 
     public void closeConnection() {
         try {
+            this.isLogged = false;
             out.close();
             input.close();
             clientSocket.close();
