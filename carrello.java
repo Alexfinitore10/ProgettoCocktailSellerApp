@@ -30,6 +30,17 @@ public class carrello {
         return shakes;
     }
 
+    
+    // svuota il carrello
+    public void emptyCarrello() {
+        if (!cocktails.isEmpty()) {
+            cocktails.clear();
+        }
+        if (!shakes.isEmpty()) {
+            shakes.clear();
+        }
+    }
+
     // Ottieni tutti gli elementi del carrello
     // todo
 

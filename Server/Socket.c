@@ -451,6 +451,7 @@ int parseCommand(char toParse[], const int client_fd) {
     // Deve arrivare una stringa formattata così: [8`Mojito`2`Frullato
     // Proteico`3`]
     handle_remove_drink_and_shake(client_fd);
+    break;
   }
   case 9: {
     log_info("Il cliente ha effettuato un acquisto di un drink E BASTA\n");
@@ -640,17 +641,24 @@ void handle_remove_drink_and_shake(int client_fd) {
       log_debug("nome: %s", name);
       char *quantita = strtok(NULL, "`");
       log_debug("quantita: %s", quantita);
+
       // distinguo se è un drink (1) o un shake (2)
-      if (strcmp(tipo, "1") == true) {
-        log_debug("Ricevuto un drink: %s, %d ", name, quantita);
+      tipo = strtok(tipo, " ");
+
+      if (strcmp(tipo, "1") == 0) {
+        log_debug("Ricevuto un drink: %s, %d ", name, atoi(quantita));
         /* if (reduce_amount_cocktail(name, quantita) == true) {
           log_info("Il cocktail è stato rimosso dal database");
         } else {
           log_error("Errore durante la rimozione del drink");
           return;
         } */
-      } else if (strcmp(tipo, "2") == true) {
-        log_debug("Ricevuto un shake: %s, %d ", name, quantita);
+        int send_result = send(client_fd, "Fine\n", strlen("Fine\n"), 0);
+        if (send_result == -1) {
+          log_error("send error: %s", strerror(errno));
+        }
+      } else if (strcmp(tipo, "2") == 0) {
+        log_debug("Ricevuto un shake: %s, %d ", name, atoi(quantita));
         /* if (reduce_amount_shake(name, quantita) == true) {
           log_info("Lo shake è stato rimosso dal database");
         } else {

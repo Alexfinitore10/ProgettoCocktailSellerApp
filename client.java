@@ -288,22 +288,37 @@ public class client {
             out.println("8");
             for (String c : cocktails) {
                 out.println(c);
+                Thread.sleep(500);
+            }
+            for (String c : shakes) {
+                out.println(c);
+                Thread.sleep(500);
             }
             Thread.sleep(500);
             out.println("Fine");
-
-            while (input.readLine() != "Fine") {
-                clientSocket.setSoTimeout(3000);
-                System.out.println("Cancellazione in corso...");
+            System.out.println("Cancellazione in corso...");
+            clientSocket.setSoTimeout(3000);
+            String line;
+            try {
+                line = input.readLine();
+            } catch (SocketTimeoutException e) {
+                System.out.println("Timeout durante l'attesa della risposta");
+                return;
             }
-            if (input.readLine().equals("Fine")) {
-                System.out.println("Cancellazione completata");
-            } else {
-                System.out.println("Cancellazione non completata");
+            while (!line.equals("Fine")) {
+                try {
+                    line = input.readLine();
+                } catch (SocketTimeoutException e) {
+                    System.out.println("Timeout durante l'attesa della risposta");
+                    return;
+                }
             }
+            System.out.println("Cancellazione completata di :");
 
-            System.out.println("List: " + cocktails.toString());
-            System.out.println("List: " + shakes.toString());
+            System.out.println("Cocktails: " + cocktails.toString());
+            System.out.println("Shakes: " + shakes.toString());
+            c.emptyCarrello();
+            Thread.sleep(1000);
         } catch (IOException e) {
             System.err.println("IOException durante la lettura: " + e.getMessage());
         } catch (InterruptedException e) {
