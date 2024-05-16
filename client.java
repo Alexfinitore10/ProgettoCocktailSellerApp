@@ -1,8 +1,6 @@
 import java.io.*;
 import java.net.*;
 import java.nio.CharBuffer;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
 import java.util.regex.*;
 import java.util.*;
 import java.security.MessageDigest;
@@ -160,11 +158,14 @@ public class client {
                 System.out.println("4) Aggiungi Shake");
                 System.out.println("5) Visualizza Carrello");
                 System.out.println("6) Esci");
+                System.out.println("10) Effettua acquisto");
+                System.out.println("11) Effettua");
+                System.out.println("12) Esci");
 
                 Scanner scanner = new Scanner(System.in);
                 risposta = scanner.nextLine();
 
-                if (risposta.matches("[1-6]+")) {
+                if (risposta.matches("[1-9]|10")) {
                     break;
                 }
 
@@ -190,7 +191,7 @@ public class client {
                 default:
                     break;
             }
-            if (!risposta.equals("5") && !risposta.equals("7") && !risposta.equals("9")) {
+            if (!risposta.equals("5") && !risposta.equals("7") && !risposta.equals("9") && !risposta.equals("10")) {
                 out.println(risposta);
             }
 
@@ -221,6 +222,13 @@ public class client {
                 case 9:// Inserisci Shake al carrello
                     chooseShake();
                     c.viewItems();
+                    break;
+                case 10:// Invio a server di cancella cocktail e shake
+                    deleteShakeNCocktails();
+                    break;
+                case 11:// Invio a server di cancella cocktail
+                    break;
+                case 12:// Invio a server di cancella shake
                     break;
                 default:
                     break;
@@ -253,6 +261,56 @@ public class client {
         }
         System.out.println("Returno il drink");
         return drink;
+    }
+
+    void deleteShakeNCocktails() {
+        try {
+            List<String> cocktails = new ArrayList<>();
+            List<String> shakes = new ArrayList<>();
+
+            if (c.getCocktails().isEmpty() && c.getShakes().isEmpty()) {
+                System.out.println("Non ci sono n'è cocktail n'è shake nel carrello, acquisto non possibile");
+                return;
+            } else {
+                if (!c.getCocktails().isEmpty()) {
+                    for (Cocktail a : c.getCocktails()) {
+                        cocktails.add("1`" + a.getNome() + "`" + a.getQuantita());
+                    }
+                }
+
+                if (!c.getShakes().isEmpty()) {
+                    for (Shake b : c.getShakes()) {
+                        shakes.add("2`" + b.getNome() + "`" + b.getQuantita());
+                    }
+                }
+            }
+
+            out.println("8");
+            for (String c : cocktails) {
+                out.println(c);
+            }
+            Thread.sleep(500);
+            out.println("Fine");
+
+            while (input.readLine() != "Fine") {
+                clientSocket.setSoTimeout(3000);
+                System.out.println("Cancellazione in corso...");
+            }
+            if (input.readLine().equals("Fine")) {
+                System.out.println("Cancellazione completata");
+            } else {
+                System.out.println("Cancellazione non completata");
+            }
+
+            System.out.println("List: " + cocktails.toString());
+            System.out.println("List: " + shakes.toString());
+        } catch (IOException e) {
+            System.err.println("IOException durante la lettura: " + e.getMessage());
+        } catch (InterruptedException e) {
+            System.err.println("InterruptedException durante la sospensione del thread: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Errore durante la cancellazione dei drink e dei frullati: " + e.getMessage());
+        }
     }
 
     void chooseCocktail() {
@@ -339,7 +397,7 @@ public class client {
                     case 4:
                         System.out.println("L'utente non è loggato, quindi non può disconnettersi");
                         break;
-                    case 5:
+                    case 5:// Uscita dall'applicativo
                         return "";
                     default:
                         System.out.println("Numero non valido");
@@ -355,40 +413,6 @@ public class client {
         }
         return risposta;
     }
-
-    // String menuLoggato() {
-    // System.out.println("Scegli l'operazione che vuoi eseguire:");
-    // System.out.println("2) Login");
-    // System.out.println("3)Visualizza i Drink");
-    // System.out.println("4)Decrementa i Drink");
-    // System.out.println("5)Logout");
-
-    // try {
-    // String risposta = receive();
-    // switch (Integer.parseInt(risposta)) {
-    // case 2:
-    // risposta = receive();
-    // if (risposta.equals("OK")) {
-    // return "OK";
-    // }
-    // break;
-    // case 3:
-    // bufferedReceive();
-    // break;
-    // case 4:
-    // // decrementaDrink();
-    // case 5:
-    // closeConnection();
-    // break;
-    // default:
-    // System.out.println("Numero non valido");
-    // }
-    // } catch (IOException e) {
-    // System.err.println("Errore durante l'invio del comando: " + e.getMessage());
-    // } catch (NumberFormatException e) {
-    // System.err.println("Comando non valido: " + e.getMessage());
-    // }
-    // }
 
     void registration() {
         try {
