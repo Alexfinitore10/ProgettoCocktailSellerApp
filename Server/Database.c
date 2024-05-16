@@ -137,17 +137,20 @@ bool reduce_amount_cocktail(char *nome, int quantita) {
 
     PQexecParams(conn, reduce_amount_command, 2, NULL, paramValues,
                  paramLengths, paramFormats, 0);
+    log_debug("Quantità del drink %s diminuita correttamente di $d", nome,
+              quantita);
+    return true;
   }
 }
 // Same for cocktails
 bool reduce_amount_shake(char *nome, int quantita) {
 
-  if (is_shake_in_db(nome) == false) {
+  if (is_shake_in_db(nome) == false) {//controllo correttezza nome
     log_error("Il frullato %s non e' presente nel database\n", nome);
     return false;
   }
 
-  if (get_shake_amount(nome) < quantita) {
+  if (get_shake_amount(nome) < quantita) {//Controllo correttezza quantita
     log_error("Il frullato %s non e' disponibile\n", nome);
     return false;
   } else {
@@ -167,6 +170,8 @@ bool reduce_amount_shake(char *nome, int quantita) {
 
     PQexecParams(conn, reduce_amount_command, 2, NULL, paramValues,
                  paramLengths, paramFormats, 0);
+    log_debug("Quantità del frullato %s diminuita correttamente di $d", nome,
+              quantita);
   }
 }
 // Checks the result of the query -> Used in line in the "command" function
@@ -516,7 +521,6 @@ void insert_shake(char nome[], char ingredienti[], double prezzo,
 
   res = PQexecParams(conn, insert_shake_command, 4, NULL, paramValues,
                      paramLengths, paramFormats, 0);
-
   checkres(res);
 }
 
@@ -567,14 +571,16 @@ char *printQuery(PGresult *res) {
     }
     strcat(response, "\n");
   }
-
   // response[strlen(response) - 1] = '`';
 
   return response;
 }
 
-void close_connection() { PQfinish(conn); }
+void close_connection(){
+  PQclear(res);
+  PQfinish(conn);
 
-// char[1000] ingredienti = sprintf("%s;")
-// sprintf("%s, [%s], %f, %f, %d", nome, ingredienti, gradazione_alcolica,
-// prezzo, quantita)
+
+  // Free the memory allocated for the response string
+  free(res);
+}

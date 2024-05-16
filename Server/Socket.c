@@ -371,6 +371,7 @@ void startSocket() {
   close(new_sockfd);
 
   // Chiusura del socket server (non necessario in un ciclo infinito)
+  free_dictionary(dict);
   close(sockfd);
 }
 
@@ -389,6 +390,8 @@ void *receiveData(void *client_fd) {
               client_socket, res);
     if (res == -1) {
       log_error("%d", res);
+      break; // se res == -1, ci siamo bloccati su recv, quindi non possiamo più
+             // ricevere nulla, quindi esci dal loop
     } else if (res == 0) { // TODO: implement client disconnection
       handle_client_disconnection(client_socket); // disconnessione
       break;
@@ -442,12 +445,25 @@ int parseCommand(char toParse[], const int client_fd) {
     break;
   }
   case 8: {
-    log_info("Il cliente vuole confermare l'acquisto\n");
-    break;
+    log_info(
+        "Il cliente ha effettuato un acquisto di un drink e un frullato\n");
+    // TODO e a fa che chiama sia reduce shake che reduce cocktail
+    // Deve arrivare una stringa formattata così: [8`Mojito`2`Frullato
+    // Proteico`3`]
+    handle_remove_drink_and_shake(client_fd);
   }
   case 9: {
-
+    log_info("Il cliente ha effettuato un acquisto di un drink E BASTA\n");
+    // TODO richiama reduce amount cocktail
+    // Deve arrivare una stringa formattata così: [9`Mojito`2]
+    // handle_remove_cocktail(strtok(NULL, "`"), atoi(strtok(NULL, "`")));
     break;
+  }
+  case 10: {
+    log_info("Il cliente ha acquistato uno shake e basta");
+    // TODO reduce amount shake
+    // Deve arrivare una stringa formattata così: [10`Frullato Proteico`3]
+    // handle_remove_shake(strtok(NULL, "`"), atoi(strtok(NULL, "`")));
   }
   default:
     log_warn("Comando non riconosciuto\n");
@@ -568,6 +584,12 @@ void handle_get_all_cocktails(int client_fd) {
   free(cocktails);
 }
 
+void handle_remove_cocktail(char *nome, int quantita) {
+  if (reduce_amount_cocktail(nome, quantita) == false) {
+    log_error("C'è stato un errore nella rimozione del cocktail", nome);
+  }
+}
+
 void handle_get_all_shakes(int client_fd) {
   log_info("Il cliente vuole vedere tutti i frullati\n");
 
@@ -591,4 +613,68 @@ void handle_get_all_shakes(int client_fd) {
   log_debug("Stringa inviata e puntatore liberato");
 
   free(shakes);
+}
+
+/* void handle_remove_shake(char* nome, int quantita){
+  if(reduce_amount_shake(nome, quantita) == false){
+    log_error("Imposibile ridurre la quantità dei frullati");
+  }
+}
+ */
+void handle_remove_drink_and_shake(int client_fd) {
+  // devo far in modo di ricevere pacchetti continuamente da quando dice INICIO
+  // A QUANDO DICE FINE;
+  char buffer[MAX_BUFFER_SIZE] = {0};
+
+  while (strcmp(buffer, "Fine") != true) {
+    int res = recv(client_fd, buffer, MAX_BUFFER_SIZE, 0);
+    if (res > 0) {
+      if (strcmp(buffer, "Fine") == true) {
+        break;
+      }
+      log_debug("Stringa arrivata dal client: %s", buffer);
+
+      char *tipo = strtok(buffer, "`");
+      log_debug("tipo: %s", tipo);
+      char *name = strtok(NULL, "`");
+      log_debug("nome: %s", name);
+      char *quantita = strtok(NULL, "`");
+      log_debug("quantita: %s", quantita);
+      // distinguo se è un drink (1) o un shake (2)
+      if (strcmp(tipo, "1") == true) {
+        log_debug("Ricevuto un drink: %s, %d ", name, quantita);
+        /* if (reduce_amount_cocktail(name, quantita) == true) {
+          log_info("Il cocktail è stato rimosso dal database");
+        } else {
+          log_error("Errore durante la rimozione del drink");
+          return;
+        } */
+      } else if (strcmp(tipo, "2") == true) {
+        log_debug("Ricevuto un shake: %s, %d ", name, quantita);
+        /* if (reduce_amount_shake(name, quantita) == true) {
+          log_info("Lo shake è stato rimosso dal database");
+        } else {
+          log_error("Errore durante la rimozione dello shake");
+        } */
+      }
+    } else if (res == 0) {
+      log_error("Connessione col client chiusa");
+      close(client_fd);
+      return;
+    } else {
+      log_error("recv error: %s", strerror(errno));
+      return;
+    }
+    bzero(buffer, sizeof(buffer));
+  }
+}
+void handle_remove_shake(char *nome, int quantita) {
+  if (reduce_amount_shake(nome, quantita) == false) {
+    log_error("Imposibile ridurre la quantità dei frullati");
+  }
+}
+
+void free_dic() {
+  if (dict != NULL)
+    free_dictionary(dict);
 }
