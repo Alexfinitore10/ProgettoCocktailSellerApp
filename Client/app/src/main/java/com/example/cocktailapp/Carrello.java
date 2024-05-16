@@ -7,10 +7,17 @@ public class Carrello {
     private List<Cocktail> cocktails;
     private List<Shake> shakes;
 
-    public Carrello(List<Cocktail> cocktails, List<Shake> shakes) {
-        this.cocktails = cocktails;
-        this.shakes = shakes;
+    private static final Carrello istanza = new Carrello();
+
+    private Carrello() {
+        cocktails = new ArrayList<>();
+        shakes = new ArrayList<>();
     }
+
+    public static Carrello getInstance() {
+        return istanza;
+    }
+
 
     // Aggiungi un cocktail al carrello
     public void addCocktail(Cocktail cocktail) {

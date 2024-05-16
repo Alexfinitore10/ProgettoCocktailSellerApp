@@ -3,17 +3,19 @@ package com.example.cocktailapp;
 import java.util.List;
 
 public class CartLayoutClass {
-    private List<Bevanda> bevande;
+    private List<Cocktail> cocktails;
+    private List<Shake> shakes;
 
-    public CartLayoutClass(List<Bevanda> bevande) {
-        this.bevande = bevande;
+    public CartLayoutClass(List<Cocktail> cocktails, List<Shake> shakes) {
+        this.cocktails = cocktails;
+        this.shakes = shakes;
     }
 
-    public List<Bevanda> getBevande() {
-        return bevande;
+    public List<Cocktail> getCocktails() {
+        return cocktails;
     }
 
-    public void setBevande(List<Bevanda> bevande) {
-        this.bevande = bevande;
+    public List<Shake> getShakes() {
+        return shakes;
     }
 }

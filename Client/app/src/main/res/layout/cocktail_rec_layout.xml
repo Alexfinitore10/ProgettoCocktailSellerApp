@@ -1,11 +1,13 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cocktailCardView"
     android:layout_width="match_parent"
     android:layout_height="400dp"
     android:layout_margin="5dp"
     app:cardCornerRadius="10dp"
     app:cardElevation="10dp">
+
 
 
     <Button
@@ -84,4 +86,8 @@
 
     </LinearLayout>
 
+
+
+
 </androidx.cardview.widget.CardView>
+

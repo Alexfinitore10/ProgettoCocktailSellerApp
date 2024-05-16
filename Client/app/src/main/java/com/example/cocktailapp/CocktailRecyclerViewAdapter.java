@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -21,6 +22,8 @@ public class CocktailRecyclerViewAdapter extends RecyclerView.Adapter <CocktailR
     private ArrayList<CocktailLayoutClass> cocktailLayoutArrayList;
     private Context context;
     private ArrayList<Cocktail> cocktailList;
+
+
 
 
     public CocktailRecyclerViewAdapter(ArrayList<CocktailLayoutClass> cocktailLayoutArrayList, Context context, ArrayList<Cocktail> cocktailList) {
@@ -43,7 +46,7 @@ public class CocktailRecyclerViewAdapter extends RecyclerView.Adapter <CocktailR
     public void onBindViewHolder(@NonNull CocktailRecyclerViewAdapter.ViewHolder holder, int position) {
         CocktailLayoutClass cocktailLayoutClass = cocktailLayoutArrayList.get(position);
         int image_id = getImageID(cocktailLayoutArrayList.get(position).getNome());
-
+        holder.setPosition(position);
 
 
         String ingredienti = cocktailLayoutClass.getIngredienti().toString();
@@ -62,6 +65,8 @@ public class CocktailRecyclerViewAdapter extends RecyclerView.Adapter <CocktailR
         holder.SpinnerInitializer(holder.amountSpinner, position, holder.itemView.getContext());
 
     }
+
+
 
     @Override
     public int getItemCount() {
@@ -112,7 +117,12 @@ public class CocktailRecyclerViewAdapter extends RecyclerView.Adapter <CocktailR
         private Button addButton;
         private Spinner amountSpinner;
         private ImageView cocktailImage;
+        private int position;
+        private int selectedAmount;
 
+        public void setPosition(int position) {
+            this.position = position;
+        }
 
         TextView cocktailName, cocktailPrice, alcoholVolume, cocktailIngredients;
         public ViewHolder(@NonNull View itemView) {
@@ -125,12 +135,17 @@ public class CocktailRecyclerViewAdapter extends RecyclerView.Adapter <CocktailR
             alcoholVolume = itemView.findViewById(R.id.alcohol_volume);
             cocktailIngredients = itemView.findViewById(R.id.cocktail_ingredients);
             amountSpinner = itemView.findViewById(R.id.amountSpinner);
+            Carrello carrello = Carrello.getInstance();
 
-
-            
 
             addButton.setOnClickListener(v -> {
-                Log.d("onBindViewHolder: ","Sto nel addButton listener");
+                Cocktail cocktail = cocktailList.get(position);
+                selectedAmount = amountSpinner.getSelectedItemPosition();
+                cocktail.setQuantita(selectedAmount);
+                carrello.addCocktail(cocktail);
+                Toast.makeText(itemView.getContext(), "Cocktail aggiunto al carrello", Toast.LENGTH_SHORT).show();
+                carrello.viewItems();
+
             });
         }
 

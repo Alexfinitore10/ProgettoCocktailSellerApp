@@ -14,6 +14,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -24,7 +25,7 @@ public class ShopActivity extends AppCompatActivity {
     private ViewPager2 viewPager;
 
     private PagerAdapter adapter;
-    private int backButtonCount = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,52 +71,35 @@ public class ShopActivity extends AppCompatActivity {
             }
         }).attach();
 
-        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                backButtonCount++;
-                int position = viewPager.getCurrentItem();
-                // Show the pop-up dialog if the back button has been pressed 3 times
-                if (backButtonCount == 3 && position == 0) {
-                    showLogoutDialog(client);
-                    backButtonCount = 0;
-                }
-
-                if(position > 0){
-                    viewPager.setCurrentItem(position - 1);
-                }
-
-            }
-        });
 
 
     }
 
-    private void showLogoutDialog(Client client) {
-        // Create a pop-up dialog
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Log Out")
-                .setMessage("Vuoi davvero disconnetterti?")
-                .setPositiveButton("Si", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        client.setLogged(false);
-                        startActivity(new Intent(ShopActivity.this, LoginActivity.class));
-                    }
-                })
-                .setNegativeButton("No", null);
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
-
-        // Change the color of the positive button
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.parseColor("#F98500"));
-
-        // Change the color of the negative button
-        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.parseColor("#F98500"));
-
-
-    }
+//    private void showLogoutDialog(Client client) {
+//        // Create a pop-up dialog
+//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//        builder.setTitle("Log Out")
+//                .setMessage("Vuoi davvero disconnetterti?")
+//                .setPositiveButton("Si", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        client.setLogged(false);
+//                        startActivity(new Intent(ShopActivity.this, LoginActivity.class));
+//                    }
+//                })
+//                .setNegativeButton("No", null);
+//
+//        AlertDialog dialog = builder.create();
+//        dialog.show();
+//
+//        // Change the color of the positive button
+//        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.parseColor("#F98500"));
+//
+//        // Change the color of the negative button
+//        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.parseColor("#F98500"));
+//
+//
+//    }
 
 
 

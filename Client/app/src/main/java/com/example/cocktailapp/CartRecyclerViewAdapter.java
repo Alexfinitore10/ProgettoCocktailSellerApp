@@ -32,7 +32,6 @@ public class CartRecyclerViewAdapter extends RecyclerView.Adapter <CartRecyclerV
     public void onBindViewHolder(@NonNull CartRecyclerViewAdapter.ViewHolder holder, int position) {
         CartLayoutClass cartLayoutClass = cartLayoutClassArrayList.get(position);
 
-
     }
 
     @Override
@@ -40,8 +39,11 @@ public class CartRecyclerViewAdapter extends RecyclerView.Adapter <CartRecyclerV
         return cartLayoutClassArrayList.size();
     }
 
+
+
     public class ViewHolder extends RecyclerView.ViewHolder{
         TextView beverageName,beveragePrice,beverageAlcoholVolume,beverageIngredients,beverageQuantity;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
@@ -49,6 +51,7 @@ public class CartRecyclerViewAdapter extends RecyclerView.Adapter <CartRecyclerV
             beveragePrice = itemView.findViewById(R.id.beverage_price);
             beverageAlcoholVolume = itemView.findViewById(R.id.alcohol_volume_opt);
             beverageIngredients = itemView.findViewById(R.id.beverage_ingredients);
+            beverageQuantity = itemView.findViewById(R.id.beverage_quantity);
         }
     }
 }

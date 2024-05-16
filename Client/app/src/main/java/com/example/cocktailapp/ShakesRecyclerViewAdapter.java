@@ -1,6 +1,7 @@
 package com.example.cocktailapp;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -38,6 +40,7 @@ public class ShakesRecyclerViewAdapter extends RecyclerView.Adapter<ShakesRecycl
     @Override
     public void onBindViewHolder(@NonNull ShakesRecyclerViewAdapter.ViewHolder holder, int position) {
         ShakesLayoutClass shakesLayoutClass = shakeslayoutlist.get(position);
+        holder.setPosition(position);
         String ingredienti = shakesLayoutClass.getIngredienti().toString();
         String PrezzoShake = String.valueOf(shakesLayoutClass.getPrezzo());
         int imageID = getImageID(shakeslayoutlist.get(position).getNome());
@@ -87,6 +90,13 @@ public class ShakesRecyclerViewAdapter extends RecyclerView.Adapter<ShakesRecycl
         private Button addButton;
         private Spinner amountSpinner;
         private ImageView imageView;
+        private int position;
+        private int selectedAmount;
+
+        public void setPosition(int position) {
+            this.position = position;
+        }
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
@@ -96,8 +106,18 @@ public class ShakesRecyclerViewAdapter extends RecyclerView.Adapter<ShakesRecycl
             shakeName = itemView.findViewById(R.id.shake_name);
             shakePrice = itemView.findViewById(R.id.shake_price);
             shakeIngredients = itemView.findViewById(R.id.shake_ingredients);
+            Carrello carrello = Carrello.getInstance();
 
 
+            addButton.setOnClickListener(v -> {
+                Shake shake = shakeslist.get(position);
+                selectedAmount = amountSpinner.getSelectedItemPosition();
+                shake.setQuantita(selectedAmount);
+                carrello.addShake(shake);
+                Toast.makeText(itemView.getContext(), "Frullato aggiunto al carrello", Toast.LENGTH_SHORT).show();
+                Log.d("addButton Shakes", "Frullato aggiunto al carrello");
+                carrello.viewItems();
+            });
         }
 
         private void SpinnerInitializer(Spinner spinner,int position, Context context) {
@@ -118,5 +138,7 @@ public class ShakesRecyclerViewAdapter extends RecyclerView.Adapter<ShakesRecycl
 
             spinner.setAdapter(adapter);
         }
+
+
     }
 }
