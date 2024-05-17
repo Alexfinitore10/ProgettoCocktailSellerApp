@@ -34,7 +34,7 @@ void insert_dictionary(Dictionary *dict, int key, const char *value) {
 }
 
 // Funzione per cercare un valore dato una chiave nel dizionario
-const char *search_dictionary(Dictionary *dict, int key) {
+const char *search_dictionary(Dictionary *dict, const int key) {
   Node *current = dict->head;
   while (current != NULL) {
     if (current->key == key) {

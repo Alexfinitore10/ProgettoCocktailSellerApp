@@ -1,6 +1,7 @@
 #include "Database.h"
 #include "log.h"
 #include <libpq-fe.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -11,6 +12,40 @@ int id_vendita = 0;
 char *feedback = "";
 char *error_response = "";
 char *firstdbcommand =
+    "CREATE TABLE IF NOT EXISTS Cliente ("
+    "email VARCHAR(255) PRIMARY KEY, "
+    "password VARCHAR(255) NOT NULL, "
+    "isLogged BOOLEAN NOT NULL DEFAULT false"
+    "); "
+    "CREATE TABLE IF NOT EXISTS Cocktail ("
+    "nome VARCHAR(255) PRIMARY KEY, "
+    "ingredienti VARCHAR(1000) NOT NULL, "
+    "gradazione_alcolica DOUBLE PRECISION, "
+    "prezzo DOUBLE PRECISION, "
+    "quantita INTEGER"
+    "); "
+    "CREATE TABLE IF NOT EXISTS Frullato ("
+    "nome VARCHAR(255) PRIMARY KEY, "
+    "ingredienti VARCHAR(1000) NOT NULL, "
+    "prezzo DOUBLE PRECISION, "
+    "quantita INTEGER"
+    "); "
+    "CREATE TABLE IF NOT EXISTS Vendite ("
+    "id SERIAL PRIMARY KEY, "
+    "cliente_id VARCHAR(255), "
+    "prodotto_id VARCHAR(255), "
+    "prodotto_tipo VARCHAR(50), "
+    "quantita INTEGER NOT NULL DEFAULT 1,"
+    "data_vendita TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+    "CONSTRAINT cliente_fk FOREIGN KEY (cliente_id) REFERENCES Cliente "
+    "(email), "
+    "CONSTRAINT cocktail_fk FOREIGN KEY (prodotto_id) REFERENCES Cocktail "
+    "(nome), "
+    "CONSTRAINT frullato_fk FOREIGN KEY (prodotto_id) REFERENCES Frullato "
+    "(nome)"
+    ");";
+
+char *oldfirstdbcommand =
     "CREATE TABLE IF NOT EXISTS Cliente(email VARCHAR(255) PRIMARY KEY, password VARCHAR(255) NOT NULL, isLogged BOOLEAN NOT NULL DEFAULT false);\
                         CREATE TABLE IF NOT EXISTS Cocktail(nome VARCHAR(255) PRIMARY KEY, ingredienti VARCHAR(1000) NOT NULL, gradazione_alcolica DOUBLE PRECISION , prezzo DOUBLE PRECISION , quantita INTEGER);\
                         CREATE TABLE IF NOT EXISTS Frullato(nome VARCHAR(255) PRIMARY KEY, ingredienti VARCHAR(1000) NOT NULL, prezzo DOUBLE PRECISION , quantita INTEGER);\
@@ -358,7 +393,7 @@ bool is_shake_in_db(char *nome) {
   }
 }
 
-bool is_cliente_in_db(char *email) {
+bool is_cliente_in_db(const char *email) {
 
   char *is_cliente_in_db_command = "SELECT email FROM Cliente WHERE email = $1";
 
@@ -472,35 +507,57 @@ bool are_credentials_correct(char *email, char *password) {
 }
 
 //
-bool create_sell(char *cliente_id, char *coctail_id) {
+bool create_sell(const char *cliente_id, char *bevanda_id, char *tipo,
+                 int quantita) {
   char *create_sell_command =
-      "INSERT INTO Vendite(id, cliente_id, cocktail_id) VALUES ($1, $2, $3)";
+      "INSERT INTO Vendite(cliente_id, prodotto_id, "
+      "prodotto_tipo, quantita) VALUES ($1, $2, $3, $4)";
 
   if (is_cliente_in_db(cliente_id) == false) {
     printf("Inserimento vendita fallito: cliente non registrato\n");
     return false;
   }
 
-  if (is_drink_in_db(coctail_id) == false) {
-    printf("Inserimento vendita fallito: cocktail non presente nel database\n");
+  const char *query_check = "SELECT 1 FROM Cocktail WHERE nome = $1 UNION ALL "
+                            "SELECT 1 FROM Frullato WHERE nome = $1";
+
+  // Esegui la query per verificare l'esistenza del nome del prodotto
+  PGresult *res_check =
+      PQexecParams(conn, query_check, 1, NULL, &bevanda_id, NULL, NULL, 0);
+
+  // Verifica se la query è stata eseguita correttamente
+  if (PQresultStatus(res_check) != PGRES_TUPLES_OK) {
+    fprintf(stderr, "Errore nell'esecuzione della query di verifica: %s\n",
+            PQerrorMessage(conn));
+    PQclear(res_check);
     return false;
   }
 
-  id_vendita = get_id_vendita() + 1;
+  if (strcmp(tipo, "Drink") == 0) {
+    if (is_drink_in_db(bevanda_id) == false) {
+      printf(
+          "Inserimento vendita fallito: cocktail non presente nel database\n");
+      return false;
+    }
 
-  char id_vendita_string[100];
+  } else if (strcmp(tipo, "Shake") == 0) {
+    if (is_shake_in_db(bevanda_id) == false) {
+      printf("Inserimento vendita fallito: shake non presente nel database\n");
+      return false;
+    }
+  } else {
+    printf("Inserimento vendita fallito: tipo non riconosciuto\n");
+    return false;
+  }
 
-  sprintf(id_vendita_string, "%d", id_vendita);
+  char quantita_str[10];
 
-  const char *paramValues[3] = {id_vendita_string, cliente_id, coctail_id};
+  snprintf(quantita_str, sizeof(quantita_str), "%d", quantita);
 
-  int paramLengths[3] = {strlen(id_vendita_string), strlen(cliente_id),
-                         strlen(coctail_id)};
+  const char *paramValues[4] = {cliente_id, bevanda_id, tipo, quantita_str};
 
-  int paramFormats[3] = {0, 0, 0};
-
-  res = PQexecParams(conn, create_sell_command, 3, NULL, paramValues,
-                     paramLengths, paramFormats, 0);
+  res = PQexecParams(conn, create_sell_command, 4, NULL, paramValues, NULL,
+                     NULL, 0);
 
   if (checkres(res)) {
     printf("Inserimento vendita effettuato con successo\n");

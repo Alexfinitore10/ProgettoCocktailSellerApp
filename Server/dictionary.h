@@ -23,7 +23,7 @@ void insert_dictionary(Dictionary *dict, int key, const char *value);
 const char *search_dictionary(Dictionary *dict, int key);
 
 // Funzione per rimuovere una coppia chiave-valore dal dizionario
-void remove_dictionary(Dictionary *dict, int key);
+void remove_dictionary(Dictionary *dict, const int key);
 
 // Funzione per deallocare la memoria utilizzata dal dizionario
 void free_dictionary(Dictionary *dict);

@@ -24,6 +24,6 @@ void handle_signin(int client_fd, char *email, char *password);
 void handle_signup(int client_fd, char *email, char *password);
 void handle_get_all_cocktails(int client_fd);
 void handle_get_all_shakes(int client_fd);
-void handle_remove_drink_and_shake();
+void handle_remove_drink_and_shake(int);
 void free_dic();
 //  Add function prototypes for remaining cases (5, 6, 7, 8)

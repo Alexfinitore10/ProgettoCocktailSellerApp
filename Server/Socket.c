@@ -622,7 +622,7 @@ void handle_get_all_shakes(int client_fd) {
   }
 }
  */
-void handle_remove_drink_and_shake(int client_fd) {
+void handle_remove_drink_and_shake(const int client_fd) {
   // devo far in modo di ricevere pacchetti continuamente da quando dice INICIO
   // A QUANDO DICE FINE;
   char buffer[MAX_BUFFER_SIZE] = {0};
@@ -648,15 +648,30 @@ void handle_remove_drink_and_shake(int client_fd) {
       if (strcmp(tipo, "1") == 0) {
         log_debug("Ricevuto un drink: %s, %d ", name, atoi(quantita));
 
-        reduce_amount_cocktail(name, atoi(quantita));
-        
+        // Creo la vendita
+        if (create_sell(search_dictionary(dict, client_fd), name, "Drink",
+                        atoi(quantita)) == true) {
+          log_debug("Creazione vendita del drink andata a buon fine");
+          reduce_amount_cocktail(name, atoi(quantita));
+        } else {
+          log_error("Errore nella creazione della vendita del drink");
+        }
+
         int send_result = send(client_fd, "Fine\n", strlen("Fine\n"), 0);
         if (send_result == -1) {
           log_error("send error: %s", strerror(errno));
         }
       } else if (strcmp(tipo, "2") == 0) {
         log_debug("Ricevuto un shake: %s, %d ", name, atoi(quantita));
-        reduce_amount_shake(name, atoi(quantita));
+
+        // Creo la vendita
+        if (create_sell(search_dictionary(dict, client_fd), name, "Shake",
+                        atoi(quantita)) == true) {
+          log_debug("Creazione vendita dello shake andata a buon fine");
+          reduce_amount_shake(name, atoi(quantita));
+        } else {
+          log_error("Errore nella creazione della vendita dello shake");
+        }
       }
     } else if (res == 0) {
       log_error("Connessione col client chiusa");
