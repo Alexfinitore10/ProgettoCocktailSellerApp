@@ -647,23 +647,16 @@ void handle_remove_drink_and_shake(int client_fd) {
 
       if (strcmp(tipo, "1") == 0) {
         log_debug("Ricevuto un drink: %s, %d ", name, atoi(quantita));
-        /* if (reduce_amount_cocktail(name, quantita) == true) {
-          log_info("Il cocktail è stato rimosso dal database");
-        } else {
-          log_error("Errore durante la rimozione del drink");
-          return;
-        } */
+
+        reduce_amount_cocktail(name, atoi(quantita));
+        
         int send_result = send(client_fd, "Fine\n", strlen("Fine\n"), 0);
         if (send_result == -1) {
           log_error("send error: %s", strerror(errno));
         }
       } else if (strcmp(tipo, "2") == 0) {
         log_debug("Ricevuto un shake: %s, %d ", name, atoi(quantita));
-        /* if (reduce_amount_shake(name, quantita) == true) {
-          log_info("Lo shake è stato rimosso dal database");
-        } else {
-          log_error("Errore durante la rimozione dello shake");
-        } */
+        reduce_amount_shake(name, atoi(quantita));
       }
     } else if (res == 0) {
       log_error("Connessione col client chiusa");

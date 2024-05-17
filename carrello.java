@@ -11,12 +11,14 @@ public class carrello {
     }
 
     // Aggiungi un cocktail al carrello
-    public void addCocktail(Cocktail cocktail) {
+    public void addCocktail(Cocktail cocktail, int quantity) {
+        cocktail.setQuantita(quantity);
         cocktails.add(cocktail);
     }
 
     // Aggiungi uno shake al carrello
-    public void addShake(Shake shake) {
+    public void addShake(Shake shake, int quantity) {
+        shake.setQuantita(quantity);
         shakes.add(shake);
     }
 
@@ -30,7 +32,6 @@ public class carrello {
         return shakes;
     }
 
-    
     // svuota il carrello
     public void emptyCarrello() {
         if (!cocktails.isEmpty()) {

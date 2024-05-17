@@ -36,6 +36,13 @@ public class Shake {
         return quantita;
     }
 
+    
+    // Setter per il campo "quantita"
+    public void setQuantita(int quantita) {
+        this.quantita = quantita;
+    }
+    
+
     // Parse della tringa da Server
     public static Shake parseString(String input) {
         String[] parts = input.split(", ");

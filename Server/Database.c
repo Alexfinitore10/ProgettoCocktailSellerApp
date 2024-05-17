@@ -1,6 +1,8 @@
 #include "Database.h"
 #include "log.h"
+#include <libpq-fe.h>
 #include <stdio.h>
+#include <string.h>
 
 // Variables
 PGconn *conn;
@@ -113,44 +115,51 @@ bool command(char *comando) {
 bool reduce_amount_cocktail(char *nome, int quantita) {
 
   if (is_drink_in_db(nome) == false) {
-    log_error("Il cocktail %s non e' presente nel database\n", nome);
-    return false; // Perchè?
+    log_error("Il cocktail %s non e' presente nel database", nome);
+    return false; // Perchè?M
   }
 
   if (get_cocktail_amount(nome) < quantita) {
-    log_error("Il cocktail %s non e' disponibile\n", nome);
+    log_error("Il cocktail %s non e' disponibile", nome);
     return false;
   } else {
 
-    char *reduce_amount_command =
-        "UPDATE Cocktail SET quantita = quantita - $1 WHERE nome = $2";
+    char reduce_amount_command[100];
 
-    char quantita_string[100];
+    snprintf(reduce_amount_command, sizeof(reduce_amount_command),
+             "UPDATE Cocktail SET quantita = quantita - $2 WHERE nome = $1");
 
-    log_debug(quantita_string, "%d", quantita);
+    char quantita_string[20];
 
-    const char *paramValues[2] = {quantita_string, nome};
+    // Utilizza snprintf per convertire l'intero in una stringa
+    snprintf(quantita_string, sizeof(quantita_string), "%d", quantita);
 
-    int paramLengths[2] = {strlen(quantita_string), strlen(nome)};
+    const char *paramValues[2] = {nome, quantita_string};
 
-    int paramFormats[2] = {0, 0};
+    int paramLengths[2] = {strlen(nome), sizeof(quantita)};
 
-    PQexecParams(conn, reduce_amount_command, 2, NULL, paramValues,
-                 paramLengths, paramFormats, 0);
-    log_debug("Quantità del drink %s diminuita correttamente di $d", nome,
-              quantita);
+    PGresult *res = PQexecParams(conn, reduce_amount_command, 2, NULL,
+                                 paramValues, paramLengths, NULL, 0);
+    if (PQresultStatus(res) == PGRES_COMMAND_OK) {
+      log_debug("Quantità del drink %s diminuita correttamente di %d", nome,
+                quantita);
+    } else {
+      log_error("Errore nella riduzione della quantità del drink %s: %s", nome,
+                PQerrorMessage(conn));
+    }
+    PQclear(res);
     return true;
   }
 }
 // Same for cocktails
 bool reduce_amount_shake(char *nome, int quantita) {
 
-  if (is_shake_in_db(nome) == false) {//controllo correttezza nome
+  if (is_shake_in_db(nome) == false) { // controllo correttezza nome
     log_error("Il frullato %s non e' presente nel database\n", nome);
     return false;
   }
 
-  if (get_shake_amount(nome) < quantita) {//Controllo correttezza quantita
+  if (get_shake_amount(nome) < quantita) { // Controllo correttezza quantita
     log_error("Il frullato %s non e' disponibile\n", nome);
     return false;
   } else {
@@ -160,18 +169,23 @@ bool reduce_amount_shake(char *nome, int quantita) {
 
     char quantita_string[100];
 
-    log_debug(quantita_string, "%d", quantita);
+    snprintf(quantita_string, sizeof(quantita_string), "%d", quantita);
 
     const char *paramValues[2] = {quantita_string, nome};
 
     int paramLengths[2] = {strlen(quantita_string), strlen(nome)};
 
-    int paramFormats[2] = {0, 0};
-
-    PQexecParams(conn, reduce_amount_command, 2, NULL, paramValues,
-                 paramLengths, paramFormats, 0);
-    log_debug("Quantità del frullato %s diminuita correttamente di $d", nome,
-              quantita);
+    PGresult *res = PQexecParams(conn, reduce_amount_command, 2, NULL,
+                                 paramValues, paramLengths, NULL, 0);
+    if (PQresultStatus(res) == PGRES_COMMAND_OK) {
+      log_debug("Quantità dello shake %s diminuita correttamente di %d", nome,
+                quantita);
+    } else {
+      log_error("Errore nella riduzione della quantità dello shakes %s: %s",
+                nome, PQerrorMessage(conn));
+    }
+    PQclear(res);
+    return true;
   }
 }
 // Checks the result of the query -> Used in line in the "command" function
@@ -576,10 +590,9 @@ char *printQuery(PGresult *res) {
   return response;
 }
 
-void close_connection(){
+void close_connection() {
   PQclear(res);
   PQfinish(conn);
-
 
   // Free the memory allocated for the response string
   free(res);

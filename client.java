@@ -338,12 +338,31 @@ public class client {
             for (i = 0; i < cock.size(); i++) {
                 System.out.println(i + ")" + cock.get(i).getNome());
             }
-            int indiceCocktail = scanner.nextInt();
-            if (indiceCocktail < cock.size()) {
-                c.addCocktail(cock.get(indiceCocktail));
-                System.out.println("Il cocktail è stato inserito nel carrello, ecco il nuovo carrello:");
-            } else {
-                System.out.println("Cocktail non disponibile");
+            int indiceCocktail;
+            do {
+                indiceCocktail = scanner.nextInt();
+                if (indiceCocktail < 0 || indiceCocktail >= cock.size()) {
+                    System.out.println("Indice non valido, reinserisci:");
+                    for (i = 0; i < cock.size(); i++) {
+                        System.out.println(i + ")" + cock.get(i).getNome());
+                    }
+                }
+            } while (indiceCocktail < 0 || indiceCocktail >= cock.size());
+
+            System.out.println("Il cocktail scelto è " + cock.get(indiceCocktail).getNome());
+
+            boolean valid = false;
+            while (!valid) {
+                System.out.println("Quanti cocktail vuoi aggiungere?");
+                int q = scanner.nextInt();
+                if (q < 0) {
+                    System.out.println("I cocktails non possono essere minore di 0");
+                } else if (q > cock.get(indiceCocktail).getQuantita()) {
+                    System.out.println("La quantita' inserita' e' maggiore della quantita' disponibile del cocktail");
+                } else {
+                    c.addCocktail(cock.get(indiceCocktail), q);
+                    valid = true;
+                }
             }
         } catch (Exception e) {
             System.err.println("IOException durante la lettura: " + e.getMessage());
@@ -359,13 +378,33 @@ public class client {
             for (i = 0; i < shake.size(); i++) {
                 System.out.println(i + ")" + shake.get(i).getNome());
             }
-            int indiceShake = scanner.nextInt();
-            if (indiceShake < shake.size()) {
-                c.addShake(shake.get(indiceShake));
-                System.out.println("Lo shake è stato inserito nel carrello, ecco il nuovo carrello:");
-            } else {
-                System.out.println("Frullato non disponibile");
+            int indiceShake;
+            do {
+                indiceShake = scanner.nextInt();
+                if (indiceShake < 0 || indiceShake >= shake.size()) {
+                    System.out.println("Indice non valido, reinserisci:");
+                    for (i = 0; i < shake.size(); i++) {
+                        System.out.println(i + ")" + shake.get(i).getNome());
+                    }
+                }
+            } while (indiceShake < 0 || indiceShake >= shake.size());
+
+            System.out.println("Lo shake scelto è " + shake.get(indiceShake).getNome());
+
+            boolean valid = false;
+            while (!valid) {
+                System.out.println("Quanti shake vuoi aggiungere?");
+                int q = scanner.nextInt();
+                if (q < 0) {
+                    System.out.println("Gli shakes non possono essere minore di 0");
+                } else if (q > shake.get(indiceShake).getQuantita()) {
+                    System.out.println("La quantita' inserita' e' maggiore della quantita' disponibile dello shake");
+                } else {
+                    c.addShake(shake.get(indiceShake), q);
+                    valid = true;
+                }
             }
+
         } catch (Exception e) {
             System.err.println("IOException durante la lettura: " + e.getMessage());
         }
