@@ -1,5 +1,6 @@
 package com.example.cocktailapp;
 
+
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,17 +24,11 @@ public class CocktailRecyclerViewAdapter extends RecyclerView.Adapter <CocktailR
     private Context context;
     private ArrayList<Cocktail> cocktailList;
 
-
-
-
     public CocktailRecyclerViewAdapter(ArrayList<CocktailLayoutClass> cocktailLayoutArrayList, Context context, ArrayList<Cocktail> cocktailList) {
         this.cocktailLayoutArrayList = cocktailLayoutArrayList;
         this.context = context;
         this.cocktailList = cocktailList;
     }
-
-
-
 
     @NonNull
     @Override
@@ -67,11 +62,12 @@ public class CocktailRecyclerViewAdapter extends RecyclerView.Adapter <CocktailR
     }
 
 
-
     @Override
     public int getItemCount() {
         return cocktailLayoutArrayList.size();
     }
+
+
 
     private int getImageID(String nome) {
         int imageResId;
@@ -113,12 +109,18 @@ public class CocktailRecyclerViewAdapter extends RecyclerView.Adapter <CocktailR
     }
 
 
+
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         private Button addButton;
         private Spinner amountSpinner;
         private ImageView cocktailImage;
         private int position;
         private int selectedAmount;
+
+
+
+
 
         public void setPosition(int position) {
             this.position = position;
@@ -134,20 +136,22 @@ public class CocktailRecyclerViewAdapter extends RecyclerView.Adapter <CocktailR
             cocktailPrice = itemView.findViewById(R.id.cocktail_price);
             alcoholVolume = itemView.findViewById(R.id.alcohol_volume);
             cocktailIngredients = itemView.findViewById(R.id.cocktail_ingredients);
-            amountSpinner = itemView.findViewById(R.id.amountSpinner);
+            amountSpinner = itemView.findViewById(R.id.cocktailAmountSpinner);
             Carrello carrello = Carrello.getInstance();
 
-
             addButton.setOnClickListener(v -> {
+
                 Cocktail cocktail = cocktailList.get(position);
-                selectedAmount = amountSpinner.getSelectedItemPosition();
+                selectedAmount = amountSpinner.getSelectedItemPosition() + 1;
                 cocktail.setQuantita(selectedAmount);
-                carrello.addCocktail(cocktail);
+                carrello.addBeverage(cocktail);
+                carrello.setCartModified(true);
                 Toast.makeText(itemView.getContext(), "Cocktail aggiunto al carrello", Toast.LENGTH_SHORT).show();
                 carrello.viewItems();
-
             });
         }
+
+
 
         void SpinnerInitializer(Spinner spinner,int position,Context context) {
             int amount = cocktailList.get(position).getQuantita();
@@ -167,9 +171,10 @@ public class CocktailRecyclerViewAdapter extends RecyclerView.Adapter <CocktailR
             spinner.setAdapter(adapter);
         }
 
+
+
+
     }
-
-
 
 
 }

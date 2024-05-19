@@ -1,13 +1,10 @@
 package com.example.cocktailapp;
 
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Color;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -15,7 +12,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,13 +24,13 @@ import java.util.ArrayList;
  * create an instance of this fragment.
  */
 public class CocktailFragment extends Fragment {
-    private CocktailRecyclerViewAdapter adapter;
+    private CocktailRecyclerViewAdapter cocktailRecyclerViewAdapter;
     private ArrayList<CocktailLayoutClass> list;
     private RecyclerView recyclerView;
     private Client client;
     private ArrayList<Cocktail> cocktails;
     private String allCocktails;
-    private int backButtonCount = 0;
+    private Carrello carrello;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -90,6 +86,7 @@ public class CocktailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        carrello = Carrello.getInstance();
         client = Client.getIstanza();
         list = new ArrayList<>();
         cocktails = new ArrayList<>();
@@ -116,8 +113,8 @@ public class CocktailFragment extends Fragment {
         }
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new CocktailRecyclerViewAdapter(list,getContext(),cocktails);
-        recyclerView.setAdapter(adapter);
+        cocktailRecyclerViewAdapter = new CocktailRecyclerViewAdapter(list,getContext(),cocktails);
+        recyclerView.setAdapter(cocktailRecyclerViewAdapter);
 
 
 
@@ -129,9 +126,34 @@ public class CocktailFragment extends Fragment {
         return client.bufferedReceive();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // Ottieni l'istanza di SharedPreferences
+        SharedPreferences prefs = getActivity().getSharedPreferences("coming Cocktail Flag", Context.MODE_PRIVATE);
+
+        // Controlla se stai tornando da CartFragment
+        boolean comingFromCartFragment = prefs.getBoolean("comingFromCartFragment", false);
+
+        if (comingFromCartFragment) {
+            Log.d("resume Cocktail Frag","Prima di aggiornare lastSize:" + carrello.getLastSize());
+            carrello.setLastSize(carrello.getBeverages().size());
+            Log.d("resume Cocktail Frag","Dopo aggiornamento lastSize:" + carrello.getLastSize());
+
+
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean("comingFromCartFragment", false);
+            editor.apply();
+        }
 
 
 
+
+
+
+
+    }
 
 
 }

@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 
-public abstract class Bevanda {
+public class Bevanda {
     private String nome;
     private double prezzo;
     private List<String> ingredienti;
@@ -18,12 +18,6 @@ public abstract class Bevanda {
     }
 
     protected Bevanda() {
-    }
-
-    @NonNull
-    @Override
-    public String toString() {
-        return super.toString();
     }
 
     public String getNome() {
@@ -56,6 +50,15 @@ public abstract class Bevanda {
 
     public void setQuantita(int quantita) {
         this.quantita = quantita;
+    }
+
+    public Boolean isCocktail(Bevanda bevanda) {
+        if(bevanda instanceof Cocktail){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 }
 

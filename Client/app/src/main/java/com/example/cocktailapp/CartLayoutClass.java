@@ -1,21 +1,21 @@
 package com.example.cocktailapp;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CartLayoutClass {
-    private List<Cocktail> cocktails;
-    private List<Shake> shakes;
+    private Bevanda bevanda;
 
-    public CartLayoutClass(List<Cocktail> cocktails, List<Shake> shakes) {
-        this.cocktails = cocktails;
-        this.shakes = shakes;
+    public CartLayoutClass(Bevanda bevanda) {
+        this.bevanda = bevanda;
     }
 
-    public List<Cocktail> getCocktails() {
-        return cocktails;
+    public Bevanda getBevanda() {
+        return bevanda;
     }
 
-    public List<Shake> getShakes() {
-        return shakes;
+    public void setBevanda(Bevanda bevanda) {
+        this.bevanda = bevanda;
     }
+
 }

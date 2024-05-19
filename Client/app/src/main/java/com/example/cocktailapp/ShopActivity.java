@@ -21,9 +21,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 
 public class ShopActivity extends AppCompatActivity {
     private TabLayout tabLayout;
-
     private ViewPager2 viewPager;
-
     private PagerAdapter adapter;
 
 
@@ -71,11 +69,9 @@ public class ShopActivity extends AppCompatActivity {
             }
         }).attach();
 
-
-
     }
 
-//    private void showLogoutDialog(Client client) {
+    //    private void showLogoutDialog(Client client) {
 //        // Create a pop-up dialog
 //        AlertDialog.Builder builder = new AlertDialog.Builder(this);
 //        builder.setTitle("Log Out")

@@ -1,12 +1,13 @@
 package com.example.cocktailapp;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Color;
+
+
+
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import androidx.activity.OnBackPressedCallback;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -20,58 +21,32 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ShakesFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class ShakesFragment extends Fragment {
     private ShakesRecyclerViewAdapter adapter;
     private ArrayList<ShakesLayoutClass> list;
     private RecyclerView recyclerView;
-    private int backButtonCount = 0;
     private Client client;
     private ArrayList<Shake> shakes;
     private String allShakes;
+    private Carrello carrello;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     public ShakesFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment NewShakesFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ShakesFragment newInstance(String param1, String param2) {
+
+    public static ShakesFragment newInstance() {
         ShakesFragment fragment = new ShakesFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
     }
 
     @Override
@@ -85,6 +60,7 @@ public class ShakesFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        carrello = Carrello.getInstance();
         client = Client.getIstanza();
         list = new ArrayList<>();
         shakes = new ArrayList<>();
@@ -125,4 +101,24 @@ public class ShakesFragment extends Fragment {
         client.sendData(command);
         return client.bufferedReceive();
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // Ottieni l'istanza di SharedPreferences
+        SharedPreferences prefs = getActivity().getSharedPreferences("Coming Shake Flag", Context.MODE_PRIVATE);
+
+        // Controlla se stai tornando da CartFragment
+        boolean comingFromCartFragment = prefs.getBoolean("comingFromCartFragment", false);
+
+        if (comingFromCartFragment) {
+            carrello.setLastSize(carrello.getBeverages().size());
+
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean("comingFromCartFragment", false);
+            editor.apply();
+        }
+    }
+
 }

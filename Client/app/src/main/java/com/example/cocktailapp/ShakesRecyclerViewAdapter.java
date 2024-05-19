@@ -21,7 +21,6 @@ import java.util.List;
 public class ShakesRecyclerViewAdapter extends RecyclerView.Adapter<ShakesRecyclerViewAdapter.ViewHolder>{
     private ArrayList<ShakesLayoutClass> shakeslayoutlist;
     private Context context;
-
     private ArrayList<Shake> shakeslist;
 
     public ShakesRecyclerViewAdapter(ArrayList<ShakesLayoutClass> shakeslayoutlist, Context context, ArrayList<Shake> shakeslist) {
@@ -85,6 +84,8 @@ public class ShakesRecyclerViewAdapter extends RecyclerView.Adapter<ShakesRecycl
         return imageResId;
     }
 
+
+
     public class ViewHolder extends RecyclerView.ViewHolder{
         TextView shakeName, shakePrice, shakeIngredients;
         private Button addButton;
@@ -110,13 +111,15 @@ public class ShakesRecyclerViewAdapter extends RecyclerView.Adapter<ShakesRecycl
 
 
             addButton.setOnClickListener(v -> {
+                Log.d("addButton shake listen", "Entro con Lastsize: "+carrello.getBeverages().size()+ " e size: "+carrello.getBeverages().size());
                 Shake shake = shakeslist.get(position);
                 selectedAmount = amountSpinner.getSelectedItemPosition();
                 shake.setQuantita(selectedAmount);
-                carrello.addShake(shake);
+                carrello.addBeverage(shake);
+                carrello.setCartModified(true);
                 Toast.makeText(itemView.getContext(), "Frullato aggiunto al carrello", Toast.LENGTH_SHORT).show();
-                Log.d("addButton Shakes", "Frullato aggiunto al carrello");
                 carrello.viewItems();
+                Log.d("addButton shake listen", "Esco con Lastsize: "+carrello.getLastSize()+ " e size: "+carrello.getBeverages().size());
             });
         }
 
