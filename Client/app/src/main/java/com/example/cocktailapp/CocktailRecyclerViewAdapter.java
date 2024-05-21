@@ -172,7 +172,7 @@ public class CocktailRecyclerViewAdapter extends RecyclerView.Adapter <CocktailR
 
 
 
-        void SpinnerInitializer(Spinner spinner,int position,Context context) {
+        private void SpinnerInitializer(Spinner spinner,int position,Context context) {
             int amount = cocktailList.get(position).getQuantita();
         
 

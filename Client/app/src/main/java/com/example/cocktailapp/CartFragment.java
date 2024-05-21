@@ -39,6 +39,11 @@ public class CartFragment extends Fragment {
     private ArrayList<CartLayoutClass> list;
     private RecyclerView recyclerView;
     private Carrello carrello;
+    private ArrayList<Cocktail> cocktailList;
+    private ArrayList<Shake> shakeList;
+    private Client client;
+    private String allCocktails;
+    private String allShakes;
 
     public CartFragment() {
         // Required empty public constructor
@@ -70,15 +75,61 @@ public class CartFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         carrello = Carrello.getInstance();
+        client = Client.getIstanza();
+        cocktailList = new ArrayList<>();
+        shakeList = new ArrayList<>();
+
+
+        Runnable getCocktailsTask = () -> allCocktails = getAllCocktails(client);
+        Thread getCocktailsThread = new Thread(getCocktailsTask);
+        getCocktailsThread.start();
+        Runnable getShakesTask = () -> allShakes = getAllShakes(client);
+        Thread getShakesThread = new Thread(getShakesTask);
+        getShakesThread.start();
+
+        try {
+            getCocktailsThread.join();
+        } catch (InterruptedException e) {
+            Log.e("onViewCreated CartFragment","Errore nella join del thread getCocktails: " + e.getMessage());
+        }
+
+        try{
+            getShakesThread.join();
+        }catch(InterruptedException e){
+            Log.e("onViewCreated CartFragment","Errore nella join del thread getShakes: " + e.getMessage());
+        }
+
+        for (String c : allCocktails.split("\\n")) {
+            cocktailList.add(Cocktail.parseString(c));
+        }
+
+        for (String s : allShakes.split("\\n")) {
+            shakeList.add(Shake.parseString(s));
+        }
+
+
+
         list = new ArrayList<>();
         recyclerView = view.findViewById(R.id.CartRecycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new CartRecyclerViewAdapter(list,getContext());
+        adapter = new CartRecyclerViewAdapter(list,getContext(),cocktailList,shakeList);
         recyclerView.setAdapter(adapter);
 
 
 
     }
+    private String getAllCocktails(Client client){
+        String command = "3";
+        client.sendData(command);
+        return client.bufferedReceive();
+    }
+
+    private String getAllShakes(Client client) {
+        String command = "4";
+        client.sendData(command);
+        return client.bufferedReceive();
+    }
+
 
     @Override
     public void onResume() {

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/beverageCardView"
     android:layout_width="match_parent"
-    android:layout_height="350dp"
+    android:layout_height="450dp"
     android:layout_margin="5dp"
     app:cardCornerRadius="10dp"
     app:cardElevation="10dp">
@@ -72,9 +72,41 @@
         android:id="@+id/beverage_quantity"
         android:layout_width="80dp"
         android:layout_height="25dp"
-        android:layout_marginTop="275dp"
         android:layout_marginStart="15dp"
+        android:layout_marginTop="275dp"
         android:textColor="@color/black"
-        android:textSize="14sp"/>
+        android:textSize="14sp" />
+
+    <Button
+        android:id="@+id/addAnotherButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="230dp"
+        android:layout_marginTop="380dp"
+        android:backgroundTint="#FD8700"
+        android:text="Aggiungi" />
+
+    <Spinner
+        android:id="@+id/addAmountSpinner"
+        android:layout_width="125dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="220dp"
+        android:layout_marginTop="320dp" />
+
+    <Button
+        android:id="@+id/removeAnotherButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="380dp"
+        android:backgroundTint="#FD8700"
+        android:text="Rimuovi" />
+
+    <Spinner
+        android:id="@+id/removeAmountSpinner"
+        android:layout_width="125dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="320dp" />
 
 </androidx.cardview.widget.CardView>

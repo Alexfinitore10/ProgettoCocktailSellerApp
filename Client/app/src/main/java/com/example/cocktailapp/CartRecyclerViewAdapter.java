@@ -4,23 +4,31 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class CartRecyclerViewAdapter extends RecyclerView.Adapter <CartRecyclerViewAdapter.ViewHolder> {
     private ArrayList<CartLayoutClass> cartLayoutClassArrayList;
     private Context context;
+    private Carrello carrello;
+    private ArrayList<Cocktail> cocktailList;
+    private ArrayList<Shake> shakeList;
 
 
-    public CartRecyclerViewAdapter(ArrayList<CartLayoutClass> cartLayoutClassArrayList, Context context) {
+    public CartRecyclerViewAdapter(ArrayList<CartLayoutClass> cartLayoutClassArrayList, Context context, ArrayList<Cocktail> cocktailList, ArrayList<Shake> shakeList) {
         this.cartLayoutClassArrayList = cartLayoutClassArrayList;
         this.context = context;
+        this.cocktailList = cocktailList;
+        this.shakeList = shakeList;
     }
 
     @NonNull
@@ -35,23 +43,26 @@ public class CartRecyclerViewAdapter extends RecyclerView.Adapter <CartRecyclerV
                 CartLayoutClass cartLayoutClass = cartLayoutClassArrayList.get(position);
                 int image_id = getImageID(cartLayoutClassArrayList.get(position).getBevanda().getNome());
                 holder.setPosition(position);
+
                 String ingredienti = cartLayoutClass.getBevanda().getIngredienti().toString();
-                String prezzoBevanda = String.valueOf(cartLayoutClass.getBevanda().getPrezzo());
+                String prezzoBevanda = String.valueOf(cartLayoutClass.getBevanda().getPrezzo()*cartLayoutClass.getBevanda().getQuantita());
                 if(cartLayoutClass.getBevanda() instanceof Cocktail){
                     String GradazioneAlcolica = String.valueOf(((Cocktail) cartLayoutClass.getBevanda()).getGradazione_alcolica());
                     GradazioneAlcolica = String.format("%.2f", ((Cocktail) cartLayoutClass.getBevanda()).getGradazione_alcolica());
-                    holder.beverageAlcoholVolume.setText(GradazioneAlcolica);
+                    holder.beverageAlcoholVolume.setText("Gradazione Alcolica: "+GradazioneAlcolica+"%");
+                }else{
+                    holder.beverageAlcoholVolume.setText("Gradazione Alcolica: Analcolico");
                 }
-                prezzoBevanda = String.format("%.2f",cartLayoutClass.getBevanda().getPrezzo());
+                prezzoBevanda = String.format("%.2f",cartLayoutClass.getBevanda().getPrezzo()*cartLayoutClass.getBevanda().getQuantita());
                 ingredienti = ingredienti.substring(1,ingredienti.length()-1);
 
                 holder.beverageName.setText(cartLayoutClass.getBevanda().getNome());
-                holder.beveragePrice.setText(prezzoBevanda);
-                holder.beverageIngredients.setText(ingredienti);
-                holder.beverageQuantity.setText("Quantità:"+String.valueOf(cartLayoutClass.getBevanda().getQuantita()));
+                holder.beveragePrice.setText("Prezzo: "+prezzoBevanda+"€");
+                holder.beverageIngredients.setText("Ingredienti: "+ingredienti);
+                holder.beverageQuantity.setText("Quantità: "+String.valueOf(cartLayoutClass.getBevanda().getQuantita()));
                 holder.CartImageView.setImageResource(image_id);
-
-
+                holder.spinnerInitializer(holder.addAnotherSpinner,holder.getAvailableAmount(cartLayoutClass)-cartLayoutClass.getBevanda().getQuantita(),position,context);
+                holder.spinnerInitializer(holder.removeAnotherSpinner,cartLayoutClass.getBevanda().getQuantita(),position,context);
     }
 
     @Override
@@ -118,6 +129,7 @@ public class CartRecyclerViewAdapter extends RecyclerView.Adapter <CartRecyclerV
         private ImageView CartImageView;
         private TextView beverageName,beveragePrice,beverageAlcoholVolume,beverageIngredients,beverageQuantity;
         private int position;
+        private Spinner addAnotherSpinner,removeAnotherSpinner;
 
         public void setPosition(int position) {
             this.position = position;
@@ -132,6 +144,47 @@ public class CartRecyclerViewAdapter extends RecyclerView.Adapter <CartRecyclerV
             beverageIngredients = itemView.findViewById(R.id.beverage_ingredients);
             beverageQuantity = itemView.findViewById(R.id.beverage_quantity);
             CartImageView = itemView.findViewById(R.id.beverage_image);
+            addAnotherSpinner = itemView.findViewById(R.id.addAmountSpinner);
+            removeAnotherSpinner = itemView.findViewById(R.id.removeAmountSpinner);
+
+
         }
+        private void spinnerInitializer(Spinner spinner, int maxAmount, int position, Context context){
+
+
+            List<Integer> amounts_list = new ArrayList<>();
+            for (int i = 1; i <= maxAmount; i++) {
+                amounts_list.add(i);
+            }
+
+
+            ArrayAdapter<Integer> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, amounts_list);
+
+
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+            spinner.setAdapter(adapter);
+        }
+
+        private int getAvailableAmount(CartLayoutClass input){
+            Bevanda temp = input.getBevanda();
+            if(temp instanceof Cocktail){
+                for(int i = 0; i < cocktailList.size(); i++){
+                    if(cocktailList.get(i).getNome().equals(temp.getNome())){
+                        return cocktailList.get(i).getQuantita();
+                    }
+                }
+            }else{
+                for(int i = 0; i < shakeList.size(); i++){
+                    if(shakeList.get(i).getNome().equals(temp.getNome())){
+                        return shakeList.get(i).getQuantita();
+                    }
+                }
+            }
+            return 0;
+        }
+
     }
+
+
 }
