@@ -476,7 +476,6 @@ bool are_credentials_correct(char *email, char *password) {
     return true;
   }
 }
-
 //
 bool create_sell(const char *cliente_id, char *nome_bevanda, char *tipo,
                  int quantita) {
@@ -503,32 +502,68 @@ bool create_sell(const char *cliente_id, char *nome_bevanda, char *tipo,
     return true;
 }
 
-/* void insert_shake(char nome[], char ingredienti[], double prezzo,
-                  int quantita) {//TODO Da rifare
-  char *insert_shake_command =
-      "INSERT INTO Frullato(nome, ingredienti, prezzo , quantita) VALUES ($1, "
-      "$2, $3, $4)ON CONFLICT (nome) DO NOTHING";
+char* get_recommended_drinks() {
+  const char *query = 
+        "SELECT nome, SUM(v.quantita) AS total_quantita "
+        "FROM Prodotti p "
+        "JOIN Vendite v ON p.nome = v.prodotto_id "
+        "WHERE p.tipo = 'cocktail' "
+        "GROUP BY nome "
+        "ORDER BY total_quantita DESC "
+        "LIMIT 3;";
 
-  char prezzo_string[100];
+    PGresult *res = PQexec(conn, query);
 
-  sprintf(prezzo_string, "%f", prezzo);
+    if (PQresultStatus(res) != PGRES_TUPLES_OK) {
+        fprintf(stderr, "Query failed: %s\n", PQerrorMessage(conn));
+        PQclear(res);
+        return NULL;
+    }
 
-  char quantita_string[100];
+    int rows = PQntuples(res);
 
-  sprintf(quantita_string, "%d", quantita);
+    if (rows == 0) {
+        fprintf(stderr, "La query non ha restituito alcun risultato.\n");
+        PQclear(res);
+        return NULL;
+    }
 
-  const char *paramValues[4] = {nome, ingredienti, prezzo_string,
-                                quantita_string};
+    if (rows < 3) {
+        log_error("Non ci sono abbastanza drink per fare raccomandazioni. Solo %d drink trovati.\n", rows);
+        PQclear(res);
+        return NULL;
+    }
 
-  int paramLengths[4] = {strlen(nome), strlen(ingredienti),
-                         strlen(prezzo_string), strlen(quantita_string)};
+    size_t total_length = 0;
+    for (int i = 0; i < rows; i++) {
+        total_length += strlen(PQgetvalue(res, i, 0)) + strlen(PQgetvalue(res, i, 1)) + 10; // 10 per sicurezza
+    }
+    total_length += rows; // Per i caratteri newline
 
-  int paramFormats[4] = {0, 0, 0, 0};
+    char *result = (char *)malloc(total_length * sizeof(char));
+    if (result == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        PQclear(res);
+        return NULL;
+    }
+    result[0] = '\0'; // Inizializza la stringa vuota
 
-  res = PQexecParams(conn, insert_shake_command, 4, NULL, paramValues,
-                     paramLengths, paramFormats, 0);
-  checkres(res);
-} */
+    // Costruisci la stringa
+    for (int i = 0; i < rows; i++) {
+        strcat(result, PQgetvalue(res, i, 0));
+        strcat(result, ": ");
+        strcat(result, PQgetvalue(res, i, 1));
+        if (i < rows - 1) {
+            strcat(result, "\n");
+        }
+    }
+    log_debug("La stringa formattata: %s ", result);
+
+    PQclear(res);
+    return result;
+}
+
+void get_recommended_shakes() {}
 
 int get_shake_amount(char *nome) {
 

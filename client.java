@@ -160,13 +160,12 @@ public class client {
                 System.out.println("5) Visualizza Carrello");
                 System.out.println("6) Esci");
                 System.out.println("10) Effettua acquisto");
-                System.out.println("11) Effettua");
-                System.out.println("12) Esci");
+                System.out.println("11) Recommend");
 
                 Scanner scanner = new Scanner(System.in);
                 risposta = scanner.nextLine();
 
-                if (risposta.matches("[1-9]|10")) {
+                if (risposta.matches("^([1-9]|10|11)$")) {
                     break;
                 }
 
@@ -227,7 +226,8 @@ public class client {
                 case 10:// Invio a server di cancella cocktail e shake
                     deleteShakeNCocktails();
                     break;
-                case 11:// Invio a server di cancella cocktail
+                case 11:// Recommend
+                    recommend();
                     break;
                 case 12:// Invio a server di cancella shake
                     break;
@@ -263,6 +263,15 @@ public class client {
         }
         System.out.println("Returno il drink");
         return drink;
+    }
+
+    void recommend(){
+        out.println("9");
+        String buffer = bufferedReceive();
+        if(!buffer.equals("NOK")) {
+            System.out.println(buffer);
+        }
+        
     }
 
     void deleteShakeNCocktails() {
