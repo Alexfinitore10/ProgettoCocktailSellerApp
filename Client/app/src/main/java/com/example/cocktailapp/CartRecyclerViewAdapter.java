@@ -49,7 +49,7 @@ public class CartRecyclerViewAdapter extends RecyclerView.Adapter <CartRecyclerV
                 holder.beveragePrice.setText(prezzoBevanda);
                 holder.beverageIngredients.setText(ingredienti);
                 holder.beverageQuantity.setText("Quantità:"+String.valueOf(cartLayoutClass.getBevanda().getQuantita()));
-
+                holder.CartImageView.setImageResource(image_id);
 
 
     }

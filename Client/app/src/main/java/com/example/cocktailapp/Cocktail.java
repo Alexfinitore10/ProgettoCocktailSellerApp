@@ -40,9 +40,9 @@ public class Cocktail extends Bevanda {
     }
 
     
-    @Override
+
     public String toString() {
-        return super.toString() + "Gradazione alcolica: " + gradazione_alcolica;
+        return "Nome: " + getNome() + ",\n Ingredienti: " + getIngredienti() + ",\n Quantità: " + getQuantita() + ",\n Gradazione Alcolica: " + this.gradazione_alcolica+ ",\n Prezzo: " + getPrezzo();
     }
 
     public void setGradazione_alcolica(double gradazione_alcolica) {

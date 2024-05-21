@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 public class Carrello {
     private ArrayList<Bevanda> beverages;
-
     private static final Carrello istanza = new Carrello();
     private boolean cartModified = false;
     private int lastSize = 0;
@@ -118,6 +117,39 @@ public class Carrello {
             }
         }
         return count;
+    }
+
+    public boolean isBeverageInCart(Bevanda bevanda) {
+        if (beverages.isEmpty()) {
+            return false;
+        }
+        for (int i = 0; i < beverages.size(); i++) {
+            if (beverages.get(i).getNome().equals(bevanda.getNome())) {
+                return true;
+            }
+        }
+
+        return false;
+
+    }
+
+    public int getAmountSelectedBeverage(Bevanda bevanda) {
+        int amount = 0;
+        for (int i = 0; i < beverages.size(); i++) {
+            if (beverages.get(i).getNome().equals(bevanda.getNome())) {
+                amount = beverages.get(i).getQuantita();
+                return amount;
+            }
+        }
+        return amount;
+    }
+
+    public void setAmountSelectedBeverage(Bevanda bevanda, int amount) {
+        for (int i = 0; i < beverages.size(); i++) {
+            if (beverages.get(i).getNome().equals(bevanda.getNome())) {
+                beverages.get(i).setQuantita(amount);
+            }
+        }
     }
 
 

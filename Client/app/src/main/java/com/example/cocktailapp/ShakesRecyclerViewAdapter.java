@@ -22,6 +22,7 @@ public class ShakesRecyclerViewAdapter extends RecyclerView.Adapter<ShakesRecycl
     private ArrayList<ShakesLayoutClass> shakeslayoutlist;
     private Context context;
     private ArrayList<Shake> shakeslist;
+    private Carrello carrello;
 
     public ShakesRecyclerViewAdapter(ArrayList<ShakesLayoutClass> shakeslayoutlist, Context context, ArrayList<Shake> shakeslist) {
         this.shakeslayoutlist = shakeslayoutlist;
@@ -107,19 +108,30 @@ public class ShakesRecyclerViewAdapter extends RecyclerView.Adapter<ShakesRecycl
             shakeName = itemView.findViewById(R.id.shake_name);
             shakePrice = itemView.findViewById(R.id.shake_price);
             shakeIngredients = itemView.findViewById(R.id.shake_ingredients);
-            Carrello carrello = Carrello.getInstance();
+            carrello = Carrello.getInstance();
 
 
             addButton.setOnClickListener(v -> {
-                Log.d("addButton shake listen", "Entro con Lastsize: "+carrello.getBeverages().size()+ " e size: "+carrello.getBeverages().size());
                 Shake shake = shakeslist.get(position);
-                selectedAmount = amountSpinner.getSelectedItemPosition();
-                shake.setQuantita(selectedAmount);
-                carrello.addBeverage(shake);
-                carrello.setCartModified(true);
-                Toast.makeText(itemView.getContext(), "Frullato aggiunto al carrello", Toast.LENGTH_SHORT).show();
-                carrello.viewItems();
-                Log.d("addButton shake listen", "Esco con Lastsize: "+carrello.getLastSize()+ " e size: "+carrello.getBeverages().size());
+                selectedAmount = amountSpinner.getSelectedItemPosition()+1;
+
+                if(carrello.isBeverageInCart(shake)){
+                    if((selectedAmount + carrello.getAmountSelectedBeverage(shake)) > shakeslist.get(position).getQuantita()){
+                        Toast.makeText(itemView.getContext(), "Quantità massima superata", Toast.LENGTH_SHORT).show();
+                    }else{
+                        int amountSelectedBeverage = carrello.getAmountSelectedBeverage(shake);
+                        carrello.setAmountSelectedBeverage(shake, selectedAmount+amountSelectedBeverage);
+                        carrello.getBeverages().get(position).setAmountRecentlyModified(true);
+                        carrello.setCartModified(true);
+                        Toast.makeText(itemView.getContext(), "Altri aggiunti al carrello" , Toast.LENGTH_SHORT).show();
+                    }
+                }else{
+                    carrello.addBeverage(new Shake(shake.getNome(),shake.getPrezzo(),shake.getIngredienti(),selectedAmount));
+                    carrello.setCartModified(true);
+                    Toast.makeText(itemView.getContext(), "Aggiunto al carrello" , Toast.LENGTH_SHORT).show();
+                    carrello.viewItems();
+                }
+
             });
         }
 

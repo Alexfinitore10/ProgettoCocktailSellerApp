@@ -84,10 +84,30 @@ public class CartFragment extends Fragment {
     public void onResume() {
         super.onResume();
                 if(carrello.isCartModified()){
+                    Log.d("CartFragment","primo if. lastsize = "+carrello.getLastSize()+ " size = "+carrello.getBeverages().size());
+                    for(int i = 0; i < carrello.getLastSize(); i++){
+                        Log.d("CartFragment","Primo for. i = "+i);
+                        if(carrello.getBeverages().get(i).isAmountRecentlyModified()){
+                            Log.d("CartFragment","Secondo if. i = "+i);
+                            Bevanda temp = carrello.getBeverages().get(i);
+                            for(int j = 0; j < list.size(); j++){
+                                Log.d("CartFragment","Secondo for. j = "+j);
+                                if(list.get(j).getBevanda().equals(temp)){
+                                    list.set(j,new CartLayoutClass(temp));
+                                    adapter.notifyItemChanged(j);
+                                    carrello.getBeverages().get(i).setAmountRecentlyModified(false);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    Log.d("CartFragment","Terzo for. lastsize = "+carrello.getLastSize()+ " size = "+carrello.getBeverages().size());
                     for(int i = carrello.getLastSize(); i < carrello.getBeverages().size(); i++){
+                        Log.d("CartFragment","Terzo for. i = "+i);
                         list.add(new CartLayoutClass(carrello.getBeverages().get(i)));
                         adapter.notifyItemInserted(i);
                     }
+                    Log.d("CartFragment","Fuori dal terzo for. lastsize = "+carrello.getLastSize()+ " size = "+carrello.getBeverages().size());
                     carrello.setLastSize(carrello.getBeverages().size());
                     carrello.setCartModified(false);
                 }

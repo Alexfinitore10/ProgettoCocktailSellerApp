@@ -151,8 +151,6 @@ public class CocktailFragment extends Fragment {
 
 
 
-
-
     }
 
 
