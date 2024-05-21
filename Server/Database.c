@@ -29,9 +29,10 @@ char *firstdbcommand =
         "CREATE TABLE IF NOT EXISTS Vendite ("
         "vendita_id SERIAL PRIMARY KEY, "
         "utente_email VARCHAR(255), "
-        "prodotto_id INT, "
+        "prodotto_id VARCHAR(255), "
         "quantita INT, "
-        "FOREIGN KEY (prodotto_id) REFERENCES Prodotti(prodotto_id), "
+        "tipo VARCHAR(50) NOT NULL,"
+        "FOREIGN KEY (prodotto_id) REFERENCES Prodotti(nome), "
         "FOREIGN KEY (utente_email) REFERENCES Cliente(email)"
         ");";
 
@@ -477,13 +478,29 @@ bool are_credentials_correct(char *email, char *password) {
 }
 
 //
-bool create_sell(const char *cliente_id, char *bevanda_id, char *tipo,
+bool create_sell(const char *cliente_id, char *nome_bevanda, char *tipo,
                  int quantita) {
-  char *create_sell_command =
-      "INSERT INTO Vendite(cliente_id, prodotto_id, "
-      "prodotto_tipo, quantita) VALUES ($1, $2, $3, $4)";
-  //devo rifare tutto....
-  
+    const char *insert_command =
+        "INSERT INTO Vendite(utente_email, prodotto_id, tipo, quantita) VALUES ($1, $2, $3, $4)";
+
+    
+
+    char quantita_str[16]; // Buffer per la conversione dell'intero in stringa
+    snprintf(quantita_str, sizeof(quantita_str), "%d", quantita);
+
+    const char *paramValues[4] = {cliente_id, nome_bevanda, tipo, quantita_str};
+    int paramLengths[4] = {0};  // 0 means "null terminated"
+    int paramFormats[4] = {0};   // 0 means "text"
+
+    res = PQexecParams(conn, insert_command, 4, NULL, paramValues, paramLengths, paramFormats, 0);
+
+    if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+        fprintf(stderr, "Insertion failed: %s", PQerrorMessage(conn));
+        PQclear(res);
+        return false;
+    }
+    PQclear(res);
+    return true;
 }
 
 /* void insert_shake(char nome[], char ingredienti[], double prezzo,
