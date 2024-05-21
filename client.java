@@ -5,6 +5,7 @@ import java.util.regex.*;
 import java.util.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+//import carrello.java.*;
 
 /* class Cocktail {
     private String nome;
@@ -250,6 +251,7 @@ public class client {
         for (String c : bufferShake.split("\\n")) {
             shake.add(Shake.parseString(c));
         }
+        System.out.println("Arrivo qua");
         return shake;
     }
 

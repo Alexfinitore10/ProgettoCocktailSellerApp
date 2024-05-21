@@ -13,37 +13,28 @@ char *feedback = "";
 char *error_response = "";
 char *firstdbcommand =
     "CREATE TABLE IF NOT EXISTS Cliente ("
-    "email VARCHAR(255) PRIMARY KEY, "
-    "password VARCHAR(255) NOT NULL, "
-    "isLogged BOOLEAN NOT NULL DEFAULT false"
-    "); "
-    "CREATE TABLE IF NOT EXISTS Cocktail ("
-    "nome VARCHAR(255) PRIMARY KEY, "
-    "ingredienti VARCHAR(1000) NOT NULL, "
-    "gradazione_alcolica DOUBLE PRECISION, "
-    "prezzo DOUBLE PRECISION, "
-    "quantita INTEGER"
-    "); "
-    "CREATE TABLE IF NOT EXISTS Frullato ("
-    "nome VARCHAR(255) PRIMARY KEY, "
-    "ingredienti VARCHAR(1000) NOT NULL, "
-    "prezzo DOUBLE PRECISION, "
-    "quantita INTEGER"
-    "); "
-    "CREATE TABLE IF NOT EXISTS Vendite ("
-    "id SERIAL PRIMARY KEY, "
-    "cliente_id VARCHAR(255), "
-    "prodotto_id VARCHAR(255), "
-    "prodotto_tipo VARCHAR(50), "
-    "quantita INTEGER NOT NULL DEFAULT 1,"
-    "data_vendita TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-    "CONSTRAINT cliente_fk FOREIGN KEY (cliente_id) REFERENCES Cliente "
-    "(email), "
-    "CONSTRAINT cocktail_fk FOREIGN KEY (prodotto_id) REFERENCES Cocktail "
-    "(nome), "
-    "CONSTRAINT frullato_fk FOREIGN KEY (prodotto_id) REFERENCES Frullato "
-    "(nome)"
-    ");";
+        "email VARCHAR(255) PRIMARY KEY, "
+        "password VARCHAR(255) NOT NULL, "
+        "isLogged BOOLEAN NOT NULL DEFAULT false"
+        "); "
+        "CREATE TABLE IF NOT EXISTS Prodotti ("
+        "prodotto_id SERIAL PRIMARY KEY, "
+        "nome VARCHAR(255) NOT NULL UNIQUE, "
+        "tipo VARCHAR(50) NOT NULL, "  // 'cocktail' o 'frullato'
+        "ingredienti VARCHAR(1000) NOT NULL, "
+        "gradazione_alcolica DOUBLE PRECISION, "  // Specifica per cocktail
+        "prezzo DOUBLE PRECISION NOT NULL, "
+        "quantita INTEGER NOT NULL"
+        "); "
+        "CREATE TABLE IF NOT EXISTS Vendite ("
+        "vendita_id SERIAL PRIMARY KEY, "
+        "utente_email VARCHAR(255), "
+        "prodotto_id INT, "
+        "quantita INT, "
+        "FOREIGN KEY (prodotto_id) REFERENCES Prodotti(prodotto_id), "
+        "FOREIGN KEY (utente_email) REFERENCES Cliente(email)"
+        ");";
+
 
 char *oldfirstdbcommand =
     "CREATE TABLE IF NOT EXISTS Cliente(email VARCHAR(255) PRIMARY KEY, password VARCHAR(255) NOT NULL, isLogged BOOLEAN NOT NULL DEFAULT false);\
@@ -75,41 +66,22 @@ void createdb_query() {
 
 // Populating the DB
 void cocktail_and_shake_population() {
-  insert_cocktail("Mojito", "Rum;Lime;Zucchero;Menta", 18.0, 6.0, 10);
-  insert_cocktail("Bloody Mary",
-                  "Vodka;Succo di pomodoro;Tabasco;Sedano;Sale;Pepe;"
-                  "nero;Succo di limone;Salsa Worchestershire",
-                  25.0, 6.0, 13);
-  insert_cocktail("White Russian",
-                  "Vodka;Liquore al caffè;Ghiaccio;Panna fresca", 25.0, 7.0,
-                  16);
-  insert_cocktail("Negroni", "Ghiaccio;Gin;Bitter Campari;Vermut Rosso", 28.0,
-                  5.90, 10);
-  insert_cocktail("Daquiri",
-                  "Rum;Succo di lime;zucchero;ghiaccio;gocce di maraschino",
-                  18.9, 6.44, 10);
-  insert_cocktail("Dry Martini", "Gin;Scorza di Limone;Vermut Dry;Ghiaccio",
-                  14.4, 7.90, 10);
-  insert_cocktail("Margarita", "Succo di Lime;Ghiaccio;Triple Sec;Tequila",
-                  25.4, 6.44, 10);
-  insert_cocktail("Manhattan",
-                  "rye wisky;vermout roso;gocce di Angostura;buccia di "
-                  "arancia;ghiaccio;ciliegina al Maraschino",
-                  30.0, 5.90, 10);
-  insert_cocktail("Whiskey Sour",
-                  "Whisky;Succo di limone;sciroppo di zucchero;albume", 23.0,
-                  4.80, 10);
-  insert_cocktail("Moscow Mule", "Vodka;Succo di lime;Ginger beer;Ghiaccio",
-                  25.0, 6.44, 10);
-  insert_shake("Frullato di frutta", "banana;fragola;kiwi;latte", 3, 5);
-  insert_shake("Frullato tropicale", "ananas;mango;succo d'arancia;latte", 4,
-               10);
-  insert_shake("Frullato di bacche",
-               "fragole;mirtilli;lamponi;latte di mandorla", 3.5, 7);
-  insert_shake("Frullato proteico",
-               "banana;burro di arachidi;semi di chia;latte;proteine", 5, 4);
-  insert_shake("Frullato esotico",
-               "papaya;ananas;latte di cocco;curcuma;pepe nero", 6, 3);
+insert_prodotto("Mojito", "Rum;Lime;Zucchero;Menta", 18.0, 6.0, 10, "cocktail");
+insert_prodotto("Bloody Mary", "Vodka;Succo di pomodoro;Tabasco;Sedano;Sale;Pepe;nero;Succo di limone;Salsa Worchestershire", 25.0, 6.0, 13, "cocktail");
+insert_prodotto("White Russian", "Vodka;Liquore al caffè;Ghiaccio;Panna fresca", 25.0, 7.0, 16, "cocktail");
+insert_prodotto("Negroni", "Ghiaccio;Gin;Bitter Campari;Vermut Rosso", 28.0, 5.90, 10, "cocktail");
+insert_prodotto("Daquiri", "Rum;Succo di lime;zucchero;ghiaccio;gocce di maraschino", 18.9, 6.44, 10, "cocktail");
+insert_prodotto("Dry Martini", "Gin;Scorza di Limone;Vermut Dry;Ghiaccio", 14.4, 7.90, 10, "cocktail");
+insert_prodotto("Margarita", "Succo di Lime;Ghiaccio;Triple Sec;Tequila", 25.4, 6.44, 10, "cocktail");
+insert_prodotto("Manhattan", "rye wisky;vermout roso;gocce di Angostura;buccia di arancia;ghiaccio;ciliegina al Maraschino", 30.0, 5.90, 10, "cocktail");
+insert_prodotto("Whiskey Sour", "Whisky;Succo di limone;sciroppo di zucchero;albume", 23.0, 4.80, 10, "cocktail");
+insert_prodotto("Moscow Mule", "Vodka;Succo di lime;Ginger beer;Ghiaccio", 25.0, 6.44, 10, "cocktail");
+
+insert_prodotto("Frullato di frutta", "banana;fragola;kiwi;latte", 0.0, 5, 10, "frullato");
+insert_prodotto("Frullato tropicale", "ananas;mango;succo d'arancia;latte", 0.0, 10, 10, "frullato");
+insert_prodotto("Frullato di bacche", "fragole;mirtilli;lamponi;latte di mandorla", 0.0, 7, 10, "frullato");
+insert_prodotto("Frullato proteico", "banana;burro di arachidi;semi di chia;latte;proteine", 0.0, 4, 10, "frullato");
+insert_prodotto("Frullato esotico", "papaya;ananas;latte di cocco;curcuma;pepe nero", 0.0, 3, 10, "frullato");
 }
 
 // A test for the reachability of the Database
@@ -162,7 +134,7 @@ bool reduce_amount_cocktail(char *nome, int quantita) {
     char reduce_amount_command[100];
 
     snprintf(reduce_amount_command, sizeof(reduce_amount_command),
-             "UPDATE Cocktail SET quantita = quantita - $2 WHERE nome = $1");
+             "UPDATE Prodotti SET quantita = quantita - $2 WHERE nome = $1");
 
     char quantita_string[20];
 
@@ -187,7 +159,7 @@ bool reduce_amount_cocktail(char *nome, int quantita) {
   }
 }
 // Same for cocktails
-bool reduce_amount_shake(char *nome, int quantita) {
+bool reduce_amount_shake(char *nome, int quantita) {//TODO Da rifare
 
   if (is_shake_in_db(nome) == false) { // controllo correttezza nome
     log_error("Il frullato %s non e' presente nel database\n", nome);
@@ -200,7 +172,7 @@ bool reduce_amount_shake(char *nome, int quantita) {
   } else {
 
     char *reduce_amount_command =
-        "UPDATE Frullato SET quantita = quantita - $1 WHERE nome = $2";
+        "UPDATE Prodotti SET quantita = quantita - $1 WHERE nome = $2";
 
     char quantita_string[100];
 
@@ -258,44 +230,43 @@ bool checkres(PGresult *res) {
 
 // Function to insert a cocktail in the DB. It's primarily used in the DB
 // population function (Cocktail and shake_population)
-void insert_cocktail(char nome[], char ingredienti[],
-                     double gradazione_alcolica, double prezzo, int quantita) {
-  char *insert_cocktail_command =
-      "INSERT INTO Cocktail(nome, ingredienti, gradazione_alcolica, prezzo , "
-      "quantita) VALUES ($1, $2, $3, $4, $5)ON CONFLICT (nome) DO NOTHING";
+void insert_prodotto(char nome[], char ingredienti[], double gradazione_alcolica, double prezzo, int quantita, char tipo[]) {
+    const char *insert_prodotto_command =
+        "INSERT INTO Prodotti(nome, tipo, ingredienti, gradazione_alcolica, prezzo, quantita) "
+        "VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT (nome) DO NOTHING;";
 
-  char gradazione_alcolica_string[100];
+    char gradazione_alcolica_string[100];
+    const char *gradazione_alcolica_value;
 
-  sprintf(gradazione_alcolica_string, "%f", gradazione_alcolica);
+    if (strcmp(tipo, "cocktail") == 0) {
+        sprintf(gradazione_alcolica_string, "%f", gradazione_alcolica);
+        gradazione_alcolica_value = gradazione_alcolica_string;
+    } else {
+        gradazione_alcolica_value = NULL;
+    }
 
-  char prezzo_string[100];
+    char prezzo_string[100];
+    sprintf(prezzo_string, "%f", prezzo);
 
-  sprintf(prezzo_string, "%f", prezzo);
+    char quantita_string[100];
+    sprintf(quantita_string, "%d", quantita);
 
-  char quantita_string[100];
+    const char *paramValues[6] = {nome, tipo, ingredienti, gradazione_alcolica_value, prezzo_string, quantita_string};
+    int paramLengths[6] = {strlen(nome), strlen(tipo), strlen(ingredienti), gradazione_alcolica_value ? strlen(gradazione_alcolica_value) : 0, strlen(prezzo_string), strlen(quantita_string)};
+    int paramFormats[6] = {0, 0, 0, 0, 0, 0};
 
-  sprintf(quantita_string, "%d", quantita);
+    PGresult *res = PQexecParams(conn, insert_prodotto_command, 6, NULL, paramValues, paramLengths, paramFormats, 0);
 
-  const char *paramValues[5] = {nome, ingredienti, gradazione_alcolica_string,
-                                prezzo_string, quantita_string};
-
-  int paramLengths[5] = {strlen(nome), strlen(ingredienti),
-                         strlen(gradazione_alcolica_string),
-                         strlen(prezzo_string), strlen(quantita_string)};
-
-  int paramFormats[5] = {0, 0, 0, 0, 0};
-
-  res = PQexecParams(conn, insert_cocktail_command, 5, NULL, paramValues,
-                     paramLengths, paramFormats, 0);
-
-  checkres(res);
+    checkres(res);
 }
 
+
+
 // A full Get
-char *get_all_cocktails() {
+char *get_all_cocktails() {//TODO da rifare
   char *get_all_cocktail_command =
-      "SELECT CONCAT(nome, ', [', ingredienti, '], ', gradazione_alcolica, ', ', prezzo, ', ', quantita)\
-   AS informazioni FROM cocktail";
+      "SELECT CONCAT(nome, ', [', ingredienti, '], ', COALESCE(gradazione_alcolica::text, ''), ', ', prezzo, ', ', quantita) AS informazioni FROM Prodotti WHERE tipo = 'cocktail';";
+
 
   if (command(get_all_cocktail_command)) {
     // return printQuery(res);
@@ -307,9 +278,8 @@ char *get_all_cocktails() {
 }
 
 char *get_all_shakes() {
-  char *get_all_shake_command =
-      "SELECT CONCAT(nome, ', [', ingredienti, '], ', prezzo, ', ', quantita)\
-   AS informazioni FROM frullato";
+  char *get_all_shake_command = "SELECT CONCAT(nome, ', [', ingredienti, '], ', prezzo, ', ', quantita) AS informazioni FROM Prodotti WHERE tipo = 'frullato';";
+
 
   if (command(get_all_shake_command)) {
     return printQuery(res);
@@ -321,7 +291,7 @@ char *get_all_shakes() {
 int get_cocktail_amount(char *nome) {
 
   char *get_cocktail_amount_command =
-      "SELECT quantita FROM Cocktail WHERE nome = $1";
+      "SELECT quantita FROM Prodotti WHERE nome = $1";
 
   const char *paramValues[1] = {nome};
 
@@ -356,7 +326,7 @@ int get_id_vendita() {
 }
 
 bool is_drink_in_db(char *nome) {
-  char *is_drink_in_db_command = "SELECT nome FROM Cocktail WHERE nome = $1";
+  char *is_drink_in_db_command = "SELECT nome FROM Prodotti WHERE nome = $1";
 
   const char *paramValues[1] = {nome};
 
@@ -375,7 +345,7 @@ bool is_drink_in_db(char *nome) {
 }
 
 bool is_shake_in_db(char *nome) {
-  char *is_shake_in_db_command = "SELECT nome FROM Frullato WHERE nome = $1";
+  char *is_shake_in_db_command = "SELECT nome FROM Prodotti WHERE nome = $1";
 
   const char *paramValues[1] = {nome};
 
@@ -512,64 +482,12 @@ bool create_sell(const char *cliente_id, char *bevanda_id, char *tipo,
   char *create_sell_command =
       "INSERT INTO Vendite(cliente_id, prodotto_id, "
       "prodotto_tipo, quantita) VALUES ($1, $2, $3, $4)";
-
-  if (is_cliente_in_db(cliente_id) == false) {
-    printf("Inserimento vendita fallito: cliente non registrato\n");
-    return false;
-  }
-
-  const char *query_check = "SELECT 1 FROM Cocktail WHERE nome = $1 UNION ALL "
-                            "SELECT 1 FROM Frullato WHERE nome = $1";
-
-  // Esegui la query per verificare l'esistenza del nome del prodotto
-  PGresult *res_check =
-      PQexecParams(conn, query_check, 1, NULL, &bevanda_id, NULL, NULL, 0);
-
-  // Verifica se la query è stata eseguita correttamente
-  if (PQresultStatus(res_check) != PGRES_TUPLES_OK) {
-    fprintf(stderr, "Errore nell'esecuzione della query di verifica: %s\n",
-            PQerrorMessage(conn));
-    PQclear(res_check);
-    return false;
-  }
-
-  if (strcmp(tipo, "Drink") == 0) {
-    if (is_drink_in_db(bevanda_id) == false) {
-      printf(
-          "Inserimento vendita fallito: cocktail non presente nel database\n");
-      return false;
-    }
-
-  } else if (strcmp(tipo, "Shake") == 0) {
-    if (is_shake_in_db(bevanda_id) == false) {
-      printf("Inserimento vendita fallito: shake non presente nel database\n");
-      return false;
-    }
-  } else {
-    printf("Inserimento vendita fallito: tipo non riconosciuto\n");
-    return false;
-  }
-
-  char quantita_str[10];
-
-  snprintf(quantita_str, sizeof(quantita_str), "%d", quantita);
-
-  const char *paramValues[4] = {cliente_id, bevanda_id, tipo, quantita_str};
-
-  res = PQexecParams(conn, create_sell_command, 4, NULL, paramValues, NULL,
-                     NULL, 0);
-
-  if (checkres(res)) {
-    printf("Inserimento vendita effettuato con successo\n");
-    return true;
-  } else {
-    printf("Inserimento vendita fallito: %s\n", error_response);
-    return false;
-  }
+  //devo rifare tutto....
+  
 }
 
-void insert_shake(char nome[], char ingredienti[], double prezzo,
-                  int quantita) {
+/* void insert_shake(char nome[], char ingredienti[], double prezzo,
+                  int quantita) {//TODO Da rifare
   char *insert_shake_command =
       "INSERT INTO Frullato(nome, ingredienti, prezzo , quantita) VALUES ($1, "
       "$2, $3, $4)ON CONFLICT (nome) DO NOTHING";
@@ -593,12 +511,12 @@ void insert_shake(char nome[], char ingredienti[], double prezzo,
   res = PQexecParams(conn, insert_shake_command, 4, NULL, paramValues,
                      paramLengths, paramFormats, 0);
   checkres(res);
-}
+} */
 
 int get_shake_amount(char *nome) {
 
   char *get_shake_amount_command =
-      "SELECT quantita FROM Frullato WHERE nome = $1";
+      "SELECT quantita FROM Prodotti WHERE nome = $1";
 
   const char *paramValues[1] = {nome};
 

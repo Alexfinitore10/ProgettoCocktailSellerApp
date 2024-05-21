@@ -46,17 +46,21 @@ public class Shake {
     // Parse della tringa da Server
     public static Shake parseString(String input) {
         String[] parts = input.split(", ");
-
         String nome = parts[0].trim();
 
-        // Rimuovi le parentesi quadre dagli ingredienti
-        String ingredientiString = parts[1].substring(1, parts[1].length() - 1).trim();
-        String[] ingredientiArray = ingredientiString.split(";");
+        // Controllo se la stringa degli ingredienti è "N/A"
+        List<String> ingredienti = new ArrayList<>();
+        if (!parts[1].trim().equals("N/A")) {
+            // Rimuovi le parentesi quadre dagli ingredienti
+            String ingredientiString = parts[1].substring(1, parts[1].length() - 1).trim();
+            String[] ingredientiArray = ingredientiString.split(";");
+            ingredienti.addAll(Arrays.asList(ingredientiArray));
+        }
 
         float prezzo = Float.parseFloat(parts[2].trim());
         int quantita = Integer.parseInt(parts[3].trim());
 
-        return new Shake(nome, Arrays.asList(ingredientiArray), prezzo, quantita);
+        return new Shake(nome, ingredienti, prezzo, quantita);
     }
 
     // Metodo toString per rappresentazione testuale dell'oggetto

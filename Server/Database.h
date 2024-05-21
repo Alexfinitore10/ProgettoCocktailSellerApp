@@ -20,6 +20,7 @@ bool reduce_amount_cocktail(char *, int); // Vorrei cambiarla in Bool
 bool reduce_amount_shake(char *, int);    // Vorrei cambiarla in Bool
 void insert_cocktail(char[], char[], double, double, int);
 void insert_shake(char[], char[], double, int);
+void insert_prodotto(char[], char [], double , double , int , char[]);
 // Checks
 bool is_cliente_in_db(const char *);
 bool is_drink_in_db(char *);
