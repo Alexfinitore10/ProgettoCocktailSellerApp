@@ -54,6 +54,8 @@ import java.security.NoSuchAlgorithmException;
 } */
 
 public class client {
+    //il cocktail
+    Cocktail recommended;
 
     // glio carrello
     carrello c = new carrello();
@@ -160,12 +162,13 @@ public class client {
                 System.out.println("5) Visualizza Carrello");
                 System.out.println("6) Esci");
                 System.out.println("10) Effettua acquisto");
-                System.out.println("11) Recommend");
+                System.out.println("11) Recommend Drinks");
+                System.out.println("12) Recommend Shakes");
 
                 Scanner scanner = new Scanner(System.in);
                 risposta = scanner.nextLine();
 
-                if (risposta.matches("^([1-9]|10|11)$")) {
+                if (risposta.matches("^(?:[1-9]|1[0-2])$")) {
                     break;
                 }
 
@@ -191,7 +194,7 @@ public class client {
                 default:
                     break;
             }
-            if (!risposta.equals("5") && !risposta.equals("7") && !risposta.equals("9") && !risposta.equals("10")) {
+            if (!risposta.equals("5") && !risposta.equals("7") && !risposta.equals("9") && !risposta.equals("10") && !risposta.equals("11") && !risposta.equals("11")) {
                 out.println(risposta);
             }
 
@@ -226,10 +229,11 @@ public class client {
                 case 10:// Invio a server di cancella cocktail e shake
                     deleteShakeNCocktails();
                     break;
-                case 11:// Recommend
-                    recommend();
+                case 11:// Recommend Drinks
+                    recommend_drinks();
                     break;
-                case 12:// Invio a server di cancella shake
+                case 12:// Recommended Shakes
+                    recommend_shakes();
                     break;
                 default:
                     break;
@@ -251,7 +255,6 @@ public class client {
         for (String c : bufferShake.split("\\n")) {
             shake.add(Shake.parseString(c));
         }
-        System.out.println("Arrivo qua");
         return shake;
     }
 
@@ -265,13 +268,40 @@ public class client {
         return drink;
     }
 
-    void recommend(){
+    void recommend_drinks(){
         out.println("9");
         String buffer = bufferedReceive();
-        if(!buffer.equals("NOK")) {
-            System.out.println(buffer);
+        if (buffer.equals("NOKERR")) {
+            System.err.println("Non è stato possibile prendere i recommended dal server");
+        } else if(buffer.equals("Ness")) {
+            System.err.println("Nessun drink è presente ancora nei recommend, quindi non è possibile effettuare i recommend");
+        }else if (buffer.equals("Pochi")){
+            System.err.println("Non ci sono abbastanza drinks per effettuare un recommend, acquista qualche drink prima");
+        }else{
+            List<Cocktail> rec = Cocktail.setRecommendedCocktails(buffer);
+            System.out.println("I drink raccomandati sono: ");
+            for(Cocktail s : rec){
+                System.out.println(s.toString());
+            }
         }
-        
+    }
+
+    void recommend_shakes(){
+        out.println("10");
+        String buffer = bufferedReceive();
+        if (buffer.equals("NOKERR")) {
+            System.err.println("Non è stato possibile prendere i recommended dal server");
+        } else if(buffer.equals("Ness")) {
+            System.err.println("Nessun drink è presente ancora nei recommend, quindi non è possibile effettuare i recommend");
+        }else if (buffer.equals("Pochi")){
+            System.err.println("Non ci sono abbastanza drinks per effettuare un recommend, acquista qualche drink prima");
+        }else{
+            List<Cocktail> rec = Cocktail.setRecommendedCocktails(buffer);
+            System.out.println("I drink raccomandati sono: ");
+            for(Cocktail s : rec){
+                System.out.println(s.toString());
+            }
+        }
     }
 
     void deleteShakeNCocktails() {

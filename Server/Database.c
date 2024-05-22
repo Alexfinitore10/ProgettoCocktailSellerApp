@@ -503,67 +503,90 @@ bool create_sell(const char *cliente_id, char *nome_bevanda, char *tipo,
 }
 
 char* get_recommended_drinks() {
-  const char *query = 
-        "SELECT nome, SUM(v.quantita) AS total_quantita "
-        "FROM Prodotti p "
-        "JOIN Vendite v ON p.nome = v.prodotto_id "
-        "WHERE p.tipo = 'cocktail' "
-        "GROUP BY nome "
-        "ORDER BY total_quantita DESC "
-        "LIMIT 3;";
+          char* query = "SELECT "
+                        "CONCAT("
+                            "p.nome, ', [', p.ingredienti, '], ', "
+                            "COALESCE(p.gradazione_alcolica::text, ''), ', ', "
+                            "p.prezzo, ', ', "
+                            "SUM(v.quantita)"
+                        ") AS formatted_string "
+                    "FROM "
+                        "Prodotti p "
+                    "JOIN "
+                        "Vendite v ON p.nome = v.prodotto_id "
+                   " WHERE "
+                        "p.tipo = 'cocktail' "
+                    "GROUP BY "
+                        "p.nome, p.ingredienti, p.gradazione_alcolica, p.prezzo "
+                    "ORDER BY "
+                        "SUM(v.quantita) DESC "
+                    "LIMIT "
+                       " 3;";
 
-    PGresult *res = PQexec(conn, query);
 
-    if (PQresultStatus(res) != PGRES_TUPLES_OK) {
-        fprintf(stderr, "Query failed: %s\n", PQerrorMessage(conn));
-        PQclear(res);
-        return NULL;
-    }
 
-    int rows = PQntuples(res);
-
-    if (rows == 0) {
+    if (command(query)) {
+    // return printQuery(res);
+      char *value = printQuery(res);//res è globale......................
+      int rows = PQntuples(res);
+      if (rows == 0) {
         fprintf(stderr, "La query non ha restituito alcun risultato.\n");
         PQclear(res);
-        return NULL;
-    }
-
-    if (rows < 3) {
+        return strdup("Ness");
+    }else if (rows < 3) {
         log_error("Non ci sono abbastanza drink per fare raccomandazioni. Solo %d drink trovati.\n", rows);
         PQclear(res);
-        return NULL;
+        return strdup("Pochi");
     }
-
-    size_t total_length = 0;
-    for (int i = 0; i < rows; i++) {
-        total_length += strlen(PQgetvalue(res, i, 0)) + strlen(PQgetvalue(res, i, 1)) + 10; // 10 per sicurezza
+      PQclear(res);
+      return value;
+    } else {
+      printf("Errore nel recupero dei cocktail\n");
     }
-    total_length += rows; // Per i caratteri newline
-
-    char *result = (char *)malloc(total_length * sizeof(char));
-    if (result == NULL) {
-        fprintf(stderr, "Memory allocation failed\n");
-        PQclear(res);
-        return NULL;
-    }
-    result[0] = '\0'; // Inizializza la stringa vuota
-
-    // Costruisci la stringa
-    for (int i = 0; i < rows; i++) {
-        strcat(result, PQgetvalue(res, i, 0));
-        strcat(result, ": ");
-        strcat(result, PQgetvalue(res, i, 1));
-        if (i < rows - 1) {
-            strcat(result, "\n");
-        }
-    }
-    log_debug("La stringa formattata: %s ", result);
-
-    PQclear(res);
-    return result;
 }
 
-void get_recommended_shakes() {}
+char* get_recommended_shakes() {
+  char* query = "SELECT "
+                        "CONCAT("
+                              "p.nome, ', [', p.ingredienti, '], ', "
+                              "p.prezzo, ', ', "
+                              "SUM(v.quantita)"
+                          ") AS formatted_string "
+                    "FROM "
+                        "Prodotti p "
+                    "JOIN "
+                        "Vendite v ON p.nome = v.prodotto_id "
+                   " WHERE "
+                        "p.tipo = 'shake' "
+                    "GROUP BY "
+                        "p.nome, p.ingredienti, p.prezzo "
+                    "ORDER BY "
+                        "SUM(v.quantita) DESC "
+                    "LIMIT "
+                       " 3;";
+
+
+
+   if (command(query)) {
+    // return printQuery(res);
+      char *value = printQuery(res);//res è globale......................
+      int rows = PQntuples(res);
+      if (rows == 0) {
+        fprintf(stderr, "La query non ha restituito alcun risultato.\n");
+        PQclear(res);
+        return strdup("Ness");
+    }else if (rows < 3) {
+        log_error("Non ci sono abbastanza shakes per fare raccomandazioni. Solo %d drink trovati.\n", rows);
+        PQclear(res);
+        return strdup("Pochi");
+    }
+      PQclear(res);
+      return value;
+    } else {
+      printf("Errore nel recupero dei shakes\n");
+    }
+
+}
 
 int get_shake_amount(char *nome) {
 

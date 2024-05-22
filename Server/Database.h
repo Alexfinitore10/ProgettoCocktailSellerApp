@@ -16,6 +16,7 @@ int get_cocktail_amount(char *);
 int get_shake_amount(char *);
 int get_id_vendita(); // non credo serva
 char* get_recommended_drinks();
+char* get_recommended_shakes();
 
 // Inserts
 bool reduce_amount_cocktail(char *, int); // Vorrei cambiarla in Bool
