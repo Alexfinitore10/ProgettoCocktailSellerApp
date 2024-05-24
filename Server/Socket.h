@@ -26,5 +26,6 @@ void handle_get_all_cocktails(int client_fd);
 void handle_get_all_shakes(int client_fd);
 void handle_remove_drink_and_shake(int);
 void handle_get_recommended_drinks(int client_fd);
+void handle_get_recommended_shakes(int client_fd);
 void free_dic();
 //  Add function prototypes for remaining cases (5, 6, 7, 8)

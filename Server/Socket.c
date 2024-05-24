@@ -460,10 +460,9 @@ int parseCommand(char toParse[], const int client_fd) {
     break;
   }
   case 10: {
-    log_info("Il cliente ha acquistato uno shake e basta");
-    // TODO reduce amount shake
-    // Deve arrivare una stringa formattata così: [10`Frullato Proteico`3]
-    // handle_remove_shake(strtok(NULL, "`"), atoi(strtok(NULL, "`")));
+    log_info("Recommended Shakes");
+    handle_get_recommended_shakes(client_fd);
+    break;
   }
   default:
     log_warn("Comando non riconosciuto\n");
@@ -616,22 +615,76 @@ void handle_get_all_shakes(int client_fd) {
 }
 
 void handle_get_recommended_drinks(int client_fd) {
-  char * risposta = get_recommended_drinks();
+  char* risposta = get_recommended_drinks();
   if (risposta == NULL) {
     log_error("C'è stato un errore nella raccolta dei cocktail consigliati");
-    int status = send(client_fd, "NOK_RecommendedDrinks\n", strlen("NOK_RecommendedDrinks\n"), 0);
+    int status = send(client_fd, "NOKERR\n", strlen("NOKERR\n"), 0);
+    if (status == -1) {
+      log_error("send error: %s", strerror(errno));
+    }
+    return;
+  }else if (risposta == "Ness")
+  {
+    log_error("C'è stato un errore, nessun drink è presente nella raccolta consigliati");
+    int status = send(client_fd, "NOK0\n", strlen("NOK0\n"), 0);
+    if (status == -1) {
+      log_error("send error: %s", strerror(errno));
+    }
+    return;
+  }else if (risposta == "Pochi")
+  {
+    log_error("C'è stato un errore, non sono presenti abbastanza drinks per effettuare il recommend");
+    int status = send(client_fd, "NOK:(\n", strlen("NOK:(\n"), 0);
     if (status == -1) {
       log_error("send error: %s", strerror(errno));
     }
     return;
   }
 
-  log_debug("Stringa: %s",risposta);
+  log_debug("Stringa: %s, di grandezza %d", risposta, strlen(risposta));
   
   int status = send(client_fd, risposta, strlen(risposta), 0);
 
   if (status > 0) {
     log_info("[Server] Dati dei cocktail consigliati inviati al client\n");
+  } else {
+    log_error("send error: %s", strerror(errno));
+  }
+}
+
+void handle_get_recommended_shakes(int client_fd) {
+  char* risposta = get_recommended_shakes();
+  if (risposta == NULL) {
+    log_error("C'è stato un errore nella raccolta dei shake consigliati");
+    int status = send(client_fd, "NOKERR\n", strlen("NOKERR\n"), 0);
+    if (status == -1) {
+      log_error("send error: %s", strerror(errno));
+    }
+    return;
+  }else if (risposta == "Ness")
+  {
+    log_error("C'è stato un errore, nessun shake è presente nella raccolta consigliati");
+    int status = send(client_fd, "NOK0\n", strlen("NOK0\n"), 0);
+    if (status == -1) {
+      log_error("send error: %s", strerror(errno));
+    }
+    return;
+  }else if (risposta == "Pochi")
+  {
+    log_error("C'è stato un errore, non sono presenti abbastanza shakes per effettuare il recommend");
+    int status = send(client_fd, "NOK:(\n", strlen("NOK:(\n"), 0);
+    if (status == -1) {
+      log_error("send error: %s", strerror(errno));
+    }
+    return;
+  }
+
+  log_debug("Stringa: %s, di grandezza %d", risposta, strlen(risposta));
+  
+  int status = send(client_fd, risposta, strlen(risposta), 0);
+
+  if (status > 0) {
+    log_info("[Server] Dati dei shakes consigliati inviati al client\n");
   } else {
     log_error("send error: %s", strerror(errno));
   }
