@@ -14,10 +14,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CocktailApp"
         tools:targetApi="31">
-        <receiver
-            android:name=".NewsFromCocktail"
-            android:enabled="true"
-            android:exported="true"></receiver>
+
+
 
         <activity
             android:name=".ShopActivity"

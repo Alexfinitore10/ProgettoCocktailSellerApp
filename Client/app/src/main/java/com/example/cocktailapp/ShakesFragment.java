@@ -11,6 +11,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -30,6 +31,7 @@ public class ShakesFragment extends Fragment {
     private ArrayList<Shake> shakes;
     private String allShakes;
     private Carrello carrello;
+    private CartLayoutItemTransfer model;
 
 
 
@@ -60,6 +62,7 @@ public class ShakesFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        model = new ViewModelProvider(requireActivity()).get(CartLayoutItemTransfer.class);
         carrello = Carrello.getInstance();
         client = Client.getIstanza();
         list = new ArrayList<>();
@@ -89,7 +92,7 @@ public class ShakesFragment extends Fragment {
 
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new ShakesRecyclerViewAdapter(list,getContext(),shakes);
+        adapter = new ShakesRecyclerViewAdapter(list,getContext(),shakes,model);
         recyclerView.setAdapter(adapter);
     }
 
@@ -102,23 +105,5 @@ public class ShakesFragment extends Fragment {
         return client.bufferedReceive();
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        // Ottieni l'istanza di SharedPreferences
-        SharedPreferences prefs = getActivity().getSharedPreferences("Coming Shake Flag", Context.MODE_PRIVATE);
-
-        // Controlla se stai tornando da CartFragment
-        boolean comingFromCartFragment = prefs.getBoolean("comingFromCartFragment", false);
-
-        if (comingFromCartFragment) {
-            carrello.setLastSize(carrello.getBeverages().size());
-
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putBoolean("comingFromCartFragment", false);
-            editor.apply();
-        }
-    }
 
 }

@@ -1,6 +1,9 @@
 package com.example.cocktailapp;
 
+import android.util.Log;
+
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Carrello {
     private ArrayList<Bevanda> beverages;
@@ -35,6 +38,17 @@ public class Carrello {
 
     public void addBeverage(Bevanda bevanda) {
         beverages.add(bevanda);
+    }
+    public void removeBeverage(Bevanda bevanda) {
+        for(int i = 0; i < beverages.size(); i++) {
+            if(beverages.get(i).getNome().equals(bevanda.getNome())) {
+                Log.d("Carrello", "Sto per rimuovere " + bevanda.getNome());
+                beverages.remove(beverages.get(i));
+                Log.d("Carrello", "Bevanda rimossa");
+                break;
+            }
+        }
+
     }
 
 
@@ -78,6 +92,7 @@ public class Carrello {
     }
 
 
+
     // Calcola il totale del carrello
     public double calculateTotal() {
         double total = 0;
@@ -91,9 +106,6 @@ public class Carrello {
     }
 
     public void emptyCarrello() {
-        if (!beverages.isEmpty()) {
-            beverages.clear();
-        }
         if (!beverages.isEmpty()) {
             beverages.clear();
         }
@@ -150,6 +162,16 @@ public class Carrello {
                 beverages.get(i).setQuantita(amount);
             }
         }
+    }
+
+    public int getPositionBeverage(Bevanda bevanda) {
+        for (int i = 0; i < beverages.size(); i++) {
+            if (beverages.get(i).getNome().equals(bevanda.getNome())) {
+                return i;
+            }
+        }
+
+        return -1;
     }
 
 

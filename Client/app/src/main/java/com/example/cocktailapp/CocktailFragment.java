@@ -1,13 +1,12 @@
 package com.example.cocktailapp;
 
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,11 +17,7 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link CocktailFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class CocktailFragment extends Fragment {
     private CocktailRecyclerViewAdapter cocktailRecyclerViewAdapter;
     private ArrayList<CocktailLayoutClass> list;
@@ -31,15 +26,8 @@ public class CocktailFragment extends Fragment {
     private ArrayList<Cocktail> cocktails;
     private String allCocktails;
     private Carrello carrello;
+    private CartLayoutItemTransfer model;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     public CocktailFragment() {
         // Required empty public constructor
@@ -56,22 +44,13 @@ public class CocktailFragment extends Fragment {
     // TODO: Rename and change types and number of parameters
     public static CocktailFragment newInstance(String param1, String param2) {
         CocktailFragment fragment = new CocktailFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
 
-        // Register for back button callbacks
 
     }
 
@@ -86,6 +65,7 @@ public class CocktailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        model = new ViewModelProvider(requireActivity()).get(CartLayoutItemTransfer.class);
         carrello = Carrello.getInstance();
         client = Client.getIstanza();
         list = new ArrayList<>();
@@ -113,7 +93,7 @@ public class CocktailFragment extends Fragment {
         }
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        cocktailRecyclerViewAdapter = new CocktailRecyclerViewAdapter(list,getContext(),cocktails);
+        cocktailRecyclerViewAdapter = new CocktailRecyclerViewAdapter(list,getContext(),cocktails,model);
         recyclerView.setAdapter(cocktailRecyclerViewAdapter);
 
 
@@ -126,32 +106,6 @@ public class CocktailFragment extends Fragment {
         return client.bufferedReceive();
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        // Ottieni l'istanza di SharedPreferences
-        SharedPreferences prefs = getActivity().getSharedPreferences("coming Cocktail Flag", Context.MODE_PRIVATE);
-
-        // Controlla se stai tornando da CartFragment
-        boolean comingFromCartFragment = prefs.getBoolean("comingFromCartFragment", false);
-
-        if (comingFromCartFragment) {
-            Log.d("resume Cocktail Frag","Prima di aggiornare lastSize:" + carrello.getLastSize());
-            carrello.setLastSize(carrello.getBeverages().size());
-            Log.d("resume Cocktail Frag","Dopo aggiornamento lastSize:" + carrello.getLastSize());
-
-
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putBoolean("comingFromCartFragment", false);
-            editor.apply();
-        }
-
-
-
-
-
-    }
 
 
 }

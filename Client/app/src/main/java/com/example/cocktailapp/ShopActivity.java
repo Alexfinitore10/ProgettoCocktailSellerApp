@@ -65,37 +65,16 @@ public class ShopActivity extends AppCompatActivity {
                         break;
                     case 2:
                         tab.setText("Carrello");
+                        break;
+                    case 3:
+                        tab.setText("Consigliati");
+                        break;
                 }
             }
         }).attach();
 
     }
 
-    //    private void showLogoutDialog(Client client) {
-//        // Create a pop-up dialog
-//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//        builder.setTitle("Log Out")
-//                .setMessage("Vuoi davvero disconnetterti?")
-//                .setPositiveButton("Si", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        client.setLogged(false);
-//                        startActivity(new Intent(ShopActivity.this, LoginActivity.class));
-//                    }
-//                })
-//                .setNegativeButton("No", null);
-//
-//        AlertDialog dialog = builder.create();
-//        dialog.show();
-//
-//        // Change the color of the positive button
-//        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.parseColor("#F98500"));
-//
-//        // Change the color of the negative button
-//        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.parseColor("#F98500"));
-//
-//
-//    }
 
 
 

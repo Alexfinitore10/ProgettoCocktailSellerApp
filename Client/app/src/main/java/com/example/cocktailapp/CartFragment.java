@@ -8,6 +8,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -115,6 +116,30 @@ public class CartFragment extends Fragment {
         adapter = new CartRecyclerViewAdapter(list,getContext(),cocktailList,shakeList);
         recyclerView.setAdapter(adapter);
 
+        CartLayoutItemTransfer model = new ViewModelProvider(requireActivity()).get(CartLayoutItemTransfer.class);
+
+        model.getToAddItems().observe(getViewLifecycleOwner(), queue -> {
+            while(!queue.isEmpty()){
+                CartLayoutClass item = queue.poll();
+                list.add(item);
+                adapter.notifyItemInserted(list.size() - 1);
+            }
+        });
+
+        model.getToUpdateItem().observe(getViewLifecycleOwner(), queue -> {
+            while (!queue.isEmpty()) {
+                CartLayoutClass item = queue.poll();
+                int index = getElementIndex(item);
+        
+                if(index != -1){
+                    list.set(index,item);
+                    adapter.notifyItemChanged(index);
+                }else{
+                    Log.e("CartFragment", "Item not found in list");
+                }
+            }
+        });
+
 
 
     }
@@ -130,53 +155,15 @@ public class CartFragment extends Fragment {
         return client.bufferedReceive();
     }
 
-
-    @Override
-    public void onResume() {
-        super.onResume();
-                if(carrello.isCartModified()){
-                    Log.d("CartFragment","primo if. lastsize = "+carrello.getLastSize()+ " size = "+carrello.getBeverages().size());
-                    for(int i = 0; i < carrello.getLastSize(); i++){
-                        Log.d("CartFragment","Primo for. i = "+i);
-                        if(carrello.getBeverages().get(i).isAmountRecentlyModified()){
-                            Log.d("CartFragment","Secondo if. i = "+i);
-                            Bevanda temp = carrello.getBeverages().get(i);
-                            for(int j = 0; j < list.size(); j++){
-                                Log.d("CartFragment","Secondo for. j = "+j);
-                                if(list.get(j).getBevanda().equals(temp)){
-                                    list.set(j,new CartLayoutClass(temp));
-                                    adapter.notifyItemChanged(j);
-                                    carrello.getBeverages().get(i).setAmountRecentlyModified(false);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    Log.d("CartFragment","Terzo for. lastsize = "+carrello.getLastSize()+ " size = "+carrello.getBeverages().size());
-                    for(int i = carrello.getLastSize(); i < carrello.getBeverages().size(); i++){
-                        Log.d("CartFragment","Terzo for. i = "+i);
-                        list.add(new CartLayoutClass(carrello.getBeverages().get(i)));
-                        adapter.notifyItemInserted(i);
-                    }
-                    Log.d("CartFragment","Fuori dal terzo for. lastsize = "+carrello.getLastSize()+ " size = "+carrello.getBeverages().size());
-                    carrello.setLastSize(carrello.getBeverages().size());
-                    carrello.setCartModified(false);
-                }
+    private int getElementIndex(CartLayoutClass item){
+        for(int i = 0; i < list.size(); i++){
+            if(list.get(i).getBevanda().getNome().equals(item.getBevanda().getNome())){
+                return i;
+            }
+        }
+        return -1;
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
 
-        //Aggiorna flag ritorno dal cart fragment allo Shakes Fragment
-        SharedPreferences prefs = getActivity().getSharedPreferences("Coming Shakes Cart Flag", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean("comingFromCartFragment", true);
-        editor.apply();
 
-        SharedPreferences prefs2 = getActivity().getSharedPreferences("Coming Cocktail Cart Flag", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor2 = prefs2.edit();
-        editor2.putBoolean("comingFromCartFragment", true);
-        editor2.apply();
-    }
 }

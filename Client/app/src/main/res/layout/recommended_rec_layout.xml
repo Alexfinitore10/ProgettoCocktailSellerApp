@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cocktailCardView"
+    android:layout_width="match_parent"
+    android:layout_height="400dp"
+    android:layout_margin="5dp"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="10dp">
+
+
+
+    <Button
+        android:id="@+id/recommendedAddButton"
+        android:layout_width="125dp"
+        android:layout_height="55dp"
+        android:layout_marginStart="215dp"
+        android:layout_marginTop="330dp"
+        android:backgroundTint="#F98500"
+        android:text="Aggiungi"
+        android:textSize="18sp" />
+
+    <Spinner
+        android:id="@+id/recommendedAmountSpinner"
+        android:layout_width="125dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="330dp" />
+
+    <LinearLayout
+        android:id="@+id/recommendedMainLayout"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/recommended_image"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="0"
+            android:scaleType="centerCrop" />
+
+        <LinearLayout
+            android:id="@+id/recommendedSecondLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toEndOf="@+id/cocktail_image"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/recommended_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/recommended_price"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:padding="8dp"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/recommended_alcohol_volume"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:padding="8dp"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/recommended_ingredients"
+                android:layout_width="match_parent"
+                android:layout_height="165dp"
+                android:padding="8dp"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+
+
+</androidx.cardview.widget.CardView>

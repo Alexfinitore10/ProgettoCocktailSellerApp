@@ -1,19 +1,27 @@
 package com.example.cocktailapp;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 
 public class CartRecyclerViewAdapter extends RecyclerView.Adapter <CartRecyclerViewAdapter.ViewHolder> {
@@ -61,8 +69,8 @@ public class CartRecyclerViewAdapter extends RecyclerView.Adapter <CartRecyclerV
                 holder.beverageIngredients.setText("Ingredienti: "+ingredienti);
                 holder.beverageQuantity.setText("Quantità: "+String.valueOf(cartLayoutClass.getBevanda().getQuantita()));
                 holder.CartImageView.setImageResource(image_id);
-                holder.spinnerInitializer(holder.addAnotherSpinner,holder.getAvailableAmount(cartLayoutClass)-cartLayoutClass.getBevanda().getQuantita(),position,context);
-                holder.spinnerInitializer(holder.removeAnotherSpinner,cartLayoutClass.getBevanda().getQuantita(),position,context);
+                holder.spinnerInitializer(holder.addAnotherSpinner,holder.getAvailableAmount(cartLayoutClass)-cartLayoutClass.getBevanda().getQuantita(),context);
+                holder.spinnerInitializer(holder.removeAnotherSpinner,cartLayoutClass.getBevanda().getQuantita(),context);
     }
 
     @Override
@@ -125,11 +133,14 @@ public class CartRecyclerViewAdapter extends RecyclerView.Adapter <CartRecyclerV
     }
 
 
+
+
     public class ViewHolder extends RecyclerView.ViewHolder{
         private ImageView CartImageView;
         private TextView beverageName,beveragePrice,beverageAlcoholVolume,beverageIngredients,beverageQuantity;
         private int position;
         private Spinner addAnotherSpinner,removeAnotherSpinner;
+        private Button addAnotherButton,removeAnotherButton;
 
         public void setPosition(int position) {
             this.position = position;
@@ -146,11 +157,71 @@ public class CartRecyclerViewAdapter extends RecyclerView.Adapter <CartRecyclerV
             CartImageView = itemView.findViewById(R.id.beverage_image);
             addAnotherSpinner = itemView.findViewById(R.id.addAmountSpinner);
             removeAnotherSpinner = itemView.findViewById(R.id.removeAmountSpinner);
+            addAnotherButton = itemView.findViewById(R.id.addAnotherButton);
+            removeAnotherButton = itemView.findViewById(R.id.removeAnotherButton);
+            carrello = Carrello.getInstance();
+
+            addAnotherButton.setOnClickListener(view -> {
+                Bevanda bevanda = cartLayoutClassArrayList.get(position).getBevanda();
+                int selectedAmount = (int) addAnotherSpinner.getSelectedItem();
+                Log.d("addAnotherButton","La bevanda selezionata è: " + bevanda.toString());
+
+                int amountSelectedBeverage = carrello.getAmountSelectedBeverage(bevanda);
+                carrello.setAmountSelectedBeverage(bevanda, selectedAmount+amountSelectedBeverage);
+                bevanda.setQuantita(selectedAmount+amountSelectedBeverage);
+                cartLayoutClassArrayList.set(position,new CartLayoutClass(bevanda));
+                notifyItemChanged(position);
+                Toast.makeText(itemView.getContext(), "Altri aggiunti al carrello" , Toast.LENGTH_SHORT).show();
+
+
+            });
+
+            removeAnotherButton.setOnClickListener(view -> {
+                Bevanda bevanda = cartLayoutClassArrayList.get(position).getBevanda();
+                int selectedAmount = (int) removeAnotherSpinner.getSelectedItem();
+                Log.d("removeAnotherButton","La bevanda selezionata è: " + bevanda.toString());
+
+                int amountSelectedBeverage = carrello.getAmountSelectedBeverage(bevanda);
+                Log.d("removeAnotherButton","L'utente vuole eliminare "+selectedAmount+ " di "+bevanda.getNome()+ " e nel carrello ce ne sono "+amountSelectedBeverage);
+                if((amountSelectedBeverage-selectedAmount) == 0){
+                    Log.d("removeAnotherButton","L'utente vuole eliminare una bevanda nel carrello");
+
+                    showRemovalDialog(result -> {
+                        if (result) {
+//                            Log.d("removeAnotherButton", "Sto per rimuovere l'oggetto dal cartLayoutArrayList esso ha dimensione: " + cartLayoutClassArrayList.size());
+//                            cartLayoutClassArrayList.remove(position);
+//                            Log.d("removeAnotherButton", "Dopo aver rimosso l'oggetto dal cartLayoutArrayList esso ha dimensione: " + cartLayoutClassArrayList.size());
+//                            notifyItemRemoved(position);
+                            if(position >= 0 && position < cartLayoutClassArrayList.size()){
+                                try{
+                                    carrello.removeBeverage(bevanda);
+                                    cartLayoutClassArrayList.remove(position);
+                                    notifyItemRemoved(position);
+                                }catch(Exception e){
+                                    Log.e("removeAnotherButton","Errore nella rimozione dal carrello: "+e.getMessage());
+                                }
+                            }
+
+
+                        }
+                    });
+
+                }else{
+                    carrello.setAmountSelectedBeverage(bevanda, amountSelectedBeverage-selectedAmount);
+                    bevanda.setQuantita(amountSelectedBeverage-selectedAmount);
+                    cartLayoutClassArrayList.set(position,new CartLayoutClass(bevanda));
+                    notifyItemChanged(position);
+                    carrello.viewItems();
+                    Toast.makeText(itemView.getContext(), "Altri rimossi dal carrello" , Toast.LENGTH_SHORT).show();
+                }
+
+                carrello.viewItems();
+            });
 
 
         }
-        private void spinnerInitializer(Spinner spinner, int maxAmount, int position, Context context){
 
+        private void spinnerInitializer(Spinner spinner, int maxAmount, Context context){
 
             List<Integer> amounts_list = new ArrayList<>();
             for (int i = 1; i <= maxAmount; i++) {
@@ -183,6 +254,32 @@ public class CartRecyclerViewAdapter extends RecyclerView.Adapter <CartRecyclerV
             }
             return 0;
         }
+
+
+        private void showRemovalDialog(Consumer<Boolean> resultHandler) {
+            
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setTitle("Rimozione dal carrello")
+                    .setMessage("Vuoi davvero rimuovere questo elemento dal carrello?")
+                    .setPositiveButton("Si", (dialog, which) -> {
+                        resultHandler.accept(true);
+                    })
+                    .setNegativeButton("No", (dialog, which) -> {
+                        resultHandler.accept(false);
+                    });
+
+            AlertDialog dialog = builder.create();
+            dialog.show();
+
+            // Change the color of the positive button
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.parseColor("#F98500"));
+
+            // Change the color of the negative button
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.parseColor("#F98500"));
+
+
+        }
+
 
     }
 
