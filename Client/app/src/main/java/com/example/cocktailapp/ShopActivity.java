@@ -36,6 +36,7 @@ public class ShopActivity extends AppCompatActivity {
         viewPager.setAdapter(adapter);
 
 
+
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -69,9 +70,13 @@ public class ShopActivity extends AppCompatActivity {
                     case 3:
                         tab.setText("Consigliati");
                         break;
+                    case 4:
+                        tab.setText("Log Out");
+                        break;
                 }
             }
         }).attach();
+
 
     }
 

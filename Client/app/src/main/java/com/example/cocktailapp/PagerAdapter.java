@@ -24,13 +24,15 @@ public class PagerAdapter extends FragmentStateAdapter {
                 return new CartFragment();
             case 3:
                 return new RecommendedFragment();
+            case 4:
+                return new LogOutFragment();
         }
         return new CocktailFragment();
     }
 
     @Override
     public int getItemCount() {
-        return 4;
+        return 5;
     }
 
 }
