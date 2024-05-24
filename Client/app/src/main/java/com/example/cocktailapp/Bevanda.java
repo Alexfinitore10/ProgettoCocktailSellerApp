@@ -9,7 +9,6 @@ public class Bevanda {
     private double prezzo;
     private List<String> ingredienti;
     private int quantita;
-    private boolean amountRecentlyModified = false;
 
     public Bevanda(String nome, double prezzo, List<String> ingredienti, int quantita) {
         this.nome = nome;
@@ -18,7 +17,7 @@ public class Bevanda {
         this.quantita = quantita;
     }
 
-    protected Bevanda() {
+    public Bevanda() {
     }
 
     public String getNome() {
@@ -53,22 +52,7 @@ public class Bevanda {
         this.quantita = quantita;
     }
 
-    public boolean isAmountRecentlyModified() {
-        return amountRecentlyModified;
-    }
 
-    public void setAmountRecentlyModified(boolean amountRecentlyModified) {
-        this.amountRecentlyModified = amountRecentlyModified;
-    }
-
-    public Boolean isCocktail(Bevanda bevanda) {
-        if(bevanda instanceof Cocktail){
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
 
 
 }

@@ -11,11 +11,7 @@ public class Shake extends Bevanda {
         super(nome, prezzo, ingredienti, quantità);
     }
 
-    @NonNull
-    @Override
-    public String toString() {
-        return super.toString();
-    }
+
 
     public static Shake parseString(String input) {
         String[] parts = input.split(", ");
@@ -26,10 +22,15 @@ public class Shake extends Bevanda {
         String ingredientiString = parts[1].substring(1, parts[1].length() - 1).trim();
         String[] ingredientiArray = ingredientiString.split(";");
 
-        float prezzo = Float.parseFloat(parts[2].trim());
+        double prezzo = Double.parseDouble(parts[2].trim());
         int quantita = Integer.parseInt(parts[3].trim());
 
         return new Shake(nome, prezzo,Arrays.asList(ingredientiArray), quantita);
+    }
+
+    @Override
+    public String toString() {
+        return "Nome: " + getNome() + ",\n Ingredienti: " + getIngredienti() + ",\n Quantità: " + getQuantita() + ",\n Prezzo: " + getPrezzo();
     }
 
 

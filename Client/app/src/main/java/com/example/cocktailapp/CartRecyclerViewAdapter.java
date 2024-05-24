@@ -177,26 +177,26 @@ public class CartRecyclerViewAdapter extends RecyclerView.Adapter <CartRecyclerV
             });
 
             removeAnotherButton.setOnClickListener(view -> {
-                Bevanda bevanda = cartLayoutClassArrayList.get(position).getBevanda();
+                int positionToRemove = getBindingAdapterPosition();
+                if(positionToRemove == RecyclerView.NO_POSITION){
+                    Log.e("removeAnotherButton","Errore durante la ricerca della bevanda selezionata");
+                    Toast.makeText(itemView.getContext(), "Errore durante la ricerca della bevanda selezionata" , Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Bevanda bevanda = cartLayoutClassArrayList.get(positionToRemove).getBevanda();
                 int selectedAmount = (int) removeAnotherSpinner.getSelectedItem();
-                Log.d("removeAnotherButton","La bevanda selezionata è: " + bevanda.toString());
 
                 int amountSelectedBeverage = carrello.getAmountSelectedBeverage(bevanda);
-                Log.d("removeAnotherButton","L'utente vuole eliminare "+selectedAmount+ " di "+bevanda.getNome()+ " e nel carrello ce ne sono "+amountSelectedBeverage);
                 if((amountSelectedBeverage-selectedAmount) == 0){
-                    Log.d("removeAnotherButton","L'utente vuole eliminare una bevanda nel carrello");
 
                     showRemovalDialog(result -> {
                         if (result) {
-//                            Log.d("removeAnotherButton", "Sto per rimuovere l'oggetto dal cartLayoutArrayList esso ha dimensione: " + cartLayoutClassArrayList.size());
-//                            cartLayoutClassArrayList.remove(position);
-//                            Log.d("removeAnotherButton", "Dopo aver rimosso l'oggetto dal cartLayoutArrayList esso ha dimensione: " + cartLayoutClassArrayList.size());
-//                            notifyItemRemoved(position);
-                            if(position >= 0 && position < cartLayoutClassArrayList.size()){
+                            if(positionToRemove >= 0 && positionToRemove < cartLayoutClassArrayList.size()){
                                 try{
+                                    cartLayoutClassArrayList.remove(positionToRemove);
                                     carrello.removeBeverage(bevanda);
-                                    cartLayoutClassArrayList.remove(position);
-                                    notifyItemRemoved(position);
+                                    notifyItemRemoved(positionToRemove);
+                                    carrello.viewItems();
                                 }catch(Exception e){
                                     Log.e("removeAnotherButton","Errore nella rimozione dal carrello: "+e.getMessage());
                                 }
@@ -209,8 +209,8 @@ public class CartRecyclerViewAdapter extends RecyclerView.Adapter <CartRecyclerV
                 }else{
                     carrello.setAmountSelectedBeverage(bevanda, amountSelectedBeverage-selectedAmount);
                     bevanda.setQuantita(amountSelectedBeverage-selectedAmount);
-                    cartLayoutClassArrayList.set(position,new CartLayoutClass(bevanda));
-                    notifyItemChanged(position);
+                    cartLayoutClassArrayList.set(positionToRemove,new CartLayoutClass(bevanda));
+                    notifyItemChanged(positionToRemove);
                     carrello.viewItems();
                     Toast.makeText(itemView.getContext(), "Altri rimossi dal carrello" , Toast.LENGTH_SHORT).show();
                 }

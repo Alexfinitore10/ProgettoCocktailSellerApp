@@ -143,35 +143,6 @@ public class CocktailRecyclerViewAdapter extends RecyclerView.Adapter <CocktailR
             carrello = Carrello.getInstance();
 
 
-//            addButton.setOnClickListener(v -> {
-//                Log.d("bottone cocktail","sto per stampare il carrello");
-//                carrello.viewItems();
-//                Cocktail cocktail = cocktailList.get(position);
-//                selectedAmount = amountSpinner.getSelectedItemPosition() + 1;
-//                Log.d("addbutton CocktailRecyclerView","Il cocktail selezionato è: " + cocktail.toString());
-
-//                if(carrello.isBeverageInCart(cocktail)){
-//                    Log.d("è già nel carrello CocktailRecyclerView","La bevanda è nel carrello e selected amount = " +selectedAmount);
-//                        if((selectedAmount + carrello.getAmountSelectedBeverage(cocktail)) > cocktailList.get(position).getQuantita()){
-//                            Log.d("if annidato CocktailRecyclerView","quantità selezionata: " +selectedAmount+ " + quantità nel carrello: " + carrello.getAmountSelectedBeverage(cocktail) + " > quantità massima: " + cocktailList.get(position).getQuantita());
-//                            Toast.makeText(itemView.getContext(), "Quantità massima superata", Toast.LENGTH_SHORT).show();
-//                        }else{
-//                            int amountSelectedBeverage = carrello.getAmountSelectedBeverage(cocktail);
-//                            Log.d( "else interno al primo if CocktailRecyclerView","quantità selezionata: " +selectedAmount+ " + quantità data da getAmountSelectedBeverage: " + carrello.getAmountSelectedBeverage(cocktail));
-//                            carrello.setAmountSelectedBeverage(cocktail, selectedAmount+amountSelectedBeverage);
-//                            //carrello.getBeverages().get(position).setAmountRecentlyModified(true);
-//                            //carrello.setCartModified(true);
-//                            Toast.makeText(itemView.getContext(), "Altri aggiunti al carrello" , Toast.LENGTH_SHORT).show();
-//                        }
-//                }else{
-//                    carrello.addBeverage(new Cocktail(cocktail.getNome(),cocktail.getPrezzo(),cocktail.getIngredienti(),selectedAmount,cocktail.getGradazione_alcolica()));
-//                    //carrello.setCartModified(true);
-//                    Toast.makeText(itemView.getContext(), "Aggiunto al carrello" , Toast.LENGTH_SHORT).show();
-//                    carrello.viewItems();
-//
-//                }
-//            });
-
             addButton.setOnClickListener(v -> {
                 carrello.viewItems();
                 Cocktail cocktail = cocktailList.get(position);

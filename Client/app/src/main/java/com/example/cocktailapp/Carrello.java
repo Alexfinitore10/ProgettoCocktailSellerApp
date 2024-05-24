@@ -8,34 +8,12 @@ import java.util.Iterator;
 public class Carrello {
     private ArrayList<Bevanda> beverages;
     private static final Carrello istanza = new Carrello();
-    private boolean cartModified = false;
-    private int lastSize = 0;
-
-    public int getLastSize() {
-        return lastSize;
-    }
-
-    public void setLastSize(int lastSize) {
-        this.lastSize = lastSize;
-    }
-
-    public boolean isCartModified() {
-        return cartModified;
-    }
-
-    public void setCartModified(boolean addingToCart) {
-        cartModified = addingToCart;
-    }
-
-
     private Carrello() {
         beverages = new ArrayList<>();
     }
-
     public static Carrello getInstance() {
         return istanza;
     }
-
     public void addBeverage(Bevanda bevanda) {
         beverages.add(bevanda);
     }
@@ -51,10 +29,6 @@ public class Carrello {
 
     }
 
-
-    public ArrayList<Bevanda> getBeverages() {
-        return beverages;
-    }
 
     public void viewItems() {
         int cocktailsNumber = getCocktailsNumber(beverages);
