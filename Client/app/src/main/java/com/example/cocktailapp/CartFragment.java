@@ -1,8 +1,6 @@
 package com.example.cocktailapp;
 
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -76,7 +74,7 @@ public class CartFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         carrello = Carrello.getInstance();
-        client = Client.getIstanza();
+        client = Client.getIstance();
         cocktailList = new ArrayList<>();
         shakeList = new ArrayList<>();
 
@@ -116,7 +114,7 @@ public class CartFragment extends Fragment {
         adapter = new CartRecyclerViewAdapter(list,getContext(),cocktailList,shakeList);
         recyclerView.setAdapter(adapter);
 
-        CartLayoutItemTransfer model = new ViewModelProvider(requireActivity()).get(CartLayoutItemTransfer.class);
+        CartObserver model = new ViewModelProvider(requireActivity()).get(CartObserver.class);
 
         model.getToAddItems().observe(getViewLifecycleOwner(), queue -> {
             while(!queue.isEmpty()){
@@ -139,6 +137,7 @@ public class CartFragment extends Fragment {
                 }
             }
         });
+
 
 
 

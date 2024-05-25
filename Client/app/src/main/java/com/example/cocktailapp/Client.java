@@ -49,7 +49,7 @@ public class Client {
 
     }
 
-    public static Client getIstanza() {
+    public static Client getIstance() {
         if(istanza == null){
             try {
                 istanza = new Client();

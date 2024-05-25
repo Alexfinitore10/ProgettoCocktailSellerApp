@@ -26,7 +26,7 @@ public class CocktailFragment extends Fragment {
     private ArrayList<Cocktail> cocktails;
     private String allCocktails;
     private Carrello carrello;
-    private CartLayoutItemTransfer model;
+    private CartObserver model;
 
 
     public CocktailFragment() {
@@ -65,9 +65,9 @@ public class CocktailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        model = new ViewModelProvider(requireActivity()).get(CartLayoutItemTransfer.class);
+        model = new ViewModelProvider(requireActivity()).get(CartObserver.class);
         carrello = Carrello.getInstance();
-        client = Client.getIstanza();
+        client = Client.getIstance();
         list = new ArrayList<>();
         cocktails = new ArrayList<>();
 

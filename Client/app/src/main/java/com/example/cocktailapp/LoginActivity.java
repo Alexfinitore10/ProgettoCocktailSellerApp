@@ -22,7 +22,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        client = Client.getIstanza();
+        client = Client.getIstance();
         sendLoginButton = findViewById(R.id.SendLogInButton);
         EmailEditText = findViewById(R.id.EmailEditText);
         PasswordEditText = findViewById(R.id.PasswordEditText);

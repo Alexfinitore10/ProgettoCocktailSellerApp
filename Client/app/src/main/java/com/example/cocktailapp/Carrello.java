@@ -8,6 +8,8 @@ import java.util.Iterator;
 public class Carrello {
     private ArrayList<Bevanda> beverages;
     private static final Carrello istanza = new Carrello();
+    private CartObserver cartObserver;
+
     private Carrello() {
         beverages = new ArrayList<>();
     }
@@ -16,6 +18,9 @@ public class Carrello {
     }
     public void addBeverage(Bevanda bevanda) {
         beverages.add(bevanda);
+        if (cartObserver != null) {
+            cartObserver.setTotalCartValue(calculateTotal());
+        }
     }
     public void removeBeverage(Bevanda bevanda) {
         for(int i = 0; i < beverages.size(); i++) {
@@ -23,12 +28,18 @@ public class Carrello {
                 Log.d("Carrello", "Sto per rimuovere " + bevanda.getNome());
                 beverages.remove(beverages.get(i));
                 Log.d("Carrello", "Bevanda rimossa");
+                if (cartObserver != null) {
+                    cartObserver.setTotalCartValue(calculateTotal());
+                }
                 break;
             }
         }
 
     }
 
+    public void setObserver(CartObserver observer) {
+        this.cartObserver = observer;
+    }
 
     public void viewItems() {
         int cocktailsNumber = getCocktailsNumber(beverages);
@@ -73,7 +84,7 @@ public class Carrello {
 
         // Calcola il totale dei cocktail
         for (int i = 0; i < beverages.size(); i++) {
-            total += beverages.get(i).getPrezzo();
+            total += beverages.get(i).getPrezzo()*beverages.get(i).getQuantita();
         }
 
         return total;

@@ -1,7 +1,6 @@
 package com.example.cocktailapp;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,9 +22,9 @@ public class ShakesRecyclerViewAdapter extends RecyclerView.Adapter<ShakesRecycl
     private Context context;
     private ArrayList<Shake> shakeslist;
     private Carrello carrello;
-    private CartLayoutItemTransfer itemTransfer;
+    private CartObserver itemTransfer;
 
-    public ShakesRecyclerViewAdapter(ArrayList<ShakesLayoutClass> shakeslayoutlist, Context context, ArrayList<Shake> shakeslist, CartLayoutItemTransfer itemTransfer) {
+    public ShakesRecyclerViewAdapter(ArrayList<ShakesLayoutClass> shakeslayoutlist, Context context, ArrayList<Shake> shakeslist, CartObserver itemTransfer) {
         this.shakeslayoutlist = shakeslayoutlist;
         this.context = context;
         this.shakeslist = shakeslist;

@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.View;
 import android.widget.*;
 
 import java.io.IOException;
@@ -24,7 +23,7 @@ public class SignUpActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
-        Client client = Client.getIstanza();
+        Client client = Client.getIstance();
         Email = findViewById(R.id.EmailEditTextSignUp);
         Password = findViewById(R.id.PasswordEditTextSignUp);
         SignUpButton = findViewById(R.id.SendSignUpButton);

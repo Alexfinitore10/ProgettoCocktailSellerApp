@@ -4,14 +4,11 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
-
-import java.io.IOException;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -27,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Runnable RunClientStarterMain = () -> {
-            client = Client.getIstanza();
+            client = Client.getIstance();
         };
 
         try {

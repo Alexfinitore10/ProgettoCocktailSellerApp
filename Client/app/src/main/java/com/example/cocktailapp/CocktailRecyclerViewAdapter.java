@@ -2,7 +2,6 @@ package com.example.cocktailapp;
 
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,10 +23,10 @@ public class CocktailRecyclerViewAdapter extends RecyclerView.Adapter <CocktailR
     private Context context;
     private ArrayList<Cocktail> cocktailList;
     private Carrello carrello;
-    private CartLayoutItemTransfer itemTransfer;
+    private CartObserver itemTransfer;
 
 
-    public CocktailRecyclerViewAdapter(ArrayList<CocktailLayoutClass> cocktailLayoutArrayList, Context context, ArrayList<Cocktail> cocktailList, CartLayoutItemTransfer itemTransfer) {
+    public CocktailRecyclerViewAdapter(ArrayList<CocktailLayoutClass> cocktailLayoutArrayList, Context context, ArrayList<Cocktail> cocktailList, CartObserver itemTransfer) {
         this.cocktailLayoutArrayList = cocktailLayoutArrayList;
         this.context = context;
         this.cocktailList = cocktailList;

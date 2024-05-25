@@ -43,7 +43,7 @@ public class LogOutFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-       client = Client.getIstanza();
+       client = Client.getIstance();
 
        LogOut = view.findViewById(R.id.LogOutButton);
 

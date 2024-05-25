@@ -3,8 +3,6 @@ package com.example.cocktailapp;
 
 
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 
@@ -31,7 +29,7 @@ public class ShakesFragment extends Fragment {
     private ArrayList<Shake> shakes;
     private String allShakes;
     private Carrello carrello;
-    private CartLayoutItemTransfer model;
+    private CartObserver model;
 
 
 
@@ -62,9 +60,9 @@ public class ShakesFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        model = new ViewModelProvider(requireActivity()).get(CartLayoutItemTransfer.class);
+        model = new ViewModelProvider(requireActivity()).get(CartObserver.class);
         carrello = Carrello.getInstance();
-        client = Client.getIstanza();
+        client = Client.getIstance();
         list = new ArrayList<>();
         shakes = new ArrayList<>();
 
