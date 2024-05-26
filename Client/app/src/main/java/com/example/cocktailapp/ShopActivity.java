@@ -75,12 +75,15 @@ public class ShopActivity extends AppCompatActivity {
                     tab.setText("Frullati");
                     break;
                 case 2:
-                    tab.setText("Carrello");
-                    break;
-                case 3:
                     tab.setText("Consigliati");
                     break;
+                case 3:
+                    tab.setText("Carrello");
+                    break;
                 case 4:
+                    tab.setText("Pagamento");
+                    break;
+                case 5:
                     tab.setText("Log Out");
                     break;
             }

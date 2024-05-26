@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/PaymentFrameLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".PaymentFragment" >
+
+    <TextView
+        android:id="@+id/LogOutQuestionTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="20dp"
+        android:text="Vuoi davvero confermare l'acquisto?"
+        android:textAlignment="center"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+    <Button
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:text="Sì"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="50dp"
+        android:id="@+id/YesButton"
+        android:backgroundTint="#F98500"/>
+
+    <Button
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:text="No"
+        android:layout_marginStart="200dp"
+        android:layout_marginTop="50dp"
+        android:id="@+id/NoButton"
+        android:backgroundTint="#F80000"/>
+
+
+
+
+
+
+</FrameLayout>
+
+

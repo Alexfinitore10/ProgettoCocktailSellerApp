@@ -18,22 +18,8 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link CartFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class CartFragment extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
     private CartRecyclerViewAdapter adapter;
     private ArrayList<CartLayoutClass> list;
     private RecyclerView recyclerView;
@@ -131,6 +117,14 @@ public class CartFragment extends Fragment {
                 }else{
                     Log.e("CartFragment", "Item not found in list");
                 }
+            }
+        });
+
+        model.getPaymentSuccess().observe(getViewLifecycleOwner(), paymentMade -> {
+            if (paymentMade) {
+                list.clear();
+                adapter.notifyDataSetChanged();
+                model.setPaymentSuccess(false);
             }
         });
 

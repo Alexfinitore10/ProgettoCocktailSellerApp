@@ -8,6 +8,7 @@ public class CartObserver extends ViewModel {
     private final MutableLiveData<Queue<CartLayoutClass>> toAddItems = new MutableLiveData<>(new LinkedList<>());
     private final MutableLiveData<Queue<CartLayoutClass>> toUpdateItems = new MutableLiveData<>(new LinkedList<>());
     private final MutableLiveData<Queue<Double>> totalCartValue = new MutableLiveData<>(new LinkedList<>());
+    private final MutableLiveData<Boolean> paymentSuccess = new MutableLiveData<>();
 
     public void setElementToAdd(CartLayoutClass item) {
         Queue<CartLayoutClass> currentItems = toAddItems.getValue();
@@ -30,6 +31,10 @@ public class CartObserver extends ViewModel {
         this.totalCartValue.setValue(currentItems);
     }
 
+    public void setPaymentSuccess(boolean success){
+        this.paymentSuccess.setValue(success);
+    }
+
     public LiveData<Queue<Double>> getTotalCartValue() {
         return totalCartValue;
     }
@@ -40,5 +45,9 @@ public class CartObserver extends ViewModel {
 
     public LiveData<Queue<CartLayoutClass>> getToUpdateItem() {
         return toUpdateItems;
+    }
+
+    public LiveData<Boolean> getPaymentSuccess() {
+        return paymentSuccess;
     }
 }
