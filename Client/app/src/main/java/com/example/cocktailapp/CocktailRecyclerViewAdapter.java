@@ -62,9 +62,6 @@ public class CocktailRecyclerViewAdapter extends RecyclerView.Adapter <CocktailR
 
         holder.SpinnerInitializer(holder.amountSpinner, position, holder.itemView.getContext());
 
-
-
-
     }
 
 
@@ -153,6 +150,7 @@ public class CocktailRecyclerViewAdapter extends RecyclerView.Adapter <CocktailR
                     } else {
                         int amountSelectedBeverage = carrello.getAmountSelectedBeverage(cocktail);
                         carrello.setAmountSelectedBeverage(cocktail, (selectedAmount + amountSelectedBeverage));
+                        itemTransfer.setTotalCartValue(carrello.calculateTotal());
                         Cocktail temp = new Cocktail(cocktail.getNome(),cocktail.getPrezzo(),cocktail.getIngredienti(),selectedAmount +amountSelectedBeverage,cocktail.getGradazione_alcolica());
                         itemTransfer.setElementToUpdate(new CartLayoutClass(temp));
                         Toast.makeText(context, "Altri aggiunti al carrello", Toast.LENGTH_SHORT).show();

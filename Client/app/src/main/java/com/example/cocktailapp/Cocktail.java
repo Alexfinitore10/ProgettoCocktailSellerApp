@@ -32,11 +32,22 @@ public class Cocktail extends Bevanda {
         String ingredientiString = parts[1].substring(1, parts[1].length() - 1).trim();
         String[] ingredientiArray = ingredientiString.split(";");
     
-        double gradazioneAlcolica = Double.parseDouble(parts[2].trim());
-        double prezzo = Double.parseDouble(parts[3].trim());
+        float gradazioneAlcolica = Float.parseFloat(parts[2].trim());
+        float prezzo = Float.parseFloat(parts[3].trim());
         int quantita = Integer.parseInt(parts[4].trim());
     
         return new Cocktail(nome, prezzo, Arrays.asList(ingredientiArray), quantita, gradazioneAlcolica);
+    }
+
+    public static List<Cocktail> setCocktails(String buffer) {
+        List<Cocktail> Cocktails = new ArrayList<Cocktail>();
+        String[] cocktails = buffer.split("\n");
+
+        for (String cocktail : cocktails) {
+            Cocktail recommendedCocktail = parseString(cocktail);
+            Cocktails.add(recommendedCocktail);
+        }
+        return Cocktails;
     }
 
     

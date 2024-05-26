@@ -122,6 +122,7 @@ public class ShakesRecyclerViewAdapter extends RecyclerView.Adapter<ShakesRecycl
                     } else {
                         int amountSelectedBeverage = carrello.getAmountSelectedBeverage(shake);
                         carrello.setAmountSelectedBeverage(shake, (selectedAmount + amountSelectedBeverage));
+                        itemTransfer.setTotalCartValue(carrello.calculateTotal());
                         Shake temp = new Shake(shake.getNome(),shake.getPrezzo(),shake.getIngredienti(),selectedAmount+amountSelectedBeverage);
                         itemTransfer.setElementToUpdate(new CartLayoutClass(temp));
                         Toast.makeText(itemView.getContext(), "Altri aggiunti al carrello", Toast.LENGTH_SHORT).show();

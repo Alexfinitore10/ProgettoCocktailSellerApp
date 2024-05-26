@@ -30,13 +30,15 @@ public class CartRecyclerViewAdapter extends RecyclerView.Adapter <CartRecyclerV
     private Carrello carrello;
     private ArrayList<Cocktail> cocktailList;
     private ArrayList<Shake> shakeList;
+    private CartObserver itemTransfer;
 
 
-    public CartRecyclerViewAdapter(ArrayList<CartLayoutClass> cartLayoutClassArrayList, Context context, ArrayList<Cocktail> cocktailList, ArrayList<Shake> shakeList) {
+    public CartRecyclerViewAdapter(ArrayList<CartLayoutClass> cartLayoutClassArrayList, Context context, ArrayList<Cocktail> cocktailList, ArrayList<Shake> shakeList, CartObserver itemTransfer) {
         this.cartLayoutClassArrayList = cartLayoutClassArrayList;
         this.context = context;
         this.cocktailList = cocktailList;
         this.shakeList = shakeList;
+        this.itemTransfer = itemTransfer;
     }
 
     @NonNull
@@ -168,6 +170,7 @@ public class CartRecyclerViewAdapter extends RecyclerView.Adapter <CartRecyclerV
 
                 int amountSelectedBeverage = carrello.getAmountSelectedBeverage(bevanda);
                 carrello.setAmountSelectedBeverage(bevanda, selectedAmount+amountSelectedBeverage);
+                itemTransfer.setTotalCartValue(carrello.calculateTotal());
                 bevanda.setQuantita(selectedAmount+amountSelectedBeverage);
                 cartLayoutClassArrayList.set(position,new CartLayoutClass(bevanda));
                 notifyItemChanged(position);
@@ -201,14 +204,13 @@ public class CartRecyclerViewAdapter extends RecyclerView.Adapter <CartRecyclerV
                                     Log.e("removeAnotherButton","Errore nella rimozione dal carrello: "+e.getMessage());
                                 }
                             }
-
-
                         }
                     });
 
                 }else{
                     carrello.setAmountSelectedBeverage(bevanda, amountSelectedBeverage-selectedAmount);
                     bevanda.setQuantita(amountSelectedBeverage-selectedAmount);
+                    itemTransfer.setTotalCartValue(carrello.calculateTotal());
                     cartLayoutClassArrayList.set(positionToRemove,new CartLayoutClass(bevanda));
                     notifyItemChanged(positionToRemove);
                     carrello.viewItems();

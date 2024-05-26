@@ -84,9 +84,7 @@ public class CocktailFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.CocktailRecyclerView);
 
-        for (String c : allCocktails.split("\\n")) {
-            cocktails.add(Cocktail.parseString(c));
-        }
+        cocktails = (ArrayList<Cocktail>) Cocktail.setCocktails(allCocktails);
 
         for (Cocktail c : cocktails) {
             list.add(new CocktailLayoutClass(c.getNome(),c.getIngredienti(),c.getGradazione_alcolica(),c.getPrezzo(),c.getQuantita()));

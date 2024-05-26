@@ -98,23 +98,19 @@ public class CartFragment extends Fragment {
             Log.e("onViewCreated CartFragment","Errore nella join del thread getShakes: " + e.getMessage());
         }
 
-        for (String c : allCocktails.split("\\n")) {
-            cocktailList.add(Cocktail.parseString(c));
-        }
+        cocktailList = (ArrayList<Cocktail>) Cocktail.setCocktails(allCocktails);
 
-        for (String s : allShakes.split("\\n")) {
-            shakeList.add(Shake.parseString(s));
-        }
+        shakeList = (ArrayList<Shake>) Shake.setShakes(allShakes);
 
 
 
+        CartObserver model = new ViewModelProvider(requireActivity()).get(CartObserver.class);
         list = new ArrayList<>();
         recyclerView = view.findViewById(R.id.CartRecycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new CartRecyclerViewAdapter(list,getContext(),cocktailList,shakeList);
+        adapter = new CartRecyclerViewAdapter(list,getContext(),cocktailList,shakeList,model);
         recyclerView.setAdapter(adapter);
 
-        CartObserver model = new ViewModelProvider(requireActivity()).get(CartObserver.class);
 
         model.getToAddItems().observe(getViewLifecycleOwner(), queue -> {
             while(!queue.isEmpty()){

@@ -80,9 +80,7 @@ public class ShakesFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.ShakesRecyclerView);
 
-        for (String s : allShakes.split("\\n")) {
-            shakes.add(Shake.parseString(s));
-        }
+        shakes = (ArrayList<Shake>) Shake.setShakes(allShakes);
 
         for(Shake s : shakes){
             list.add(new ShakesLayoutClass(s.getNome(),s.getIngredienti(),s.getPrezzo(),s.getQuantita()));
