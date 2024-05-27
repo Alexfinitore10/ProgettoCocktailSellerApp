@@ -63,6 +63,17 @@ public class Shake {
         return new Shake(nome, ingredienti, prezzo, quantita);
     }
 
+    public static List<Shake> setRecommendedShakes(String buffer) {
+        List<Shake> recommendedShakes = new ArrayList<Shake>();
+        String[] shakes = buffer.split("\n");
+
+        for (String shake : shakes) {
+            Shake recommendedShake = parseString(shake);
+            recommendedShakes.add(recommendedShake);
+        }
+        return recommendedShakes;
+    }
+
     // Metodo toString per rappresentazione testuale dell'oggetto
     @Override
     public String toString() {

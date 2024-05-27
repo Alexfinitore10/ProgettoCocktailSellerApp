@@ -557,7 +557,7 @@ char* get_recommended_shakes() {
                     "JOIN "
                         "Vendite v ON p.nome = v.prodotto_id "
                    " WHERE "
-                        "p.tipo = 'shake' "
+                        "p.tipo = 'frullato' "
                     "GROUP BY "
                         "p.nome, p.ingredienti, p.prezzo "
                     "ORDER BY "
