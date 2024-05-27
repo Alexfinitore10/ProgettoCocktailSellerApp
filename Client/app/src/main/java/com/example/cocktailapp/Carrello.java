@@ -149,15 +149,7 @@ public class Carrello {
         }
     }
 
-    public int getPositionBeverage(Bevanda bevanda) {
-        for (int i = 0; i < beverages.size(); i++) {
-            if (beverages.get(i).getNome().equals(bevanda.getNome())) {
-                return i;
-            }
-        }
-
-        return -1;
+    public ArrayList<Bevanda> getBeverages() {
+        return beverages;
     }
-
-
 }

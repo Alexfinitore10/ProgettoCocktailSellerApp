@@ -114,6 +114,10 @@ public class ShakesRecyclerViewAdapter extends RecyclerView.Adapter<ShakesRecycl
 
             addButton.setOnClickListener(v -> {
                 Shake shake = shakeslist.get(position);
+                if(amountSpinner.getSelectedItem() == null){
+                    Toast.makeText(itemView.getContext(), "Bevanda terminata" , Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 selectedAmount = (int) amountSpinner.getSelectedItem();
 
                 if(carrello.isBeverageInCart(shake)) {

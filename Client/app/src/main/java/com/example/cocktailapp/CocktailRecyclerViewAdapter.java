@@ -142,6 +142,10 @@ public class CocktailRecyclerViewAdapter extends RecyclerView.Adapter <CocktailR
             addButton.setOnClickListener(v -> {
                 carrello.viewItems();
                 Cocktail cocktail = cocktailList.get(position);
+                if(amountSpinner.getSelectedItem() == null){
+                    Toast.makeText(itemView.getContext(), "Bevanda terminata" , Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 selectedAmount = (int) amountSpinner.getSelectedItem();
 
                 if(carrello.isBeverageInCart(cocktail)) {

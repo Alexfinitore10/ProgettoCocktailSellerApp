@@ -14,9 +14,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 public class PaymentFragment extends Fragment {
     private Button YesButton;
     private Carrello carrello;
+    private Client client;
 
     public PaymentFragment() {
         // Required empty public constructor
@@ -31,6 +34,7 @@ public class PaymentFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         carrello = Carrello.getInstance();
+        client = Client.getIstance();
     }
 
     @Override
@@ -51,12 +55,57 @@ public class PaymentFragment extends Fragment {
             if(carrello.calculateTotal() == 0) {
                 Toast.makeText(getContext(), "Carrello vuoto", Toast.LENGTH_SHORT).show();
             }else{
-                Toast.makeText(getContext(), "Pagamento effettuato", Toast.LENGTH_SHORT).show();
+                Runnable sendToServer = () -> sendBeveragesToServer(client,carrello);
+                Thread sendToServerStarter = new Thread(sendToServer);
+                sendToServerStarter.start();
+                try {
+                    sendToServerStarter.join();
+                } catch (InterruptedException e) {
+                    Log.e("PaymentFragment", "Errore join");
+                }
                 carrello.emptyCarrello();
                 carrello.viewItems();
                 model.setTotalCartValue(carrello.calculateTotal());
                 model.setPaymentSuccess(true);
+                Toast.makeText(getContext(), "Pagamento completato con successo!", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void sendBeveragesToServer(Client client,Carrello carrello){
+        ArrayList<String> cocktails = new ArrayList<>();
+        ArrayList<String> shakes =  new ArrayList<>();
+        for (int i = 0; i < carrello.getBeverages().size(); i++) {
+            if(carrello.getBeverages().get(i) instanceof Cocktail){
+                cocktails.add("1`" + carrello.getBeverages().get(i).getNome() + "`" + carrello.getBeverages().get(i).getQuantita());
+            }else{
+                shakes.add("2`" + carrello.getBeverages().get(i).getNome() + "`" + carrello.getBeverages().get(i).getQuantita());
+            }
+        }
+
+        client.sendData("8");
+        for (String c : cocktails) {
+            client.sendData(c);
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                Log.e("sendBeveragesToServer", "Errore sleep durante l'invio dei cocktail");
+            }
+        }
+        for (String c : shakes) {
+            client.sendData(c);
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                Log.e("sendBeveragesToServer", "Errore sleep durante l'invio dei frullati");
+            }
+        }
+
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        client.sendData("Fine");
     }
 }
