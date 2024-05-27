@@ -296,9 +296,9 @@ public class client {
         }else if (buffer.equals("Pochi")){
             System.err.println("Non ci sono abbastanza drinks per effettuare un recommend, acquista qualche drink prima");
         }else{
-            List<Cocktail> rec = Cocktail.setRecommendedCocktails(buffer);
-            System.out.println("I drink raccomandati sono: ");
-            for(Cocktail s : rec){
+            List<Shake> rec = Shake.setRecommendedShakes(buffer);
+            System.out.println("Gli shakes raccomandati sono: ");
+            for(Shake s : rec){
                 System.out.println(s.toString());
             }
         }
