@@ -26,14 +26,13 @@ public class CocktailFragment extends Fragment {
     private ArrayList<Cocktail> cocktails;
     private String allCocktails;
     private Carrello carrello;
-    private CartObserver model;
 
 
     public CocktailFragment() {
         // Required empty public constructor
     }
 
-    public static CocktailFragment newInstance(String param1, String param2) {
+    public static CocktailFragment newInstance() {
         CocktailFragment fragment = new CocktailFragment();
         return fragment;
     }
@@ -41,8 +40,8 @@ public class CocktailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
+        carrello = Carrello.getInstance();
+    
     }
 
     @Override
@@ -56,8 +55,7 @@ public class CocktailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        model = new ViewModelProvider(requireActivity()).get(CartObserver.class);
-        carrello = Carrello.getInstance();
+        CartObserver model = new ViewModelProvider(requireActivity()).get(CartObserver.class);
         client = Client.getIstance();
         list = new ArrayList<>();
         cocktails = new ArrayList<>();

@@ -15,21 +15,21 @@ public class PagerAdapter extends FragmentStateAdapter {
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        switch (position){
-            case 0:
-                return new CocktailFragment();
-            case 1:
-                return new ShakesFragment();
-            case 2:
-                return new RecommendedFragment();
-            case 3:
-                return new CartFragment();
-            case 4:
-                return new PaymentFragment();
-            case 5:
-                return new LogOutFragment();
-        }
-        return new CocktailFragment();
+          switch (position){
+              case 0:
+                  return new CocktailFragment();
+              case 1:
+                  return new ShakesFragment();
+              case 2:
+                  return new RecommendedFragment();
+              case 3:
+                  return new CartFragment();
+              case 4:
+                  return new PaymentFragment();
+              case 5:
+                  return new LogOutFragment();
+          }
+          return new CocktailFragment();
     }
 
     @Override

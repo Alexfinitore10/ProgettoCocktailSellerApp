@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +17,6 @@ import android.widget.Toast;
 public class PaymentFragment extends Fragment {
     private Button YesButton;
     private Carrello carrello;
-    private CartObserver model;
 
     public PaymentFragment() {
         // Required empty public constructor
@@ -30,6 +30,7 @@ public class PaymentFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        carrello = Carrello.getInstance();
     }
 
     @Override
@@ -42,8 +43,7 @@ public class PaymentFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        model = new ViewModelProvider(requireActivity()).get(CartObserver.class);
-        carrello = Carrello.getInstance();
+        CartObserver model = new ViewModelProvider(requireActivity()).get(CartObserver.class);
         YesButton = view.findViewById(R.id.YesButton);
 
 

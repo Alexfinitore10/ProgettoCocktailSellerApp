@@ -29,7 +29,6 @@ public class ShakesFragment extends Fragment {
     private ArrayList<Shake> shakes;
     private String allShakes;
     private Carrello carrello;
-    private CartObserver model;
 
 
 
@@ -46,7 +45,7 @@ public class ShakesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        carrello = Carrello.getInstance();
     }
 
     @Override
@@ -60,8 +59,7 @@ public class ShakesFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        model = new ViewModelProvider(requireActivity()).get(CartObserver.class);
-        carrello = Carrello.getInstance();
+        CartObserver model = new ViewModelProvider(requireActivity()).get(CartObserver.class);
         client = Client.getIstance();
         list = new ArrayList<>();
         shakes = new ArrayList<>();

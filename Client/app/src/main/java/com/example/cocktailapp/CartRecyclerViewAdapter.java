@@ -165,6 +165,10 @@ public class CartRecyclerViewAdapter extends RecyclerView.Adapter <CartRecyclerV
 
             addAnotherButton.setOnClickListener(view -> {
                 Bevanda bevanda = cartLayoutClassArrayList.get(position).getBevanda();
+                if(addAnotherSpinner.getSelectedItem() == null){
+                    Toast.makeText(itemView.getContext(), "Impossibile aggiungere altre bevande" , Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 int selectedAmount = (int) addAnotherSpinner.getSelectedItem();
                 Log.d("addAnotherButton","La bevanda selezionata è: " + bevanda.toString());
 
