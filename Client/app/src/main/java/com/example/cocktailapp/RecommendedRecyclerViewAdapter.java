@@ -5,9 +5,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,10 +20,17 @@ import java.util.List;
 public class RecommendedRecyclerViewAdapter extends RecyclerView.Adapter<RecommendedRecyclerViewAdapter.ViewHolder> {
     private ArrayList<RecommendedLayoutClass> recommendedLayoutArrayList;
     private Context context;
+    private Carrello carrello;
+    private ArrayList<Cocktail> cocktailList;
+    private ArrayList<Shake> shakeList;
+    private CartObserver itemTransfer;
 
-    public RecommendedRecyclerViewAdapter(ArrayList<RecommendedLayoutClass> recommendedLayoutArrayList, Context context) {
+    public RecommendedRecyclerViewAdapter(ArrayList<RecommendedLayoutClass> recommendedLayoutArrayList, Context context, ArrayList<Cocktail> cocktailList, ArrayList<Shake> shakeList, CartObserver itemTransfer) {
         this.recommendedLayoutArrayList = recommendedLayoutArrayList;
         this.context = context;
+        this.cocktailList = cocktailList;
+        this.shakeList = shakeList;
+        this.itemTransfer = itemTransfer;
     }
 
     @NonNull
@@ -119,9 +128,10 @@ public class RecommendedRecyclerViewAdapter extends RecyclerView.Adapter<Recomme
 
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+        private Button addButton;
         private ImageView RecommendedImageView;
         private Spinner amountSpinner;
-        private int position;
+        private int position,selectedAmount;
         private TextView recommendedName, recommendedPrice, recommendedAlcoholVolume, recommendedIngredients;
 
         public void setPosition(int position) {
@@ -137,6 +147,52 @@ public class RecommendedRecyclerViewAdapter extends RecyclerView.Adapter<Recomme
             recommendedIngredients = itemView.findViewById(R.id.recommended_ingredients);
             RecommendedImageView = itemView.findViewById(R.id.recommended_image);
             amountSpinner = itemView.findViewById(R.id.recommendedAmountSpinner);
+            addButton = itemView.findViewById(R.id.recommendedAddButton);
+            carrello = Carrello.getInstance();
+
+
+            addButton.setOnClickListener(v -> {
+                carrello.viewItems();
+                Bevanda bevanda = recommendedLayoutArrayList.get(position).getBevanda();
+                if(amountSpinner.getSelectedItem() == null){
+                    Toast.makeText(itemView.getContext(), "Bevanda terminata" , Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                selectedAmount = (int) amountSpinner.getSelectedItem();
+
+                if(carrello.isBeverageInCart(bevanda)) {
+                        if ((selectedAmount + carrello.getAmountSelectedBeverage(bevanda)) > getRecommendedAmount(bevanda)) {
+                            Toast.makeText(context, "Quantità massima superata", Toast.LENGTH_SHORT).show();
+                        } else {
+                            int amountSelectedBeverage = carrello.getAmountSelectedBeverage(bevanda);
+                            carrello.setAmountSelectedBeverage(bevanda, (selectedAmount + amountSelectedBeverage));
+                            itemTransfer.setTotalCartValue(carrello.calculateTotal());
+                            if(bevanda instanceof Cocktail){
+                                Cocktail temp = new Cocktail(bevanda.getNome(),bevanda.getPrezzo(),bevanda.getIngredienti(),(selectedAmount +amountSelectedBeverage),((Cocktail) bevanda).getGradazione_alcolica());
+                                itemTransfer.setElementToUpdate(new CartLayoutClass(temp));
+                            }else{
+                                Shake temp = new Shake(bevanda.getNome(),bevanda.getPrezzo(),bevanda.getIngredienti(),(selectedAmount +amountSelectedBeverage));
+                                itemTransfer.setElementToUpdate(new CartLayoutClass(temp));
+                            }
+                            Toast.makeText(context, "Altri aggiunti al carrello", Toast.LENGTH_SHORT).show();
+                        }
+
+                }else{
+                    if(bevanda instanceof Cocktail){
+                        Cocktail temp = new Cocktail(bevanda.getNome(),bevanda.getPrezzo(),bevanda.getIngredienti(),selectedAmount,((Cocktail) bevanda).getGradazione_alcolica());
+                        carrello.addBeverage(temp);
+                        carrello.viewItems();
+                        itemTransfer.setElementToAdd(new CartLayoutClass(temp));
+                    }else{
+                        Shake temp = new Shake(bevanda.getNome(),bevanda.getPrezzo(),bevanda.getIngredienti(),selectedAmount);
+                        carrello.addBeverage(temp);
+                        carrello.viewItems();
+                        itemTransfer.setElementToAdd(new CartLayoutClass(temp));
+                    }
+
+                    Toast.makeText(context, "Aggiunto al carrello" , Toast.LENGTH_SHORT).show();
+                }
+            });
         }
 
         private void SpinnerInitializer(Spinner spinner, int position, Context context) {
@@ -155,6 +211,23 @@ public class RecommendedRecyclerViewAdapter extends RecyclerView.Adapter<Recomme
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
             spinner.setAdapter(adapter);
+        }
+
+        private int getRecommendedAmount(Bevanda bevanda){
+            if(bevanda instanceof Cocktail){
+                for(int i = 0; i < cocktailList.size(); i++){
+                    if(cocktailList.get(i).getNome().equals(bevanda.getNome())) {
+                        return cocktailList.get(i).getQuantita();
+                    }
+                }
+            }else{
+                for(int i = 0; i < shakeList.size(); i++){
+                    if(shakeList.get(i).getNome().equals(bevanda.getNome())) {
+                        return shakeList.get(i).getQuantita();
+                    }
+                }
+            }
+            return 0;
         }
     }
 

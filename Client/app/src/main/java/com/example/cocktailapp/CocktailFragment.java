@@ -60,7 +60,7 @@ public class CocktailFragment extends Fragment {
         list = new ArrayList<>();
         cocktails = new ArrayList<>();
 
-        Runnable getCocktailsTask = () -> allCocktails = getAllCocktails(client);
+        Runnable getCocktailsTask = () -> allCocktails = getAllCocktails();
         Thread getCocktailsThread = new Thread(getCocktailsTask);
         getCocktailsThread.start();
 
@@ -85,9 +85,11 @@ public class CocktailFragment extends Fragment {
 
 
 
+
+
     }
 
-    private String getAllCocktails(Client client){
+    private String getAllCocktails(){
         String command = "3";
         client.sendData(command);
         return client.bufferedReceive();

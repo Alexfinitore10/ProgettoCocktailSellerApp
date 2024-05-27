@@ -66,7 +66,7 @@ public class ShakesFragment extends Fragment {
 
 
 
-        Runnable getShakesTask = () -> allShakes = getAllShakes(client);
+        Runnable getShakesTask = () -> allShakes = getAllShakes();
         Thread getShakesThread = new Thread(getShakesTask);
         getShakesThread.start();
 
@@ -93,7 +93,7 @@ public class ShakesFragment extends Fragment {
 
 
 
-    private String getAllShakes(Client client) {
+    private String getAllShakes() {
         String command = "4";
         client.sendData(command);
         return client.bufferedReceive();
