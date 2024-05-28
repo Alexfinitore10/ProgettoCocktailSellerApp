@@ -558,6 +558,8 @@ public class client {
             System.out.println("I dati del login che stanno per essere inviati sono: " + dati);
             out.println(dati);
             System.out.println("Invio riuscito");
+        } catch (NullPointerException e) {
+            System.err.println("Errore NullPointerException durante l'invio dei dati per il login: " + e.getMessage());
         } catch (NoSuchElementException ex) {
             System.err.println("Mancano dei dati per il login");
         } catch (IllegalStateException e) {
@@ -567,6 +569,7 @@ public class client {
         }
 
     }
+
 
     boolean checkEmailRegex(String email) {
         Pattern pattern = Pattern.compile(regex);
