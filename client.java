@@ -195,7 +195,7 @@ public class client {
                     break;
             }
             if (!risposta.equals("5") && !risposta.equals("7") && !risposta.equals("9") && !risposta.equals("10")
-                    && !risposta.equals("11") && !risposta.equals("11")) {
+                    && !risposta.equals("11") && !risposta.equals("12")) {
                 out.println(risposta);
             }
 

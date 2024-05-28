@@ -163,7 +163,9 @@ bool testingConnection() {
 // not
 bool command(char *comando) {
   bool status = false;
+  connection_lock();
   res = PQexec(conn, comando);
+  connection_unlock();
   if (checkres(res)) {
     return true;
   } else
@@ -173,7 +175,6 @@ bool command(char *comando) {
 // Funzione di riduzione mandata al Database quando un ordine viene effettuato,
 // controlla anche se può farlo o meno(?) Ovviamente fatta male
 bool reduce_amount_cocktail(char *nome, int quantita) {
-
   if (is_drink_in_db(nome) == false) {
     log_error("Il cocktail %s non e' presente nel database", nome);
     return false; // Perchè?M
@@ -235,6 +236,8 @@ bool reduce_amount_shake(char *nome, int quantita) { // TODO Da rifare
 
     int paramLengths[2] = {strlen(quantita_string), strlen(nome)};
 
+    connection_lock();
+
     PGresult *res = PQexecParams(conn, reduce_amount_command, 2, NULL,
                                  paramValues, paramLengths, NULL, 0);
     if (PQresultStatus(res) == PGRES_COMMAND_OK) {
@@ -244,6 +247,7 @@ bool reduce_amount_shake(char *nome, int quantita) { // TODO Da rifare
       log_error("Errore nella riduzione della quantità dello shakes %s: %s",
                 nome, PQerrorMessage(conn));
     }
+    connection_unlock();
     PQclear(res);
     return true;
   }
@@ -253,6 +257,7 @@ bool checkres(PGresult *res) {
   char *risultato;
   ExecStatusType ris;
   bool status = false;
+  connection_lock();
   ris = PQresultStatus(res);
   switch (ris) {
   case PGRES_COMMAND_OK:
@@ -278,6 +283,8 @@ bool checkres(PGresult *res) {
     log_error("%s : %s", risultato, PQresultErrorMessage(res));
     break;
   }
+  connection_unlock();
+  PQclear(res);
   return status;
 }
 
@@ -319,8 +326,11 @@ void insert_prodotto(char nome[], char ingredienti[],
       strlen(quantita_string)};
   int paramFormats[6] = {0, 0, 0, 0, 0, 0};
 
+  connection_lock();
   PGresult *res = PQexecParams(conn, insert_prodotto_command, 6, NULL,
                                paramValues, paramLengths, paramFormats, 0);
+
+  connection_unlock();
 
   checkres(res);
 }
@@ -335,6 +345,7 @@ char *get_all_cocktails() { // TODO da rifare
   if (command(get_all_cocktail_command)) {
     // return printQuery(res);
     char *value = printQuery(res);
+    PQclear(res);
     return value;
   } else {
     printf("Errore nel recupero dei cocktail\n");
@@ -347,7 +358,8 @@ char *get_all_shakes() {
       "AS informazioni FROM Prodotti WHERE tipo = 'frullato';";
 
   if (command(get_all_shake_command)) {
-    return printQuery(res);
+    char *value = printQuery(res);
+    return value;
   } else {
     printf("Errore nel recupero dei frullati\n");
   }
@@ -364,12 +376,20 @@ int get_cocktail_amount(char *nome) {
 
   int paramFormats[1] = {0};
 
+  connection_lock();
+
   res = PQexecParams(conn, get_cocktail_amount_command, 1, NULL, paramValues,
                      paramLengths, paramFormats, 0);
 
+  connection_unlock();
+
   checkres(res);
 
+  connection_lock();
+
   int quantita = atoi(PQgetvalue(res, 0, 0));
+
+  connection_unlock();
 
   return quantita;
 }
@@ -378,14 +398,22 @@ int get_id_vendita() {
   char *get_id_vendita_command =
       "SELECT id FROM Vendite ORDER BY id DESC LIMIT 1";
 
+  connection_lock();
+
   res = PQexec(conn, get_id_vendita_command);
+
+  connection_unlock();
 
   if (checkres(res) == false) {
     printf("Errore nel recupero dell'id della vendita\n");
     return -1;
   }
 
+  connection_lock();
+
   int id = atoi(PQgetvalue(res, 0, 0));
+
+  connection_unlock();
 
   return id;
 }
@@ -399,12 +427,17 @@ bool is_drink_in_db(char *nome) {
 
   int paramFormats[1] = {0};
 
+  connection_lock();
+
   res = PQexecParams(conn, is_drink_in_db_command, 1, NULL, paramValues,
                      paramLengths, paramFormats, 0);
 
   if (PQntuples(res) == 0) {
+    connection_unlock();
     return false;
   } else {
+    connection_unlock();
+    connection_unlock();
     return true;
   }
 }
@@ -418,12 +451,16 @@ bool is_shake_in_db(char *nome) {
 
   int paramFormats[1] = {0};
 
+  connection_lock();
+
   res = PQexecParams(conn, is_shake_in_db_command, 1, NULL, paramValues,
                      paramLengths, paramFormats, 0);
 
   if (PQntuples(res) == 0) {
+    connection_unlock();
     return false;
   } else {
+    connection_unlock();
     return true;
   }
 }
@@ -438,12 +475,16 @@ bool is_cliente_in_db(const char *email) {
 
   int paramFormats[1] = {0};
 
+  connection_lock();
+
   res = PQexecParams(conn, is_cliente_in_db_command, 1, NULL, paramValues,
                      paramLengths, paramFormats, 0);
 
   if (PQntuples(res) == 0) {
+    connection_unlock();
     return false;
   } else {
+    connection_unlock();
     return true;
   }
 }
@@ -469,8 +510,11 @@ char signup(char *email, char *password) {
 
     int paramFormats[2] = {0, 0};
 
+    connection_lock();
+
     res = PQexecParams(conn, signup_command, 2, NULL, paramValues, paramLengths,
                        paramFormats, 0);
+    connection_unlock();
 
     if (checkres(res)) {
       printf("Registrazione effettuata con successo\n");
@@ -488,8 +532,14 @@ bool signin(char *email, char *password) {
     const char *paramValues[1] = {email};
     int paramLengths[1] = {strlen(email)};
     int paramFormats[1] = {0};
+
+    connection_lock();
+
     res = PQexecParams(conn, isLogged, 1, NULL, paramValues, paramLengths,
                        paramFormats, 0);
+
+    connection_unlock();
+
     if (checkres(res)) {
       log_info("Login effettuato con successo\n");
       return true;
@@ -509,8 +559,10 @@ bool logoff(const char *email) {
   const char *paramValues[1] = {email};
   int paramLengths[1] = {strlen(email)};
   int paramFormats[1] = {0};
+  connection_lock();
   res = PQexecParams(conn, isLogged, 1, NULL, paramValues, paramLengths,
                      paramFormats, 0);
+  connection_unlock();
   if (checkres(res)) {
     log_info("Logout effettuato");
     return true;
@@ -531,12 +583,16 @@ bool are_credentials_correct(char *email, char *password) {
 
   int paramFormats[2] = {0, 0};
 
+  connection_lock();
+
   res = PQexecParams(conn, credentials_command, 2, NULL, paramValues,
                      paramLengths, paramFormats, 0);
 
   if (PQntuples(res) == 0) {
+    connection_unlock();
     return false;
   } else {
+    connection_unlock();
     return true;
   }
 }
@@ -553,14 +609,18 @@ bool create_sell(const char *cliente_id, char *nome_bevanda, char *tipo,
   int paramLengths[4] = {0}; // 0 means "null terminated"
   int paramFormats[4] = {0}; // 0 means "text"
 
+  connection_lock();
+
   res = PQexecParams(conn, insert_command, 4, NULL, paramValues, paramLengths,
                      paramFormats, 0);
 
   if (PQresultStatus(res) != PGRES_COMMAND_OK) {
     fprintf(stderr, "Insertion failed: %s", PQerrorMessage(conn));
+    connection_unlock();
     PQclear(res);
     return false;
   }
+  connection_unlock();
   PQclear(res);
   return true;
 }
@@ -587,7 +647,6 @@ char *get_recommended_drinks() {
                 " 3;";
 
   if (command(query)) {
-    // return printQuery(res);
     char *value = printQuery(res); // res è globale......................
     int rows = PQntuples(res);
     if (rows == 0) {
@@ -629,7 +688,6 @@ char *get_recommended_shakes() {
                 " 3;";
 
   if (command(query)) {
-    // return printQuery(res);
     char *value = printQuery(res); // res è globale......................
     int rows = PQntuples(res);
     if (rows == 0) {
@@ -661,19 +719,28 @@ int get_shake_amount(char *nome) {
 
   int paramFormats[1] = {0};
 
+  connection_lock();
+
   res = PQexecParams(conn, get_shake_amount_command, 1, NULL, paramValues,
                      paramLengths, paramFormats, 0);
+  connection_unlock();
 
   checkres(res);
 
+  connection_lock();
+
   int quantita = atoi(PQgetvalue(res, 0, 0));
+
+  connection_unlock();
 
   return quantita;
 }
 
 char *printQuery(PGresult *res) {
+  connection_lock();
   int nFields = PQnfields(res);
   int nTuples = PQntuples(res);
+  connection_unlock();
 
   size_t response_size = 512;
   char *response = malloc(response_size * sizeof(char));
@@ -681,7 +748,9 @@ char *printQuery(PGresult *res) {
 
   for (int i = 0; i < nTuples; i++) {
     for (int j = 0; j < nFields; j++) {
+      connection_lock();
       char *value = PQgetvalue(res, i, j);
+      connection_unlock();
       size_t value_len = strlen(value);
 
       // Check if the response string is about to overflow
@@ -707,5 +776,4 @@ void close_connection() {
   PQfinish(conn);
 
   // Free the memory allocated for the response string
-  free(res);
 }
