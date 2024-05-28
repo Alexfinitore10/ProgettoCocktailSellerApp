@@ -52,11 +52,17 @@ public class SignUpActivity extends AppCompatActivity {
             String email = Email.getText().toString();
             String password = Password.getText().toString();
 
+            if(email.isEmpty() || password.isEmpty()){
+                Toast.makeText(this, "Email o Password vuote", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             boolean isValidEmail = client.checkEmailRegex(Email.getText().toString());
             if(!isValidEmail){
                 Toast.makeText(this, "Email non valida", Toast.LENGTH_SHORT).show();
                 return;
             }
+
 
             Runnable SignupTask = () -> {
                 risposta = sendSignup(client, email, password);

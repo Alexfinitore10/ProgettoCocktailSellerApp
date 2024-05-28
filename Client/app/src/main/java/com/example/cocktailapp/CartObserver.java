@@ -9,6 +9,7 @@ public class CartObserver extends ViewModel {
     private final MutableLiveData<Queue<CartLayoutClass>> toUpdateItems = new MutableLiveData<>(new LinkedList<>());
     private final MutableLiveData<Queue<Double>> totalCartValue = new MutableLiveData<>(new LinkedList<>());
     private final MutableLiveData<Boolean> paymentSuccess = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> isLoggedIn = new MutableLiveData<>();
 
     public void setElementToAdd(CartLayoutClass item) {
         Queue<CartLayoutClass> currentItems = toAddItems.getValue();
@@ -31,6 +32,10 @@ public class CartObserver extends ViewModel {
         this.totalCartValue.setValue(currentItems);
     }
 
+    public void setIsLoggedIn(boolean loggedIn){
+        this.isLoggedIn.setValue(loggedIn);
+    }
+
     public void setPaymentSuccess(boolean success){
         this.paymentSuccess.setValue(success);
     }
@@ -49,6 +54,10 @@ public class CartObserver extends ViewModel {
 
     public LiveData<Boolean> getPaymentSuccess() {
         return paymentSuccess;
+    }
+
+    public LiveData<Boolean> getIsLoggedIn() {
+        return isLoggedIn;
     }
 
 

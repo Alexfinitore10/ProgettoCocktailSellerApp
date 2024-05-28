@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
 public class PaymentFragment extends Fragment {
@@ -55,7 +57,7 @@ public class PaymentFragment extends Fragment {
             if(carrello.calculateTotal() == 0) {
                 Toast.makeText(getContext(), "Carrello vuoto", Toast.LENGTH_SHORT).show();
             }else{
-                Runnable sendToServer = () -> sendBeveragesToServer(client,carrello);
+                Runnable sendToServer = () -> sendBeveragesToServer(carrello);
                 Thread sendToServerStarter = new Thread(sendToServer);
                 sendToServerStarter.start();
                 try {
@@ -72,7 +74,8 @@ public class PaymentFragment extends Fragment {
         });
     }
 
-    private void sendBeveragesToServer(Client client,Carrello carrello){
+    private void sendBeveragesToServer(Carrello carrello){
+        String response = "";
         ArrayList<String> cocktails = new ArrayList<>();
         ArrayList<String> shakes =  new ArrayList<>();
         for (int i = 0; i < carrello.getBeverages().size(); i++) {
@@ -106,6 +109,17 @@ public class PaymentFragment extends Fragment {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        client.sendData("Fine");
+
+        do{
+            try {
+                response = client.receiveData();
+            } catch (IOException e) {
+                Log.e("sendBeveragesToServer", "Errore durante la ricezione di dati dal server: " + e.getMessage());
+            } catch (InterruptedException e) {
+                Log.e("sendBeveragesToServer", "Errore chiamata receive:" +e.getMessage());
+            }catch (Exception e){
+                Log.e("sendBeveragesToServer", "Errore:" +e.getMessage());
+            }
+        }while(!response.equals("Fine"));
     }
 }

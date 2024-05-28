@@ -129,6 +129,13 @@ public class CartFragment extends Fragment {
             }
         });
 
+        model.getIsLoggedIn().observe(getViewLifecycleOwner(), loggedIn -> {
+            if (!loggedIn) {
+                list.clear();
+                adapter.notifyDataSetChanged();
+            }
+        });
+
 
 
 

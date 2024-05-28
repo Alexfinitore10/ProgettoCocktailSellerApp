@@ -14,11 +14,11 @@ import java.util.regex.Pattern;
 
 
 public class Client {
-    boolean isLogged = false;
+    private boolean isLogged = false;
     //Regex
-    String regex = "^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
+    private String regex = "^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
 
-    StringBuilder stringBuilder = new StringBuilder();
+    private StringBuilder stringBuilder = new StringBuilder();
     private static Client istanza;
     // Socket for client communication
     private Socket clientSocket;
@@ -158,5 +158,9 @@ public class Client {
 
     public void setLogged(boolean logged) {
         isLogged = logged;
+    }
+
+    public boolean isLogged() {
+        return isLogged;
     }
 }
