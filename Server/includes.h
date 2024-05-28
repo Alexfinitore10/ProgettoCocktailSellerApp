@@ -1,21 +1,20 @@
 #ifndef __INCLUDES_H_
 #define __INCLUDES_H_
- 
-#include <stdlib.h>
-#include <stdio.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <sys/socket.h>
-#include <errno.h>
-#include <netinet/in.h>
-#include <unistd.h>
-#include <string.h>
-#include <pthread.h>
-#include <math.h> 
-#include <libpq-fe.h>
-#include <string.h>
-#include <stdbool.h>
-#include <sys/types.h>
+
 #include "log.h"
- 
+#include <arpa/inet.h>
+#include <errno.h>
+#include <libpq-fe.h>
+#include <math.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <pthread.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 #endif

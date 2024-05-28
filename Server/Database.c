@@ -6,6 +6,7 @@
 #include <string.h>
 
 // Variables
+static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 PGconn *conn;
 PGresult *res;
 int id_vendita = 0;
@@ -13,29 +14,28 @@ char *feedback = "";
 char *error_response = "";
 char *firstdbcommand =
     "CREATE TABLE IF NOT EXISTS Cliente ("
-        "email VARCHAR(255) PRIMARY KEY, "
-        "password VARCHAR(255) NOT NULL, "
-        "isLogged BOOLEAN NOT NULL DEFAULT false"
-        "); "
-        "CREATE TABLE IF NOT EXISTS Prodotti ("
-        "prodotto_id SERIAL PRIMARY KEY, "
-        "nome VARCHAR(255) NOT NULL UNIQUE, "
-        "tipo VARCHAR(50) NOT NULL, "  // 'cocktail' o 'frullato'
-        "ingredienti VARCHAR(1000) NOT NULL, "
-        "gradazione_alcolica DOUBLE PRECISION, "  // Specifica per cocktail
-        "prezzo DOUBLE PRECISION NOT NULL, "
-        "quantita INTEGER NOT NULL"
-        "); "
-        "CREATE TABLE IF NOT EXISTS Vendite ("
-        "vendita_id SERIAL PRIMARY KEY, "
-        "utente_email VARCHAR(255), "
-        "prodotto_id VARCHAR(255), "
-        "quantita INT, "
-        "tipo VARCHAR(50) NOT NULL,"
-        "FOREIGN KEY (prodotto_id) REFERENCES Prodotti(nome), "
-        "FOREIGN KEY (utente_email) REFERENCES Cliente(email)"
-        ");";
-
+    "email VARCHAR(255) PRIMARY KEY, "
+    "password VARCHAR(255) NOT NULL, "
+    "isLogged BOOLEAN NOT NULL DEFAULT false"
+    "); "
+    "CREATE TABLE IF NOT EXISTS Prodotti ("
+    "prodotto_id SERIAL PRIMARY KEY, "
+    "nome VARCHAR(255) NOT NULL UNIQUE, "
+    "tipo VARCHAR(50) NOT NULL, " // 'cocktail' o 'frullato'
+    "ingredienti VARCHAR(1000) NOT NULL, "
+    "gradazione_alcolica DOUBLE PRECISION, " // Specifica per cocktail
+    "prezzo DOUBLE PRECISION NOT NULL, "
+    "quantita INTEGER NOT NULL"
+    "); "
+    "CREATE TABLE IF NOT EXISTS Vendite ("
+    "vendita_id SERIAL PRIMARY KEY, "
+    "utente_email VARCHAR(255), "
+    "prodotto_id VARCHAR(255), "
+    "quantita INT, "
+    "tipo VARCHAR(50) NOT NULL,"
+    "FOREIGN KEY (prodotto_id) REFERENCES Prodotti(nome), "
+    "FOREIGN KEY (utente_email) REFERENCES Cliente(email)"
+    ");";
 
 char *oldfirstdbcommand =
     "CREATE TABLE IF NOT EXISTS Cliente(email VARCHAR(255) PRIMARY KEY, password VARCHAR(255) NOT NULL, isLogged BOOLEAN NOT NULL DEFAULT false);\
@@ -67,30 +67,79 @@ void createdb_query() {
 
 // Populating the DB
 void cocktail_and_shake_population() {
-insert_prodotto("Mojito", "Rum;Lime;Zucchero;Menta", 18.0, 6.0, 10, "cocktail");
-insert_prodotto("Bloody Mary", "Vodka;Succo di pomodoro;Tabasco;Sedano;Sale;Pepe;nero;Succo di limone;Salsa Worchestershire", 25.0, 6.0, 13, "cocktail");
-insert_prodotto("White Russian", "Vodka;Liquore al caffè;Ghiaccio;Panna fresca", 25.0, 7.0, 16, "cocktail");
-insert_prodotto("Negroni", "Ghiaccio;Gin;Bitter Campari;Vermut Rosso", 28.0, 5.90, 10, "cocktail");
-insert_prodotto("Daquiri", "Rum;Succo di lime;zucchero;ghiaccio;gocce di maraschino", 18.9, 6.44, 10, "cocktail");
-insert_prodotto("Dry Martini", "Gin;Scorza di Limone;Vermut Dry;Ghiaccio", 14.4, 7.90, 10, "cocktail");
-insert_prodotto("Margarita", "Succo di Lime;Ghiaccio;Triple Sec;Tequila", 25.4, 6.44, 10, "cocktail");
-insert_prodotto("Manhattan", "rye wisky;vermout roso;gocce di Angostura;buccia di arancia;ghiaccio;ciliegina al Maraschino", 30.0, 5.90, 10, "cocktail");
-insert_prodotto("Whiskey Sour", "Whisky;Succo di limone;sciroppo di zucchero;albume", 23.0, 4.80, 10, "cocktail");
-insert_prodotto("Moscow Mule", "Vodka;Succo di lime;Ginger beer;Ghiaccio", 25.0, 6.44, 10, "cocktail");
+  insert_prodotto("Mojito", "Rum;Lime;Zucchero;Menta", 18.0, 6.0, 10,
+                  "cocktail");
+  insert_prodotto("Bloody Mary",
+                  "Vodka;Succo di pomodoro;Tabasco;Sedano;Sale;Pepe;nero;Succo "
+                  "di limone;Salsa Worchestershire",
+                  25.0, 6.0, 13, "cocktail");
+  insert_prodotto("White Russian",
+                  "Vodka;Liquore al caffè;Ghiaccio;Panna fresca", 25.0, 7.0, 16,
+                  "cocktail");
+  insert_prodotto("Negroni", "Ghiaccio;Gin;Bitter Campari;Vermut Rosso", 28.0,
+                  5.90, 10, "cocktail");
+  insert_prodotto("Daquiri",
+                  "Rum;Succo di lime;zucchero;ghiaccio;gocce di maraschino",
+                  18.9, 6.44, 10, "cocktail");
+  insert_prodotto("Dry Martini", "Gin;Scorza di Limone;Vermut Dry;Ghiaccio",
+                  14.4, 7.90, 10, "cocktail");
+  insert_prodotto("Margarita", "Succo di Lime;Ghiaccio;Triple Sec;Tequila",
+                  25.4, 6.44, 10, "cocktail");
+  insert_prodotto("Manhattan",
+                  "rye wisky;vermout roso;gocce di Angostura;buccia di "
+                  "arancia;ghiaccio;ciliegina al Maraschino",
+                  30.0, 5.90, 10, "cocktail");
+  insert_prodotto("Whiskey Sour",
+                  "Whisky;Succo di limone;sciroppo di zucchero;albume", 23.0,
+                  4.80, 10, "cocktail");
+  insert_prodotto("Moscow Mule", "Vodka;Succo di lime;Ginger beer;Ghiaccio",
+                  25.0, 6.44, 10, "cocktail");
 
-insert_prodotto("Frullato di frutta", "banana;fragola;kiwi;latte", 0.0, 5, 10, "frullato");
-insert_prodotto("Frullato tropicale", "ananas;mango;succo d'arancia;latte", 0.0, 10, 10, "frullato");
-insert_prodotto("Frullato di bacche", "fragole;mirtilli;lamponi;latte di mandorla", 0.0, 7, 10, "frullato");
-insert_prodotto("Frullato proteico", "banana;burro di arachidi;semi di chia;latte;proteine", 0.0, 4, 10, "frullato");
-insert_prodotto("Frullato esotico", "papaya;ananas;latte di cocco;curcuma;pepe nero", 0.0, 3, 10, "frullato");
+  insert_prodotto("Frullato di frutta", "banana;fragola;kiwi;latte", 0.0, 5, 10,
+                  "frullato");
+  insert_prodotto("Frullato tropicale", "ananas;mango;succo d'arancia;latte",
+                  0.0, 10, 10, "frullato");
+  insert_prodotto("Frullato di bacche",
+                  "fragole;mirtilli;lamponi;latte di mandorla", 0.0, 7, 10,
+                  "frullato");
+  insert_prodotto("Frullato proteico",
+                  "banana;burro di arachidi;semi di chia;latte;proteine", 0.0,
+                  4, 10, "frullato");
+  insert_prodotto("Frullato esotico",
+                  "papaya;ananas;latte di cocco;curcuma;pepe nero", 0.0, 3, 10,
+                  "frullato");
+}
+
+void connection_lock() {
+  log_debug("Mutex locked");
+  pthread_mutex_lock(&mutex);
+}
+
+void connection_unlock() {
+  log_debug("Mutex unlocked");
+  pthread_mutex_unlock(&mutex);
+}
+
+bool is_connection_locked() { return pthread_mutex_trylock(&mutex) != 0; }
+
+bool testingMutex() {
+  if (is_connection_locked()) {
+    return false;
+  }
 }
 
 // A test for the reachability of the Database
 bool testingConnection() {
+  bool status;
+  connection_lock();
   conn = PQconnectdb("dbname = dbcocktail user = postgres password = postgres "
                      "host = localhost port = 5432");
-  sleep(2);
-  bool status = false;
+  if (conn == NULL) {
+    feedback = "Connessione fallita";
+    log_info("Connection to database status : %s\n", feedback);
+    connection_unlock();
+    return false;
+  }
   switch (PQstatus(conn)) {
   case CONNECTION_OK:
     feedback = "Connesso al server\n";
@@ -98,12 +147,15 @@ bool testingConnection() {
     break;
   case CONNECTION_BAD:
     feedback = "Connessione fallita";
+    status = false;
     break;
   default:
     feedback = "default status\n";
+    status = false;
     break;
   }
   log_info("Connection to database status : %s\n", feedback);
+  connection_unlock();
   return status;
 }
 
@@ -160,7 +212,7 @@ bool reduce_amount_cocktail(char *nome, int quantita) {
   }
 }
 // Same for cocktails
-bool reduce_amount_shake(char *nome, int quantita) {//TODO Da rifare
+bool reduce_amount_shake(char *nome, int quantita) { // TODO Da rifare
 
   if (is_shake_in_db(nome) == false) { // controllo correttezza nome
     log_error("Il frullato %s non e' presente nel database\n", nome);
@@ -231,43 +283,54 @@ bool checkres(PGresult *res) {
 
 // Function to insert a cocktail in the DB. It's primarily used in the DB
 // population function (Cocktail and shake_population)
-void insert_prodotto(char nome[], char ingredienti[], double gradazione_alcolica, double prezzo, int quantita, char tipo[]) {
-    const char *insert_prodotto_command =
-        "INSERT INTO Prodotti(nome, tipo, ingredienti, gradazione_alcolica, prezzo, quantita) "
-        "VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT (nome) DO NOTHING;";
+void insert_prodotto(char nome[], char ingredienti[],
+                     double gradazione_alcolica, double prezzo, int quantita,
+                     char tipo[]) {
+  const char *insert_prodotto_command =
+      "INSERT INTO Prodotti(nome, tipo, ingredienti, gradazione_alcolica, "
+      "prezzo, quantita) "
+      "VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT (nome) DO NOTHING;";
 
-    char gradazione_alcolica_string[100];
-    const char *gradazione_alcolica_value;
+  char gradazione_alcolica_string[100];
+  const char *gradazione_alcolica_value;
 
-    if (strcmp(tipo, "cocktail") == 0) {
-        sprintf(gradazione_alcolica_string, "%f", gradazione_alcolica);
-        gradazione_alcolica_value = gradazione_alcolica_string;
-    } else {
-        gradazione_alcolica_value = NULL;
-    }
+  if (strcmp(tipo, "cocktail") == 0) {
+    sprintf(gradazione_alcolica_string, "%f", gradazione_alcolica);
+    gradazione_alcolica_value = gradazione_alcolica_string;
+  } else {
+    gradazione_alcolica_value = NULL;
+  }
 
-    char prezzo_string[100];
-    sprintf(prezzo_string, "%f", prezzo);
+  char prezzo_string[100];
+  sprintf(prezzo_string, "%f", prezzo);
 
-    char quantita_string[100];
-    sprintf(quantita_string, "%d", quantita);
+  char quantita_string[100];
+  sprintf(quantita_string, "%d", quantita);
 
-    const char *paramValues[6] = {nome, tipo, ingredienti, gradazione_alcolica_value, prezzo_string, quantita_string};
-    int paramLengths[6] = {strlen(nome), strlen(tipo), strlen(ingredienti), gradazione_alcolica_value ? strlen(gradazione_alcolica_value) : 0, strlen(prezzo_string), strlen(quantita_string)};
-    int paramFormats[6] = {0, 0, 0, 0, 0, 0};
+  const char *paramValues[6] = {nome,          tipo,
+                                ingredienti,   gradazione_alcolica_value,
+                                prezzo_string, quantita_string};
+  int paramLengths[6] = {
+      strlen(nome),
+      strlen(tipo),
+      strlen(ingredienti),
+      gradazione_alcolica_value ? strlen(gradazione_alcolica_value) : 0,
+      strlen(prezzo_string),
+      strlen(quantita_string)};
+  int paramFormats[6] = {0, 0, 0, 0, 0, 0};
 
-    PGresult *res = PQexecParams(conn, insert_prodotto_command, 6, NULL, paramValues, paramLengths, paramFormats, 0);
+  PGresult *res = PQexecParams(conn, insert_prodotto_command, 6, NULL,
+                               paramValues, paramLengths, paramFormats, 0);
 
-    checkres(res);
+  checkres(res);
 }
 
-
-
 // A full Get
-char *get_all_cocktails() {//TODO da rifare
+char *get_all_cocktails() { // TODO da rifare
   char *get_all_cocktail_command =
-      "SELECT CONCAT(nome, ', [', ingredienti, '], ', COALESCE(gradazione_alcolica::text, ''), ', ', prezzo, ', ', quantita) AS informazioni FROM Prodotti WHERE tipo = 'cocktail';";
-
+      "SELECT CONCAT(nome, ', [', ingredienti, '], ', "
+      "COALESCE(gradazione_alcolica::text, ''), ', ', prezzo, ', ', quantita) "
+      "AS informazioni FROM Prodotti WHERE tipo = 'cocktail';";
 
   if (command(get_all_cocktail_command)) {
     // return printQuery(res);
@@ -279,8 +342,9 @@ char *get_all_cocktails() {//TODO da rifare
 }
 
 char *get_all_shakes() {
-  char *get_all_shake_command = "SELECT CONCAT(nome, ', [', ingredienti, '], ', prezzo, ', ', quantita) AS informazioni FROM Prodotti WHERE tipo = 'frullato';";
-
+  char *get_all_shake_command =
+      "SELECT CONCAT(nome, ', [', ingredienti, '], ', prezzo, ', ', quantita) "
+      "AS informazioni FROM Prodotti WHERE tipo = 'frullato';";
 
   if (command(get_all_shake_command)) {
     return printQuery(res);
@@ -479,113 +543,111 @@ bool are_credentials_correct(char *email, char *password) {
 //
 bool create_sell(const char *cliente_id, char *nome_bevanda, char *tipo,
                  int quantita) {
-    const char *insert_command =
-        "INSERT INTO Vendite(utente_email, prodotto_id, tipo, quantita) VALUES ($1, $2, $3, $4)";
+  const char *insert_command = "INSERT INTO Vendite(utente_email, prodotto_id, "
+                               "tipo, quantita) VALUES ($1, $2, $3, $4)";
 
-    
+  char quantita_str[16]; // Buffer per la conversione dell'intero in stringa
+  snprintf(quantita_str, sizeof(quantita_str), "%d", quantita);
 
-    char quantita_str[16]; // Buffer per la conversione dell'intero in stringa
-    snprintf(quantita_str, sizeof(quantita_str), "%d", quantita);
+  const char *paramValues[4] = {cliente_id, nome_bevanda, tipo, quantita_str};
+  int paramLengths[4] = {0}; // 0 means "null terminated"
+  int paramFormats[4] = {0}; // 0 means "text"
 
-    const char *paramValues[4] = {cliente_id, nome_bevanda, tipo, quantita_str};
-    int paramLengths[4] = {0};  // 0 means "null terminated"
-    int paramFormats[4] = {0};   // 0 means "text"
+  res = PQexecParams(conn, insert_command, 4, NULL, paramValues, paramLengths,
+                     paramFormats, 0);
 
-    res = PQexecParams(conn, insert_command, 4, NULL, paramValues, paramLengths, paramFormats, 0);
+  if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+    fprintf(stderr, "Insertion failed: %s", PQerrorMessage(conn));
+    PQclear(res);
+    return false;
+  }
+  PQclear(res);
+  return true;
+}
 
-    if (PQresultStatus(res) != PGRES_COMMAND_OK) {
-        fprintf(stderr, "Insertion failed: %s", PQerrorMessage(conn));
-        PQclear(res);
-        return false;
+char *get_recommended_drinks() {
+  char *query = "SELECT "
+                "CONCAT("
+                "p.nome, ', [', p.ingredienti, '], ', "
+                "COALESCE(p.gradazione_alcolica::text, ''), ', ', "
+                "p.prezzo, ', ', "
+                "SUM(v.quantita)"
+                ") AS formatted_string "
+                "FROM "
+                "Prodotti p "
+                "JOIN "
+                "Vendite v ON p.nome = v.prodotto_id "
+                " WHERE "
+                "p.tipo = 'cocktail' "
+                "GROUP BY "
+                "p.nome, p.ingredienti, p.gradazione_alcolica, p.prezzo "
+                "ORDER BY "
+                "SUM(v.quantita) DESC "
+                "LIMIT "
+                " 3;";
+
+  if (command(query)) {
+    // return printQuery(res);
+    char *value = printQuery(res); // res è globale......................
+    int rows = PQntuples(res);
+    if (rows == 0) {
+      fprintf(stderr, "La query non ha restituito alcun risultato.\n");
+      PQclear(res);
+      return strdup("Ness");
+    } else if (rows < 3) {
+      log_error("Non ci sono abbastanza drink per fare raccomandazioni. Solo "
+                "%d drink trovati.\n",
+                rows);
+      PQclear(res);
+      return strdup("Pochi");
     }
     PQclear(res);
-    return true;
+    return value;
+  } else {
+    printf("Errore nel recupero dei cocktail\n");
+  }
 }
 
-char* get_recommended_drinks() {
-          char* query = "SELECT "
-                        "CONCAT("
-                            "p.nome, ', [', p.ingredienti, '], ', "
-                            "COALESCE(p.gradazione_alcolica::text, ''), ', ', "
-                            "p.prezzo, ', ', "
-                            "SUM(v.quantita)"
-                        ") AS formatted_string "
-                    "FROM "
-                        "Prodotti p "
-                    "JOIN "
-                        "Vendite v ON p.nome = v.prodotto_id "
-                   " WHERE "
-                        "p.tipo = 'cocktail' "
-                    "GROUP BY "
-                        "p.nome, p.ingredienti, p.gradazione_alcolica, p.prezzo "
-                    "ORDER BY "
-                        "SUM(v.quantita) DESC "
-                    "LIMIT "
-                       " 3;";
+char *get_recommended_shakes() {
+  char *query = "SELECT "
+                "CONCAT("
+                "p.nome, ', [', p.ingredienti, '], ', "
+                "p.prezzo, ', ', "
+                "SUM(v.quantita)"
+                ") AS formatted_string "
+                "FROM "
+                "Prodotti p "
+                "JOIN "
+                "Vendite v ON p.nome = v.prodotto_id "
+                " WHERE "
+                "p.tipo = 'frullato' "
+                "GROUP BY "
+                "p.nome, p.ingredienti, p.prezzo "
+                "ORDER BY "
+                "SUM(v.quantita) DESC "
+                "LIMIT "
+                " 3;";
 
-
-
-    if (command(query)) {
+  if (command(query)) {
     // return printQuery(res);
-      char *value = printQuery(res);//res è globale......................
-      int rows = PQntuples(res);
-      if (rows == 0) {
-        fprintf(stderr, "La query non ha restituito alcun risultato.\n");
-        PQclear(res);
-        return strdup("Ness");
-    }else if (rows < 3) {
-        log_error("Non ci sono abbastanza drink per fare raccomandazioni. Solo %d drink trovati.\n", rows);
-        PQclear(res);
-        return strdup("Pochi");
-    }
+    char *value = printQuery(res); // res è globale......................
+    int rows = PQntuples(res);
+    if (rows == 0) {
+      fprintf(stderr, "La query non ha restituito alcun risultato.\n");
       PQclear(res);
-      return value;
-    } else {
-      printf("Errore nel recupero dei cocktail\n");
-    }
-}
-
-char* get_recommended_shakes() {
-  char* query = "SELECT "
-                        "CONCAT("
-                              "p.nome, ', [', p.ingredienti, '], ', "
-                              "p.prezzo, ', ', "
-                              "SUM(v.quantita)"
-                          ") AS formatted_string "
-                    "FROM "
-                        "Prodotti p "
-                    "JOIN "
-                        "Vendite v ON p.nome = v.prodotto_id "
-                   " WHERE "
-                        "p.tipo = 'frullato' "
-                    "GROUP BY "
-                        "p.nome, p.ingredienti, p.prezzo "
-                    "ORDER BY "
-                        "SUM(v.quantita) DESC "
-                    "LIMIT "
-                       " 3;";
-
-
-
-   if (command(query)) {
-    // return printQuery(res);
-      char *value = printQuery(res);//res è globale......................
-      int rows = PQntuples(res);
-      if (rows == 0) {
-        fprintf(stderr, "La query non ha restituito alcun risultato.\n");
-        PQclear(res);
-        return strdup("Ness");
-    }else if (rows < 3) {
-        log_error("Non ci sono abbastanza shakes per fare raccomandazioni. Solo %d drink trovati.\n", rows);
-        PQclear(res);
-        return strdup("Pochi");
-    }
+      return strdup("Ness");
+    } else if (rows < 3) {
+      log_error("Non ci sono abbastanza shakes per fare raccomandazioni. Solo "
+                "%d drink trovati.\n",
+                rows);
       PQclear(res);
-      return value;
-    } else {
-      printf("Errore nel recupero dei shakes\n");
+      return strdup("Pochi");
     }
-
+    PQclear(res);
+    return value;
+  } else {
+    printf("Errore nel recupero dei shakes\n");
+  }
 }
 
 int get_shake_amount(char *nome) {

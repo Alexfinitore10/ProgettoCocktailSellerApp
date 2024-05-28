@@ -54,7 +54,7 @@ import java.security.NoSuchAlgorithmException;
 } */
 
 public class client {
-    //il cocktail
+    // il cocktail
     Cocktail recommended;
 
     // glio carrello
@@ -194,7 +194,8 @@ public class client {
                 default:
                     break;
             }
-            if (!risposta.equals("5") && !risposta.equals("7") && !risposta.equals("9") && !risposta.equals("10") && !risposta.equals("11") && !risposta.equals("11")) {
+            if (!risposta.equals("5") && !risposta.equals("7") && !risposta.equals("9") && !risposta.equals("10")
+                    && !risposta.equals("11") && !risposta.equals("11")) {
                 out.println(risposta);
             }
 
@@ -268,37 +269,41 @@ public class client {
         return drink;
     }
 
-    void recommend_drinks(){
+    void recommend_drinks() {
         out.println("9");
         String buffer = bufferedReceive();
         if (buffer.equals("NOKERR")) {
             System.err.println("Non è stato possibile prendere i recommended dal server");
-        } else if(buffer.equals("Ness")) {
-            System.err.println("Nessun drink è presente ancora nei recommend, quindi non è possibile effettuare i recommend");
-        }else if (buffer.equals("Pochi")){
-            System.err.println("Non ci sono abbastanza drinks per effettuare un recommend, acquista qualche drink prima");
-        }else{
+        } else if (buffer.equals("Ness")) {
+            System.err.println(
+                    "Nessun drink è presente ancora nei recommend, quindi non è possibile effettuare i recommend");
+        } else if (buffer.equals("Pochi")) {
+            System.err
+                    .println("Non ci sono abbastanza drinks per effettuare un recommend, acquista qualche drink prima");
+        } else {
             List<Cocktail> rec = Cocktail.setRecommendedCocktails(buffer);
             System.out.println("I drink raccomandati sono: ");
-            for(Cocktail s : rec){
+            for (Cocktail s : rec) {
                 System.out.println(s.toString());
             }
         }
     }
 
-    void recommend_shakes(){
+    void recommend_shakes() {
         out.println("10");
         String buffer = bufferedReceive();
         if (buffer.equals("NOKERR")) {
             System.err.println("Non è stato possibile prendere i recommended dal server");
-        } else if(buffer.equals("Ness")) {
-            System.err.println("Nessun drink è presente ancora nei recommend, quindi non è possibile effettuare i recommend");
-        }else if (buffer.equals("Pochi")){
-            System.err.println("Non ci sono abbastanza drinks per effettuare un recommend, acquista qualche drink prima");
-        }else{
+        } else if (buffer.equals("Ness")) {
+            System.err.println(
+                    "Nessun drink è presente ancora nei recommend, quindi non è possibile effettuare i recommend");
+        } else if (buffer.equals("Pochi")) {
+            System.err
+                    .println("Non ci sono abbastanza drinks per effettuare un recommend, acquista qualche drink prima");
+        } else {
             List<Shake> rec = Shake.setRecommendedShakes(buffer);
             System.out.println("Gli shakes raccomandati sono: ");
-            for(Shake s : rec){
+            for (Shake s : rec) {
                 System.out.println(s.toString());
             }
         }
@@ -326,6 +331,8 @@ public class client {
                 }
             }
 
+            System.out.println("Cancellazione in corso...");
+
             out.println("8");
             for (String c : cocktails) {
                 out.println(c);
@@ -337,23 +344,17 @@ public class client {
             }
             Thread.sleep(500);
             out.println("Fine");
-            System.out.println("Cancellazione in corso...");
             clientSocket.setSoTimeout(3000);
             String line;
             try {
-                line = input.readLine();
+                do {
+                    line = input.readLine();
+                } while (!line.equals("Fine"));
             } catch (SocketTimeoutException e) {
                 System.out.println("Timeout durante l'attesa della risposta");
                 return;
             }
-            while (!line.equals("Fine")) {
-                try {
-                    line = input.readLine();
-                } catch (SocketTimeoutException e) {
-                    System.out.println("Timeout durante l'attesa della risposta");
-                    return;
-                }
-            }
+
             System.out.println("Cancellazione completata di :");
 
             System.out.println("Cocktails: " + cocktails.toString());
@@ -569,7 +570,6 @@ public class client {
         }
 
     }
-
 
     boolean checkEmailRegex(String email) {
         Pattern pattern = Pattern.compile(regex);
