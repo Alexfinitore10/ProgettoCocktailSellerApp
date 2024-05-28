@@ -37,7 +37,7 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
 
-            Runnable LoginTask = () -> risposta = sendLogin(client, email, password);
+            Runnable LoginTask = () -> risposta = sendLogin(email, password);
 
             try {
                 Thread LoginThread = new Thread(LoginTask);
@@ -59,7 +59,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private String sendLogin(Client client, String input_email, String input_password) {
+    private String sendLogin(String input_email, String input_password) {
 
         String password;
 

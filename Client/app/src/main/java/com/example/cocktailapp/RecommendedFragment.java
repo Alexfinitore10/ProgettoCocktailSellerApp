@@ -22,10 +22,10 @@ public class RecommendedFragment extends Fragment {
     private RecommendedRecyclerViewAdapter adapter;
     private ArrayList<RecommendedLayoutClass> list;
     private RecyclerView recyclerView;
-    private ArrayList<Cocktail> recommendedCocktails;
-    private ArrayList<Shake> recommendedShakes;
-    private String allCocktails;
-    private String allShakes;
+    private ArrayList<Cocktail> recommendedCocktails,allCocktails;
+    private ArrayList<Shake> recommendedShakes,allShakes;
+    private String recommendedCocktailsString, recommendedShakesString, allCocktailsString, allShakesString;
+
 
     public RecommendedFragment() {
         // Required empty public constructor
@@ -56,7 +56,10 @@ public class RecommendedFragment extends Fragment {
         list = new ArrayList<>();
 
         CartObserver model = new ViewModelProvider(requireActivity()).get(CartObserver.class);
-        Runnable getCocktailsTask = () -> allCocktails = getRecommendedCocktails();
+        Runnable getCocktailsTask = () -> {
+            recommendedCocktailsString = getRecommendedCocktails();
+            allCocktailsString = getAllCocktails();
+        };
         Thread getCocktailsThread = new Thread(getCocktailsTask);
         getCocktailsThread.start();
 
@@ -65,7 +68,10 @@ public class RecommendedFragment extends Fragment {
         } catch (InterruptedException e) {
             Log.e("RecommendedFragment cocktail thread","Errore nella join del thread: " + e.getMessage());
         }
-        Runnable getShakesTask = () -> allShakes = getRecommendedShakes();
+        Runnable getShakesTask = () -> {
+            recommendedShakesString = getRecommendedShakes();
+            allShakesString = getAllShakes();
+        };
         Thread getShakesThread = new Thread(getShakesTask);
         getShakesThread.start();
 
@@ -75,14 +81,30 @@ public class RecommendedFragment extends Fragment {
             Log.e("RecommendedFragment shake thread","Errore nella join del thread: " + e.getMessage());
         }
         if(isGetCocktailsOk()){
-            recommendedCocktails = (ArrayList<Cocktail>) Cocktail.setCocktails(allCocktails);
+            recommendedCocktails = (ArrayList<Cocktail>) Cocktail.setCocktails(recommendedCocktailsString);
+            allCocktails = (ArrayList<Cocktail>) Cocktail.setCocktails(allCocktailsString);
+            for(Cocktail cocktail : recommendedCocktails){
+                for(Cocktail c : allCocktails){
+                    if(cocktail.getNome().equals(c.getNome())){
+                        cocktail.setQuantita(c.getQuantita());
+                    }
+                }
+            }
             for(Cocktail cocktail : recommendedCocktails){
                 list.add(new RecommendedLayoutClass(cocktail));
             }
         }
 
         if(isGetShakesOk()){
-            recommendedShakes = (ArrayList<Shake>) Shake.setShakes(allShakes);
+            recommendedShakes = (ArrayList<Shake>) Shake.setShakes(recommendedShakesString);
+            allShakes = (ArrayList<Shake>) Shake.setShakes(allShakesString);
+            for(Shake shake : recommendedShakes){
+                for(Shake s : allShakes) {
+                    if (shake.getNome().equals(s.getNome())) {
+                        shake.setQuantita(s.getQuantita());
+                    }
+                }
+            }
             for(Shake shake : recommendedShakes){
                 list.add(new RecommendedLayoutClass(shake));
             }
@@ -101,8 +123,14 @@ public class RecommendedFragment extends Fragment {
         return client.bufferedReceive();
     }
 
+    private String getAllCocktails(){
+        String command = "3";
+        client.sendData(command);
+        return client.bufferedReceive();
+    }
+
     private boolean isGetCocktailsOk() {
-        switch (allCocktails) {
+        switch (recommendedCocktailsString) {
             case "NOKERR":
                 System.err.println("Non è stato possibile prendere i recommended dal server");
                 return false;
@@ -122,9 +150,15 @@ public class RecommendedFragment extends Fragment {
         client.sendData(command);
         return client.bufferedReceive();
     }
+    private String getAllShakes() {
+        String command = "4";
+        client.sendData(command);
+        return client.bufferedReceive();
+    }
+
 
     private boolean isGetShakesOk() {
-        switch (allShakes) {
+        switch (recommendedShakesString) {
             case "NOKERR":
                 System.err.println("Non è stato possibile prendere i recommended dal server");
                 return false;
