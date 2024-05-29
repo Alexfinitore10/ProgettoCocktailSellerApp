@@ -88,15 +88,17 @@ public class Client {
     public String receiveData() throws IOException, InterruptedException{
         String data = "";
         try{
-            clientSocket.setSoTimeout(5000);
+            clientSocket.setSoTimeout(3000);
             data = input.readLine();
             return data;
         }catch (IOException e){
             if (e instanceof SocketTimeoutException) {
-                Log.e("Client","Errore durante la ricezione del messaggio: " + e.getMessage());
+                Log.e("Client","Errore durante la ricezione del messaggio, SocketTimedOut: " + e.getMessage());
             } else {
                 Log.e("Client","Errore durante la lettura: " + e.getMessage());
             }
+        }catch (Exception e){
+            Log.e("Client","Errore durante la ricezione del messaggio, exception generale: " + e.getMessage());
         }
         return data;
     }

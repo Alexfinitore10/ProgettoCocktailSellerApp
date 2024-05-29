@@ -88,6 +88,30 @@ public class ShakesFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new ShakesRecyclerViewAdapter(list,getContext(),shakes,model);
         recyclerView.setAdapter(adapter);
+
+        model.getPaymentSuccess().observe(getViewLifecycleOwner(), paymentMade -> {
+             if (paymentMade) {
+                 Runnable getAgainShakesTask = () -> allShakes = getAllShakes();
+                 Thread getAgainShakesThread = new Thread(getAgainShakesTask);
+                 getAgainShakesThread.start();
+                 try{
+                     getAgainShakesThread.join();
+                 }catch(InterruptedException e){
+                     Log.e("onViewCreated ShakesFragment","Errore nella join del thread: " + e.getMessage());
+                 }
+                 shakes.clear();
+                 shakes = (ArrayList<Shake>) Shake.setShakes(allShakes);
+                 list.clear();
+                 for (Shake s : shakes) {
+                     list.add(new ShakesLayoutClass(s.getNome(),s.getIngredienti(),s.getPrezzo(),s.getQuantita()));
+                 }
+                 adapter.notifyDataSetChanged();
+             }
+
+        });
+
+
+
     }
 
 

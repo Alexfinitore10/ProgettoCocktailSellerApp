@@ -65,10 +65,11 @@ public class PaymentFragment extends Fragment {
                 } catch (InterruptedException e) {
                     Log.e("PaymentFragment", "Errore join");
                 }
+
                 carrello.emptyCarrello();
-                carrello.viewItems();
                 model.setTotalCartValue(carrello.calculateTotal());
                 model.setPaymentSuccess(true);
+                carrello.viewItems();
                 Toast.makeText(getContext(), "Pagamento completato con successo!", Toast.LENGTH_SHORT).show();
             }
         });
@@ -109,6 +110,8 @@ public class PaymentFragment extends Fragment {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+
+        client.sendData("Fine");
 
         do{
             try {

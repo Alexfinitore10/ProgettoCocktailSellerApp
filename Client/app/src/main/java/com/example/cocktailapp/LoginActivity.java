@@ -39,13 +39,14 @@ public class LoginActivity extends AppCompatActivity {
 
             Runnable LoginTask = () -> risposta = sendLogin(email, password);
 
-            try {
                 Thread LoginThread = new Thread(LoginTask);
                 LoginThread.start();
-                LoginThread.join();
-            } catch (InterruptedException e) {
-                Log.e("LoginActivity thread","Errore nella join del thread:" +e.getMessage());
-            }
+                try {
+                    LoginThread.join();
+                } catch (InterruptedException e) {
+                    Log.e("sendLogin", "Errore nella join del thread:" +e.getMessage());
+                }
+
 
 
             if(risposta.equals("OK")){
@@ -81,6 +82,8 @@ public class LoginActivity extends AppCompatActivity {
             Log.e("sendLogin", "Errore nell'invio/ricezione di dati al server:" +e.getMessage());
         } catch (InterruptedException e) {
             Log.e("sendLogin", "Errore socket sendLogin invio:" +e.getMessage());
+        } catch (Exception e){
+            Log.e("sendLogin", "Errore socket sendLogin:" +e.getMessage());
         }
 
         return risposta;

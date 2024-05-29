@@ -19,7 +19,7 @@ import java.util.ArrayList;
 
 
 public class CocktailFragment extends Fragment {
-    private CocktailRecyclerViewAdapter cocktailRecyclerViewAdapter;
+    private CocktailRecyclerViewAdapter adapter;
     private ArrayList<CocktailLayoutClass> list;
     private RecyclerView recyclerView;
     private Client client;
@@ -80,11 +80,29 @@ public class CocktailFragment extends Fragment {
         }
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        cocktailRecyclerViewAdapter = new CocktailRecyclerViewAdapter(list,getContext(),cocktails,model);
-        recyclerView.setAdapter(cocktailRecyclerViewAdapter);
+        adapter = new CocktailRecyclerViewAdapter(list,getContext(),cocktails,model);
+        recyclerView.setAdapter(adapter);
 
 
-
+        model.getPaymentSuccess().observe(getViewLifecycleOwner(), paymentMade -> {
+             if (paymentMade) {
+                 Runnable getAgainCocktailsTask = () -> allCocktails = getAllCocktails();
+                 Thread getAgainCocktailsThread = new Thread(getAgainCocktailsTask);
+                 getAgainCocktailsThread.start();
+                 try {
+                     getAgainCocktailsThread.join();
+                 } catch (InterruptedException e) {
+                     Log.e("onViewCreated CocktailFragment","Errore nella join del thread: " + e.getMessage());
+                 }
+                 cocktails.clear();
+                 cocktails = (ArrayList<Cocktail>) Cocktail.setCocktails(allCocktails);
+                 list.clear();
+                 for (Cocktail c : cocktails) {
+                     list.add(new CocktailLayoutClass(c.getNome(),c.getIngredienti(),c.getGradazione_alcolica(),c.getPrezzo(),c.getQuantita()));
+                 }
+                 adapter.notifyDataSetChanged();
+             }
+        });
 
 
     }

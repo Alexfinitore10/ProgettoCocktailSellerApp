@@ -19,14 +19,17 @@ public class Shake extends Bevanda {
 
         String nome = parts[0].trim();
 
-        // Rimuovi le parentesi quadre dagli ingredienti
-        String ingredientiString = parts[1].substring(1, parts[1].length() - 1).trim();
-        String[] ingredientiArray = ingredientiString.split(";");
+        List<String> ingredienti = new ArrayList<>();
+        if (!parts[1].trim().equals("N/A")) {
+            String ingredientiString = parts[1].substring(1, parts[1].length() - 1).trim();
+            String[] ingredientiArray = ingredientiString.split(";");
+            ingredienti.addAll(Arrays.asList(ingredientiArray));
+        }
 
         float prezzo = Float.parseFloat(parts[2].trim());
         int quantita = Integer.parseInt(parts[3].trim());
 
-        return new Shake(nome, prezzo,Arrays.asList(ingredientiArray), quantita);
+        return new Shake(nome, prezzo,ingredienti, quantita);
     }
 
     public static List<Shake> setShakes(String buffer) {
