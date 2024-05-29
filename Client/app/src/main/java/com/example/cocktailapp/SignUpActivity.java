@@ -17,60 +17,49 @@ public class SignUpActivity extends AppCompatActivity {
     private Button SignUpButton;
     private EditText Email, Password;
     private String risposta;
+    private Client client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
-        Client client = Client.getIstance();
+        client = Client.getIstance();
         Email = findViewById(R.id.EmailEditTextSignUp);
         Password = findViewById(R.id.PasswordEditTextSignUp);
         SignUpButton = findViewById(R.id.SendSignUpButton);
 
-        // Set a listener on the email EditText to check the email format on every keystroke
-        Email.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                //Must be empty
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                //Must be empty
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                boolean isValidEmail = client.checkEmailRegex(Email.getText().toString());
-                SignUpButton.setEnabled(isValidEmail);
-            }
-        });
-
 
         SignUpButton.setOnClickListener(v -> {
-            String email = Email.getText().toString();
-            String password = Password.getText().toString();
 
-            if(email.isEmpty() || password.isEmpty()){
-                Toast.makeText(this, "Email o Password vuote", Toast.LENGTH_SHORT).show();
+            if(Email.getText().toString().isEmpty() && Password.getText().toString().isEmpty()){
+                Toast.makeText(this, "Inserisci email e password", Toast.LENGTH_SHORT).show();
+                return;
+            }else if(Email.getText().toString().isEmpty()){
+                Toast.makeText(this, "Inserisci email", Toast.LENGTH_SHORT).show();
+                return;
+            }else if(Password.getText().toString().isEmpty()){
+                Toast.makeText(this, "Inserisci password", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            boolean isValidEmail = client.checkEmailRegex(Email.getText().toString());
+            String email = Email.getText().toString();
+            String password = Password.getText().toString();
+
+            boolean isValidEmail = client.checkEmailRegex(email);
             if(!isValidEmail){
                 Toast.makeText(this, "Email non valida", Toast.LENGTH_SHORT).show();
                 return;
             }
 
 
-            Runnable SignupTask = () -> {
-                risposta = sendSignup(client, email, password);
-            };
+            Runnable SignupTask = () -> risposta = sendSignup(email, password);
+
+
+            Thread SignupThread = new Thread(SignupTask);
+            SignupThread.start();
 
             try {
-                Thread SignupThread = new Thread(SignupTask);
-                SignupThread.start();
                 SignupThread.join();
             } catch (InterruptedException e) {
                 Log.e("SignupActivity thread","Errore nella join del thread:" +e.getMessage());
@@ -86,7 +75,7 @@ public class SignUpActivity extends AppCompatActivity {
         });
     }
 
-    private String sendSignup(Client client, String input_email, String input_password) {
+    private String sendSignup(String input_email, String input_password) {
         String password;
 
         try {

@@ -41,7 +41,8 @@ public class CocktailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         carrello = Carrello.getInstance();
-    
+        client = Client.getIstance();
+        
     }
 
     @Override
@@ -55,36 +56,41 @@ public class CocktailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+
         CartObserver model = new ViewModelProvider(requireActivity()).get(CartObserver.class);
-        client = Client.getIstance();
         list = new ArrayList<>();
         cocktails = new ArrayList<>();
 
-        Runnable getCocktailsTask = () -> allCocktails = getAllCocktails();
-        Thread getCocktailsThread = new Thread(getCocktailsTask);
-        getCocktailsThread.start();
+        
+            Runnable getCocktailsTask = () -> allCocktails = getAllCocktails();
+            Thread getCocktailsThread = new Thread(getCocktailsTask);
+            getCocktailsThread.start();
 
-        try {
-            getCocktailsThread.join();
-        } catch (InterruptedException e) {
-            Log.e("onViewCreated CocktailFragment","Errore nella join del thread: " + e.getMessage());
-        }
+            try {
+                getCocktailsThread.join();
+            } catch (InterruptedException e) {
+                Log.e("onViewCreated CocktailFragment","Errore nella join del thread: " + e.getMessage());
+            }
 
 
-        recyclerView = view.findViewById(R.id.CocktailRecyclerView);
+            recyclerView = view.findViewById(R.id.CocktailRecyclerView);
 
-        cocktails = (ArrayList<Cocktail>) Cocktail.setCocktails(allCocktails);
+            cocktails = (ArrayList<Cocktail>) Cocktail.setCocktails(allCocktails);
 
-        for (Cocktail c : cocktails) {
-            list.add(new CocktailLayoutClass(c.getNome(),c.getIngredienti(),c.getGradazione_alcolica(),c.getPrezzo(),c.getQuantita()));
-        }
+            for (Cocktail c : cocktails) {
+                list.add(new CocktailLayoutClass(c.getNome(),c.getIngredienti(),c.getGradazione_alcolica(),c.getPrezzo(),c.getQuantita()));
+            }
+        
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new CocktailRecyclerViewAdapter(list,getContext(),cocktails,model);
         recyclerView.setAdapter(adapter);
+        
+        
 
 
         model.getPaymentSuccess().observe(getViewLifecycleOwner(), paymentMade -> {
+            Log.d("onViewCreated","paymentMade: " + paymentMade);
              if (paymentMade) {
                  Runnable getAgainCocktailsTask = () -> allCocktails = getAllCocktails();
                  Thread getAgainCocktailsThread = new Thread(getAgainCocktailsTask);
@@ -101,15 +107,19 @@ public class CocktailFragment extends Fragment {
                      list.add(new CocktailLayoutClass(c.getNome(),c.getIngredienti(),c.getGradazione_alcolica(),c.getPrezzo(),c.getQuantita()));
                  }
                  adapter.notifyDataSetChanged();
+                 model.setPaymentSuccess(false);
              }
         });
 
 
     }
 
+
+
     private String getAllCocktails(){
         String command = "3";
         client.sendData(command);
+        client.setSocketTimeout(3000);
         return client.bufferedReceive();
     }
 

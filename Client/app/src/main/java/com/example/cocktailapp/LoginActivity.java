@@ -29,13 +29,19 @@ public class LoginActivity extends AppCompatActivity {
 
 
         sendLoginButton.setOnClickListener(v -> {
-            String email = EmailEditText.getText().toString();
-            String password = PasswordEditText.getText().toString();
-
-            if(email.isEmpty() || password.isEmpty()){
+            if(EmailEditText.getText().toString().isEmpty() && PasswordEditText.getText().toString().isEmpty()){
                 Toast.makeText(this, "Inserisci email e password", Toast.LENGTH_SHORT).show();
                 return;
+            }else if(EmailEditText.getText().toString().isEmpty()){
+                Toast.makeText(this, "Inserisci email", Toast.LENGTH_SHORT).show();
+                return;
+            }else if(PasswordEditText.getText().toString().isEmpty()){
+                Toast.makeText(this, "Inserisci password", Toast.LENGTH_SHORT).show();
+                return;
             }
+
+            String email = EmailEditText.getText().toString();
+            String password = PasswordEditText.getText().toString();
 
             Runnable LoginTask = () -> risposta = sendLogin(email, password);
 
@@ -76,6 +82,7 @@ public class LoginActivity extends AppCompatActivity {
 
         try {
             client.sendData(dati);
+            client.setSocketTimeout(3000);
             risposta = client.receiveData();
             return risposta;
         } catch (IOException e) {

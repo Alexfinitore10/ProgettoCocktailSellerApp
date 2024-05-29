@@ -120,12 +120,14 @@ public class RecommendedFragment extends Fragment {
     private String getRecommendedCocktails() {
         String command = "9";
         client.sendData(command);
+        client.setSocketTimeout(3000);
         return client.bufferedReceive();
     }
 
     private String getAllCocktails(){
         String command = "3";
         client.sendData(command);
+        client.setSocketTimeout(3000);
         return client.bufferedReceive();
     }
 
@@ -148,11 +150,13 @@ public class RecommendedFragment extends Fragment {
     private String getRecommendedShakes() {
         String command = "10";
         client.sendData(command);
+        client.setSocketTimeout(3000);
         return client.bufferedReceive();
     }
     private String getAllShakes() {
         String command = "4";
         client.sendData(command);
+        client.setSocketTimeout(3000);
         return client.bufferedReceive();
     }
 

@@ -64,9 +64,9 @@ public class PaymentFragment extends Fragment {
                     sendToServerStarter.join();
                 } catch (InterruptedException e) {
                     Log.e("PaymentFragment", "Errore join");
+                    return;
                 }
 
-                carrello.emptyCarrello();
                 model.setTotalCartValue(carrello.calculateTotal());
                 model.setPaymentSuccess(true);
                 carrello.viewItems();
@@ -76,53 +76,65 @@ public class PaymentFragment extends Fragment {
     }
 
     private void sendBeveragesToServer(Carrello carrello){
-        String response = "";
-        ArrayList<String> cocktails = new ArrayList<>();
-        ArrayList<String> shakes =  new ArrayList<>();
-        for (int i = 0; i < carrello.getBeverages().size(); i++) {
-            if(carrello.getBeverages().get(i) instanceof Cocktail){
-                cocktails.add("1`" + carrello.getBeverages().get(i).getNome() + "`" + carrello.getBeverages().get(i).getQuantita());
-            }else{
-                shakes.add("2`" + carrello.getBeverages().get(i).getNome() + "`" + carrello.getBeverages().get(i).getQuantita());
-            }
-        }
-
-        client.sendData("8");
-        for (String c : cocktails) {
-            client.sendData(c);
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                Log.e("sendBeveragesToServer", "Errore sleep durante l'invio dei cocktail");
-            }
-        }
-        for (String c : shakes) {
-            client.sendData(c);
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                Log.e("sendBeveragesToServer", "Errore sleep durante l'invio dei frullati");
-            }
-        }
-
         try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            ArrayList<String> cocktails = new ArrayList<>();
+            ArrayList<String> shakes =  new ArrayList<>();
+            if(carrello.getBeverages().isEmpty()){
+                Log.e("sendBeveragesToServer", "Carrello vuoto");
+                return;
+            }
+
+            for (int i = 0; i < carrello.getBeverages().size(); i++) {
+                if(carrello.getBeverages().get(i) instanceof Cocktail){
+                    cocktails.add("1`" + carrello.getBeverages().get(i).getNome() + "`" + carrello.getBeverages().get(i).getQuantita());
+                }else{
+                    shakes.add("2`" + carrello.getBeverages().get(i).getNome() + "`" + carrello.getBeverages().get(i).getQuantita());
+                }
+            }
+
+            client.sendData("8");
+            for (String c : cocktails) {
+                client.sendData(c);
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    Log.e("sendBeveragesToServer", "Errore sleep durante l'invio dei cocktail");
+                }
+            }
+            for (String c : shakes) {
+                client.sendData(c);
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    Log.e("sendBeveragesToServer", "Errore sleep durante l'invio dei frullati");
+                }
+            }
+
+
+            try {
+                client.sendData("Fine");
+                client.setSocketTimeout(3000);
+                System.out.println("Aspetto la risposta dal server....");
+                String risposta = client.receiveData();
+                if (!risposta.equals("ERRORE")) {
+                    System.out.println("Cancellazione completata di :");
+                    System.out.println("Cocktails: " + cocktails.toString());
+                    System.out.println("Shakes: " + shakes.toString());
+                    carrello.emptyCarrello();
+                    Thread.sleep(1000);
+                } else {
+                    Log.e("sendBeveragesToServer","Il server ha riscontrato un errore nella cancellazione dei drink e dei frullati");
+                }
+            } catch (Exception e) {
+                Log.e("sendBeveragesToServer", "\"Errore durante la ricezione della risposta al comando di cancellazione dei drink e dei frullati, impossibile cancellare");
+            }
+        }catch (Exception e) {
+            if(e instanceof InterruptedException){
+                Log.e("sendBeveragesToServer","InterruptedException durante la sospensione del thread: " + e.getMessage());
+            }else{
+                Log.e("sendBeveragesToServer","Errore durante la cancellazione dei drink e dei frullati: " + e.getMessage());
+            }
         }
 
-        client.sendData("Fine");
-
-        do{
-            try {
-                response = client.receiveData();
-            } catch (IOException e) {
-                Log.e("sendBeveragesToServer", "Errore durante la ricezione di dati dal server: " + e.getMessage());
-            } catch (InterruptedException e) {
-                Log.e("sendBeveragesToServer", "Errore chiamata receive:" +e.getMessage());
-            }catch (Exception e){
-                Log.e("sendBeveragesToServer", "Errore:" +e.getMessage());
-            }
-        }while(!response.equals("Fine"));
     }
 }

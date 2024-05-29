@@ -46,6 +46,8 @@ public class ShakesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         carrello = Carrello.getInstance();
+        client = Client.getIstance();
+        
     }
 
     @Override
@@ -60,12 +62,11 @@ public class ShakesFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         CartObserver model = new ViewModelProvider(requireActivity()).get(CartObserver.class);
-        client = Client.getIstance();
         list = new ArrayList<>();
         shakes = new ArrayList<>();
 
 
-
+    
         Runnable getShakesTask = () -> allShakes = getAllShakes();
         Thread getShakesThread = new Thread(getShakesTask);
         getShakesThread.start();
@@ -76,13 +77,14 @@ public class ShakesFragment extends Fragment {
             Log.e("onViewCreated ShakesFragment","Errore nella join del thread: " + e.getMessage());
         }
 
+        shakes = (ArrayList<Shake>) Shake.setShakes(allShakes);
         recyclerView = view.findViewById(R.id.ShakesRecyclerView);
 
-        shakes = (ArrayList<Shake>) Shake.setShakes(allShakes);
 
         for(Shake s : shakes){
             list.add(new ShakesLayoutClass(s.getNome(),s.getIngredienti(),s.getPrezzo(),s.getQuantita()));
         }
+    
 
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -90,6 +92,7 @@ public class ShakesFragment extends Fragment {
         recyclerView.setAdapter(adapter);
 
         model.getPaymentSuccess().observe(getViewLifecycleOwner(), paymentMade -> {
+            Log.d("onViewCreated ShakesFragment","paymentMade: " + paymentMade);
              if (paymentMade) {
                  Runnable getAgainShakesTask = () -> allShakes = getAllShakes();
                  Thread getAgainShakesThread = new Thread(getAgainShakesTask);
@@ -106,6 +109,7 @@ public class ShakesFragment extends Fragment {
                      list.add(new ShakesLayoutClass(s.getNome(),s.getIngredienti(),s.getPrezzo(),s.getQuantita()));
                  }
                  adapter.notifyDataSetChanged();
+                 model.setPaymentSuccess(false);
              }
 
         });
@@ -120,6 +124,7 @@ public class ShakesFragment extends Fragment {
     private String getAllShakes() {
         String command = "4";
         client.sendData(command);
+        client.setSocketTimeout(3000);
         return client.bufferedReceive();
     }
 

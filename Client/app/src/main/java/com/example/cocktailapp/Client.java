@@ -16,7 +16,9 @@ import java.util.regex.Pattern;
 public class Client {
     private boolean isLogged = false;
     //Regex
-    private String regex = "^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
+    private String regex = "^(?!\\.)(?!.*\\.@)(?!.*\\.\\..)(?!.*\\.$)[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*"
+            +
+            "@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\\.)+[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?$";
 
     private StringBuilder stringBuilder = new StringBuilder();
     private static Client istanza;
@@ -88,7 +90,6 @@ public class Client {
     public String receiveData() throws IOException, InterruptedException{
         String data = "";
         try{
-            clientSocket.setSoTimeout(3000);
             data = input.readLine();
             return data;
         }catch (IOException e){
@@ -120,7 +121,7 @@ public class Client {
         }
     }
 
-    boolean checkEmailRegex(String email) {
+    public boolean checkEmailRegex(String email) {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(email);
         if (matcher.matches()) {
@@ -164,5 +165,13 @@ public class Client {
 
     public boolean isLogged() {
         return isLogged;
+    }
+
+    public void setSocketTimeout(int timeout){
+        try {
+            clientSocket.setSoTimeout(timeout);
+        } catch (IOException e) {
+            Log.e("Client", "Impossibile impostare il timeout: " + e.getMessage());
+        }
     }
 }
