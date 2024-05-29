@@ -331,8 +331,7 @@ public class client {
                 }
             }
 
-            System.out.println("Cancellazione in corso...");
-
+            
             out.println("8");
             for (String c : cocktails) {
                 out.println(c);
@@ -343,12 +342,17 @@ public class client {
                 Thread.sleep(500);
             }
             Thread.sleep(500);
+
+            System.out.println("Cancellazione in corso...");
             out.println("Fine");
             clientSocket.setSoTimeout(3000);
             String line;
             try {
                 do {
                     line = input.readLine();
+                    if(line.equals("Errore")){
+                        
+                    }
                 } while (!line.equals("Fine"));
             } catch (SocketTimeoutException e) {
                 System.out.println("Timeout durante l'attesa della risposta");

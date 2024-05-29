@@ -1,5 +1,5 @@
-#include "Database.h"
 #include "Socket.h"
+#include "Database.h"
 #include "dictionary.h"
 #include "log.h"
 #include <stdio.h>
@@ -326,7 +326,7 @@ void handle_get_all_shakes(int client_fd) {
 }
 
 void handle_get_recommended_drinks(int client_fd) {
-  char* risposta = get_recommended_drinks();
+  char *risposta = get_recommended_drinks();
   if (risposta == NULL) {
     log_error("C'è stato un errore nella raccolta dei cocktail consigliati");
     int status = send(client_fd, "NOKERR\n", strlen("NOKERR\n"), 0);
@@ -334,17 +334,17 @@ void handle_get_recommended_drinks(int client_fd) {
       log_error("send error: %s", strerror(errno));
     }
     return;
-  }else if (risposta == "Ness")
-  {
-    log_error("C'è stato un errore, nessun drink è presente nella raccolta consigliati");
+  } else if (risposta == "Ness") {
+    log_error("C'è stato un errore, nessun drink è presente nella raccolta "
+              "consigliati");
     int status = send(client_fd, "NOK0\n", strlen("NOK0\n"), 0);
     if (status == -1) {
       log_error("send error: %s", strerror(errno));
     }
     return;
-  }else if (risposta == "Pochi")
-  {
-    log_error("C'è stato un errore, non sono presenti abbastanza drinks per effettuare il recommend");
+  } else if (risposta == "Pochi") {
+    log_error("C'è stato un errore, non sono presenti abbastanza drinks per "
+              "effettuare il recommend");
     int status = send(client_fd, "NOK:(\n", strlen("NOK:(\n"), 0);
     if (status == -1) {
       log_error("send error: %s", strerror(errno));
@@ -353,7 +353,7 @@ void handle_get_recommended_drinks(int client_fd) {
   }
 
   log_debug("Stringa: %s, di grandezza %d", risposta, strlen(risposta));
-  
+
   int status = send(client_fd, risposta, strlen(risposta), 0);
 
   if (status > 0) {
@@ -364,7 +364,7 @@ void handle_get_recommended_drinks(int client_fd) {
 }
 
 void handle_get_recommended_shakes(int client_fd) {
-  char* risposta = get_recommended_shakes();
+  char *risposta = get_recommended_shakes();
   if (risposta == NULL) {
     log_error("C'è stato un errore nella raccolta dei shake consigliati");
     int status = send(client_fd, "NOKERR\n", strlen("NOKERR\n"), 0);
@@ -372,17 +372,17 @@ void handle_get_recommended_shakes(int client_fd) {
       log_error("send error: %s", strerror(errno));
     }
     return;
-  }else if (risposta == "Ness")
-  {
-    log_error("C'è stato un errore, nessun shake è presente nella raccolta consigliati");
+  } else if (risposta == "Ness") {
+    log_error("C'è stato un errore, nessun shake è presente nella raccolta "
+              "consigliati");
     int status = send(client_fd, "NOK0\n", strlen("NOK0\n"), 0);
     if (status == -1) {
       log_error("send error: %s", strerror(errno));
     }
     return;
-  }else if (risposta == "Pochi")
-  {
-    log_error("C'è stato un errore, non sono presenti abbastanza shakes per effettuare il recommend");
+  } else if (risposta == "Pochi") {
+    log_error("C'è stato un errore, non sono presenti abbastanza shakes per "
+              "effettuare il recommend");
     int status = send(client_fd, "NOK:(\n", strlen("NOK:(\n"), 0);
     if (status == -1) {
       log_error("send error: %s", strerror(errno));
@@ -391,7 +391,7 @@ void handle_get_recommended_shakes(int client_fd) {
   }
 
   log_debug("Stringa: %s, di grandezza %d", risposta, strlen(risposta));
-  
+
   int status = send(client_fd, risposta, strlen(risposta), 0);
 
   if (status > 0) {
@@ -428,17 +428,21 @@ void handle_remove_drink_and_shake(const int client_fd) {
         log_debug("Ricevuto un drink: %s, %d ", name, atoi(quantita));
 
         // Creo la vendita
-        if (create_sell(search_dictionary(dict, client_fd), name, "Drink",
+        if (get_cocktail_amount(name) <= atoi(quantita) &&
+            create_sell(search_dictionary(dict, client_fd), name, "Drink",
                         atoi(quantita)) == true) {
           log_debug("Creazione vendita del drink andata a buon fine");
           reduce_amount_cocktail(name, atoi(quantita));
         } else {
           log_error("Errore nella creazione della vendita del drink");
-        }
-
-        int send_result = send(client_fd, "Fine\n", strlen("Fine\n"), 0);
-        if (send_result == -1) {
-          log_error("send error: %s", strerror(errno));
+          // invia al client "Errore"
+          int status = send(client_fd, "ERRORE\n", 7, 0);
+          if (status > 0) {
+            log_debug("Risposta inviata al client");
+          } else {
+            log_error("send error: %s", strerror(errno));
+          }
+          break;
         }
       } else if (strcmp(tipo, "2") == 0) {
         log_debug("Ricevuto un shake: %s, %d ", name, atoi(quantita));
@@ -460,9 +464,14 @@ void handle_remove_drink_and_shake(const int client_fd) {
       log_error("recv error: %s", strerror(errno));
       return;
     }
+    int send_result = send(client_fd, "Fine\n", strlen("Fine\n"), 0);
+    if (send_result == -1) {
+      log_error("send error: %s", strerror(errno));
+    }
     bzero(buffer, sizeof(buffer));
   }
 }
+
 void handle_remove_shake(char *nome, int quantita) {
   if (reduce_amount_shake(nome, quantita) == false) {
     log_error("Imposibile ridurre la quantità dei frullati");
