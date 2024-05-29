@@ -64,7 +64,9 @@ public class client {
     boolean isLogged = false;
 
     // Regex
-    String regex = "^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
+    String regex = "^(?!\\.)(?!.*\\.@)(?!.*\\.\\..)(?!.*\\.$)[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*"
+            +
+            "@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\\.)+[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?$";
 
     // Socket for client communication
     Socket clientSocket;
