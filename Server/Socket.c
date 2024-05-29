@@ -428,7 +428,7 @@ void handle_remove_drink_and_shake(const int client_fd) {
         log_debug("Ricevuto un drink: %s, %d ", name, atoi(quantita));
 
         // Creo la vendita
-        if (get_cocktail_amount(name) <= atoi(quantita) &&
+        if (get_cocktail_amount(name) >= atoi(quantita) &&
             create_sell(search_dictionary(dict, client_fd), name, "Drink",
                         atoi(quantita)) == true) {
           log_debug("Creazione vendita del drink andata a buon fine");
@@ -438,7 +438,7 @@ void handle_remove_drink_and_shake(const int client_fd) {
           // invia al client "Errore"
           int status = send(client_fd, "ERRORE\n", 7, 0);
           if (status > 0) {
-            log_debug("Risposta inviata al client");
+            log_debug("Errore inviata al client");
           } else {
             log_error("send error: %s", strerror(errno));
           }
@@ -454,6 +454,12 @@ void handle_remove_drink_and_shake(const int client_fd) {
           reduce_amount_shake(name, atoi(quantita));
         } else {
           log_error("Errore nella creazione della vendita dello shake");
+          int status = send(client_fd, "ERRORE\n", 7, 0);
+          if (status > 0) {
+            log_debug("Errore inviata al client");
+          } else {
+            log_error("send error: %s", strerror(errno));
+          }
         }
       }
     } else if (res == 0) {
@@ -462,13 +468,23 @@ void handle_remove_drink_and_shake(const int client_fd) {
       return;
     } else {
       log_error("recv error: %s", strerror(errno));
+      int status = send(client_fd, "ERRORE\n", 7, 0);
+      if (status > 0) {
+        log_debug("Errore inviata al client");
+      } else {
+        log_error("send error: %s", strerror(errno));
+      }
       return;
     }
-    int send_result = send(client_fd, "Fine\n", strlen("Fine\n"), 0);
-    if (send_result == -1) {
-      log_error("send error: %s", strerror(errno));
-    }
     bzero(buffer, sizeof(buffer));
+  }
+  sleep(1);
+  // questo perchè alla fine di tutte le operazioni devo mandare FINE
+  int send_result = send(client_fd, "Fine\n", strlen("Fine\n"), 0);
+  if (send_result == -1) {
+    log_error("send error: %s", strerror(errno));
+  } else if (send_result > 0) {
+    log_debug("Fine inviata al Client");
   }
 }
 

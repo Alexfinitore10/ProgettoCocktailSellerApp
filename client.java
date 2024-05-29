@@ -5,6 +5,7 @@ import java.util.regex.*;
 import java.util.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.TimeoutException;
 //import carrello.java.*;
 
 /* class Cocktail {
@@ -130,7 +131,7 @@ public class client {
             // elaborazione... però devo vede un attimo
             return rispostadato;
         } catch (Exception e) {
-            System.err.println("Errore durante la lettura del server: a rigo 130 " + e.getMessage());
+            System.err.println("Errore durante la lettura del server: nel bufferedReceive " + e.getMessage());
             return e.getMessage();
         }
     }
@@ -331,8 +332,9 @@ public class client {
                 }
             }
 
-            
             out.println("8");
+            System.out.println("Cancellazione in corso...");
+
             for (String c : cocktails) {
                 out.println(c);
                 Thread.sleep(500);
@@ -341,32 +343,28 @@ public class client {
                 out.println(c);
                 Thread.sleep(500);
             }
-            Thread.sleep(500);
+            // Thread.sleep(500);
 
-            System.out.println("Cancellazione in corso...");
-            out.println("Fine");
-            clientSocket.setSoTimeout(3000);
-            String line;
             try {
-                do {
-                    line = input.readLine();
-                    if(line.equals("Errore")){
-                        
-                    }
-                } while (!line.equals("Fine"));
-            } catch (SocketTimeoutException e) {
-                System.out.println("Timeout durante l'attesa della risposta");
-                return;
+                out.println("Fine");
+                clientSocket.setSoTimeout(3000);
+                System.out.println("Aspetto la risposta dal server....");
+                String risposta = receive();
+                if (!risposta.equals("ERRORE")) {
+                    System.out.println("Cancellazione completata di :");
+                    System.out.println("Cocktails: " + cocktails.toString());
+                    System.out.println("Shakes: " + shakes.toString());
+                    c.emptyCarrello();
+                    Thread.sleep(1000);
+                } else {
+                    System.err
+                            .println("Il server ha riscontrato un errore nella cancellazione dei drink e dei frullati");
+                }
+            } catch (Exception e) {
+                System.err.println(
+                        "Errore durante la ricezione della risposta al comando di cancellazione dei drink e dei frullati, impossibile cancellare");
             }
 
-            System.out.println("Cancellazione completata di :");
-
-            System.out.println("Cocktails: " + cocktails.toString());
-            System.out.println("Shakes: " + shakes.toString());
-            c.emptyCarrello();
-            Thread.sleep(1000);
-        } catch (IOException e) {
-            System.err.println("IOException durante la lettura: " + e.getMessage());
         } catch (InterruptedException e) {
             System.err.println("InterruptedException durante la sospensione del thread: " + e.getMessage());
         } catch (Exception e) {

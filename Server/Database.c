@@ -154,7 +154,7 @@ bool testingConnection() {
 bool command(char *comando) {
   res = PQexec(conn, comando);
   bool status = checkres(res);
-  PQclear(res);
+  // PQclear(res);
   return status;
 }
 
@@ -377,22 +377,22 @@ int get_id_vendita() {
   char *get_id_vendita_command =
       "SELECT id FROM Vendite ORDER BY id DESC LIMIT 1";
 
-  connection_lock();
+  // connection_lock();
 
   res = PQexec(conn, get_id_vendita_command);
 
-  connection_unlock();
+  // connection_unlock();
 
   if (checkres(res) == false) {
     printf("Errore nel recupero dell'id della vendita\n");
     return -1;
   }
 
-  connection_lock();
+  // connection_lock();
 
   int id = atoi(PQgetvalue(res, 0, 0));
 
-  connection_unlock();
+  // connection_unlock();
 
   return id;
 }
@@ -406,7 +406,7 @@ bool is_drink_in_db(char *nome) {
 
   int paramFormats[1] = {0};
 
-  connection_lock();
+  // connection_lock();
 
   res = PQexecParams(conn, is_drink_in_db_command, 1, NULL, paramValues,
                      paramLengths, paramFormats, 0);
@@ -430,7 +430,7 @@ bool is_shake_in_db(char *nome) {
 
   int paramFormats[1] = {0};
 
-  connection_lock();
+  // connection_lock();
 
   res = PQexecParams(conn, is_shake_in_db_command, 1, NULL, paramValues,
                      paramLengths, paramFormats, 0);
@@ -454,7 +454,7 @@ bool is_cliente_in_db(const char *email) {
 
   int paramFormats[1] = {0};
 
-  connection_lock();
+  // connection_lock();
 
   res = PQexecParams(conn, is_cliente_in_db_command, 1, NULL, paramValues,
                      paramLengths, paramFormats, 0);
@@ -489,7 +489,7 @@ char signup(char *email, char *password) {
 
     int paramFormats[2] = {0, 0};
 
-    connection_lock();
+    // connection_lock();
 
     res = PQexecParams(conn, signup_command, 2, NULL, paramValues, paramLengths,
                        paramFormats, 0);
@@ -512,12 +512,12 @@ bool signin(char *email, char *password) {
     int paramLengths[1] = {strlen(email)};
     int paramFormats[1] = {0};
 
-    connection_lock();
+    // connection_lock();
 
     res = PQexecParams(conn, isLogged, 1, NULL, paramValues, paramLengths,
                        paramFormats, 0);
 
-    connection_unlock();
+    // connection_unlock();
 
     if (checkres(res)) {
       log_info("Login effettuato con successo\n");
@@ -538,10 +538,10 @@ bool logoff(const char *email) {
   const char *paramValues[1] = {email};
   int paramLengths[1] = {strlen(email)};
   int paramFormats[1] = {0};
-  connection_lock();
+  // connection_lock();
   res = PQexecParams(conn, isLogged, 1, NULL, paramValues, paramLengths,
                      paramFormats, 0);
-  connection_unlock();
+  // connection_unlock();
   if (checkres(res)) {
     log_info("Logout effettuato");
     return true;
@@ -562,16 +562,16 @@ bool are_credentials_correct(char *email, char *password) {
 
   int paramFormats[2] = {0, 0};
 
-  connection_lock();
+  // connection_lock();
 
   res = PQexecParams(conn, credentials_command, 2, NULL, paramValues,
                      paramLengths, paramFormats, 0);
 
   if (PQntuples(res) == 0) {
-    connection_unlock();
+    // connection_unlock();
     return false;
   } else {
-    connection_unlock();
+    // connection_unlock();
     return true;
   }
 }
@@ -588,18 +588,18 @@ bool create_sell(const char *cliente_id, char *nome_bevanda, char *tipo,
   int paramLengths[4] = {0}; // 0 means "null terminated"
   int paramFormats[4] = {0}; // 0 means "text"
 
-  connection_lock();
+  // connection_lock();
 
   res = PQexecParams(conn, insert_command, 4, NULL, paramValues, paramLengths,
                      paramFormats, 0);
 
   if (PQresultStatus(res) != PGRES_COMMAND_OK) {
     fprintf(stderr, "Insertion failed: %s", PQerrorMessage(conn));
-    connection_unlock();
+    // connection_unlock();
     PQclear(res); // TODO: CAPIRE SE FUNZIONA
     return false;
   }
-  connection_unlock();
+  // connection_unlock();
   PQclear(res); // TODO: CAPIRE SE FUNZIONA
   return true;
 }
@@ -698,7 +698,7 @@ int get_shake_amount(char *nome) {
 
   int paramFormats[1] = {0};
 
-  connection_lock();
+  // connection_lock();
 
   res = PQexecParams(conn, get_shake_amount_command, 1, NULL, paramValues,
                      paramLengths, paramFormats, 0);
@@ -706,7 +706,7 @@ int get_shake_amount(char *nome) {
 
   checkres(res);
 
-  connection_lock();
+  // connection_lock();
 
   int quantita = atoi(PQgetvalue(res, 0, 0));
 
