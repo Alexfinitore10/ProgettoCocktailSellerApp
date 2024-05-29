@@ -523,7 +523,10 @@ public class client {
             } while (checkEmailRegex(email) == false);
 
             System.out.print("Inserisci la tua password: ");
-            String password = scanner.nextLine();
+            String password;
+            do {
+                password = scanner.nextLine();
+            } while (password.isEmpty());
 
             // hashing della password
             password = hash(password);
@@ -549,7 +552,10 @@ public class client {
             } while (checkEmailRegex(email) == false);
 
             System.out.print("Inserisci la tua password: ");
-            String password = scanner.nextLine();
+            String password;
+            do {
+                password = scanner.nextLine();
+            } while (password.isEmpty());
 
             // hashing della password
             password = hash(password);
