@@ -24,9 +24,8 @@ public class LogOutFragment extends Fragment {
     }
 
 
-    public static LogOutFragment newInstance(String param1, String param2) {
-        LogOutFragment fragment = new LogOutFragment();
-        return fragment;
+    public static LogOutFragment newInstance() {
+        return new LogOutFragment();
     }
 
     @Override

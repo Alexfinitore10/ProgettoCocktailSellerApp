@@ -7,6 +7,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,14 +16,18 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
-import java.io.IOException;
-import java.net.SocketTimeoutException;
+
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PaymentFragment extends Fragment {
     private Button YesButton;
     private Carrello carrello;
     private Client client;
+    private CartObserver model;
+
 
     public PaymentFragment() {
         // Required empty public constructor
@@ -49,7 +55,7 @@ public class PaymentFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        CartObserver model = new ViewModelProvider(requireActivity()).get(CartObserver.class);
+        model = new ViewModelProvider(requireActivity()).get(CartObserver.class);
         YesButton = view.findViewById(R.id.YesButton);
 
 
@@ -57,25 +63,44 @@ public class PaymentFragment extends Fragment {
             if(carrello.calculateTotal() == 0) {
                 Toast.makeText(getContext(), "Carrello vuoto", Toast.LENGTH_SHORT).show();
             }else{
-                Runnable sendToServer = () -> sendBeveragesToServer(carrello);
-                Thread sendToServerStarter = new Thread(sendToServer);
-                sendToServerStarter.start();
-                try {
-                    sendToServerStarter.join();
-                } catch (InterruptedException e) {
-                    Log.e("PaymentFragment", "Errore join");
-                    return;
-                }
+                // Runnable sendToServer = () -> sendBeveragesToServer();
+                // Thread sendToServerStarter = new Thread(sendToServer);
+                // sendToServerStarter.start();
+                // try {
+                //     sendToServerStarter.join();
+                // } catch (InterruptedException e) {
+                //     Log.e("PaymentFragment", "Errore join");
+                //     return;
+                // }
 
-                model.setTotalCartValue(carrello.calculateTotal());
-                model.setPaymentSuccess(true);
-                carrello.viewItems();
-                Toast.makeText(getContext(), "Pagamento completato con successo!", Toast.LENGTH_SHORT).show();
+                // model.setTotalCartValue(carrello.calculateTotal());
+                // model.setPaymentSuccess(true);
+                // carrello.viewItems();
+                // Toast.makeText(getContext(), "Pagamento completato con successo!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Pagamento effettuato! Attendere prego...", Toast.LENGTH_SHORT).show();
+                
+                ExecutorService executor = Executors.newSingleThreadExecutor();
+                Handler handler = new Handler(Looper.getMainLooper());
+
+                executor.execute(() -> {
+                    sendBeveragesToServer();
+                    handler.post(() -> {
+                        model.setTotalCartValue(carrello.calculateTotal());
+                        carrello.viewItems();
+                        Toast.makeText(getContext(), "Pagamento completato con successo!", Toast.LENGTH_SHORT).show();
+                    });
+                });
+
+
+                
             }
         });
     }
 
-    private void sendBeveragesToServer(Carrello carrello){
+    private void sendBeveragesToServer(){
+        boolean hasCocktails = false;
+        boolean hasShakes = false;
+
         try {
             ArrayList<String> cocktails = new ArrayList<>();
             ArrayList<String> shakes =  new ArrayList<>();
@@ -87,8 +112,10 @@ public class PaymentFragment extends Fragment {
             for (int i = 0; i < carrello.getBeverages().size(); i++) {
                 if(carrello.getBeverages().get(i) instanceof Cocktail){
                     cocktails.add("1`" + carrello.getBeverages().get(i).getNome() + "`" + carrello.getBeverages().get(i).getQuantita());
+                    hasCocktails = true;
                 }else{
                     shakes.add("2`" + carrello.getBeverages().get(i).getNome() + "`" + carrello.getBeverages().get(i).getQuantita());
+                    hasShakes = true;
                 }
             }
 
@@ -120,6 +147,13 @@ public class PaymentFragment extends Fragment {
                     System.out.println("Cancellazione completata di :");
                     System.out.println("Cocktails: " + cocktails.toString());
                     System.out.println("Shakes: " + shakes.toString());
+                    if(hasCocktails){
+                        model.setResetCocktails(true);
+                    }
+                    if(hasShakes){
+                        model.setResetShakes(true);
+                    }
+                    model.setResetCart(true);
                     carrello.emptyCarrello();
                     Thread.sleep(1000);
                 } else {
@@ -128,6 +162,7 @@ public class PaymentFragment extends Fragment {
             } catch (Exception e) {
                 Log.e("sendBeveragesToServer", "\"Errore durante la ricezione della risposta al comando di cancellazione dei drink e dei frullati, impossibile cancellare");
             }
+
         }catch (Exception e) {
             if(e instanceof InterruptedException){
                 Log.e("sendBeveragesToServer","InterruptedException durante la sospensione del thread: " + e.getMessage());

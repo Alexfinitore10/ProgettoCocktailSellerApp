@@ -174,4 +174,8 @@ public class Client {
             Log.e("Client", "Impossibile impostare il timeout: " + e.getMessage());
         }
     }
+
+    public boolean isConnected() {
+        return connected;
+    }
 }

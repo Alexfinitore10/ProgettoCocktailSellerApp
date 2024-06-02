@@ -4,9 +4,14 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.StrictMode;
 import android.util.Log;
 import android.widget.Button;
 
@@ -16,24 +21,36 @@ public class MainActivity extends AppCompatActivity {
     private Button signupButton;
     private Client client;
     private int backButtonCount;
+    private ClientService clientService;
+    private boolean isBound = false;
+
+    private ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            ClientService.LocalBinder binder = (ClientService.LocalBinder) service;
+            clientService = binder.getService();
+            isBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            isBound = false;
+        }
+    };
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
 
-        Runnable RunClientStarterMain = () -> {
-            client = Client.getIstance();
-        };
-
-        try {
-            Thread ClientStarterMain = new Thread(RunClientStarterMain);
-            ClientStarterMain.start();
-            ClientStarterMain.join();
-        } catch (InterruptedException e) {
-            Log.e("MainActivity thread","Errore nella join del thread:" +e.getMessage());
-        }
+    
+        Intent intent = new Intent(this, ClientService.class);
+        startForegroundService(intent);
+        bindService(intent, connection, Context.BIND_AUTO_CREATE);
+        
 
         signupButton = findViewById(R.id.RegisterButton);
 

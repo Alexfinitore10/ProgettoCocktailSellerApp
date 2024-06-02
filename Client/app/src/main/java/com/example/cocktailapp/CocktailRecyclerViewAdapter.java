@@ -2,6 +2,7 @@ package com.example.cocktailapp;
 
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,7 +61,7 @@ public class CocktailRecyclerViewAdapter extends RecyclerView.Adapter <CocktailR
         holder.cocktailIngredients.setText("Ingredienti: "+ingredienti);
         holder.cocktailImage.setImageResource(image_id);
 
-        holder.SpinnerInitializer(holder.amountSpinner, position, holder.itemView.getContext());
+        holder.SpinnerInitializer(holder.amountSpinner, holder.position, holder.itemView.getContext());
 
     }
 
@@ -148,6 +149,7 @@ public class CocktailRecyclerViewAdapter extends RecyclerView.Adapter <CocktailR
                 }
                 selectedAmount = (int) amountSpinner.getSelectedItem();
 
+
                 if(carrello.isBeverageInCart(cocktail)) {
                     if ((selectedAmount + carrello.getAmountSelectedBeverage(cocktail)) > cocktailList.get(position).getQuantita()) {
                         Toast.makeText(context, "Quantità massima superata", Toast.LENGTH_SHORT).show();
@@ -175,19 +177,29 @@ public class CocktailRecyclerViewAdapter extends RecyclerView.Adapter <CocktailR
         private void SpinnerInitializer(Spinner spinner,int position,Context context) {
             int amount = cocktailList.get(position).getQuantita();
         
+            if(amount == 0){
+                int zero = 0;
 
-            List<Integer> amounts_list = new ArrayList<>();
-            for (int i = 1; i <= amount; i++) {
-                amounts_list.add(i);
+                ArrayAdapter<Integer> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, zero);
+
+
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+                spinner.setAdapter(adapter);
+            }else{
+                List<Integer> amounts_list = new ArrayList<>();
+                for (int i = 1; i <= amount; i++) {
+                    amounts_list.add(i);
+                }
+
+
+                ArrayAdapter<Integer> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, amounts_list);
+
+
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+                spinner.setAdapter(adapter);
             }
-        
-
-            ArrayAdapter<Integer> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, amounts_list);
-        
-
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-            spinner.setAdapter(adapter);
         }
 
     }

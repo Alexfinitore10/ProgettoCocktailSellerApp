@@ -7,14 +7,14 @@ public class CocktailLayoutClass {
     private List<String> ingredienti;
     private double gradazione_alcolica;
     private double prezzo;
-    private int quantità;
+    private int quantita;
 
-    public CocktailLayoutClass(String nome, List<String> ingredienti, double gradazione_alcolica, double prezzo, int quantità) {
+    public CocktailLayoutClass(String nome, List<String> ingredienti, double gradazione_alcolica, double prezzo, int amount) {
         this.nome = nome;
         this.ingredienti = ingredienti;
         this.gradazione_alcolica = gradazione_alcolica;
         this.prezzo = prezzo;
-        this.quantità = quantità;
+        this.quantita = amount;
     }
 
     public String getNome() {
@@ -49,11 +49,21 @@ public class CocktailLayoutClass {
         this.prezzo = prezzo;
     }
 
-    public int getQuantità() {
-        return quantità;
+    public int getQuantita() {
+        return quantita;
     }
 
-    public void setQuantità(int quantità) {
-        this.quantità = quantità;
+    public void setQuantita(int quantita) {
+        this.quantita = quantita;
+    }
+
+    public String toString() {
+        return "CocktailLayoutClass{" +
+                "nome='" + nome + '\'' +
+                ", ingredienti=" + ingredienti+
+                ", gradazione_alcolica=" + gradazione_alcolica +
+                ", prezzo=" + prezzo +
+                ", quantità=" + quantita +
+                '}';
     }
 }
