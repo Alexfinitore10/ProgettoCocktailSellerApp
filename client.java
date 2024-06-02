@@ -176,6 +176,7 @@ public class client {
                 }
 
                 System.out.println("Inserimento non valido. Riprova");
+                scanner.close();
             }
 
             switch (Integer.parseInt(risposta)) {
@@ -242,13 +243,15 @@ public class client {
                 default:
                     break;
             }
-
+            scanner.close();
             return rispostaServer;
         } catch (IOException e) {
             System.err.println("IOException durante la lettura: " + e.getMessage());
+            scanner.close();
             return null;
         } catch (Exception e) {
             System.err.println("Errore durante la lettura: " + e.getMessage());
+            scanner.close();
             return null;
         }
     }
