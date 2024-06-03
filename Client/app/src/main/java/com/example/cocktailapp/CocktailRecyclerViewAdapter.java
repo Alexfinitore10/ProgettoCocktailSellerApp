@@ -43,6 +43,7 @@ public class CocktailRecyclerViewAdapter extends RecyclerView.Adapter <CocktailR
 
     @Override
     public void onBindViewHolder(@NonNull CocktailRecyclerViewAdapter.ViewHolder holder, int position) {
+        Log.d("CocktailRecyclerViewAdapter", "onBindViewHolder, cocktailList size = "+cocktailList.size());
         CocktailLayoutClass cocktailLayoutClass = cocktailLayoutArrayList.get(position);
         int image_id = getImageID(cocktailLayoutArrayList.get(position).getNome());
         holder.setPosition(position);
@@ -61,17 +62,30 @@ public class CocktailRecyclerViewAdapter extends RecyclerView.Adapter <CocktailR
         holder.cocktailIngredients.setText("Ingredienti: "+ingredienti);
         holder.cocktailImage.setImageResource(image_id);
 
-        holder.SpinnerInitializer(holder.amountSpinner, holder.position, holder.itemView.getContext());
+        if(!cocktailLayoutArrayList.isEmpty()){
+            holder.SpinnerInitializer(holder.amountSpinner, holder.position, holder.itemView.getContext());
+        }
 
     }
-
 
     @Override
     public int getItemCount() {
         return cocktailLayoutArrayList.size();
     }
 
+    @Override
+    public void registerAdapterDataObserver(@NonNull RecyclerView.AdapterDataObserver observer) {
+        super.registerAdapterDataObserver(observer);
+    }
 
+    @Override
+    public void unregisterAdapterDataObserver(@NonNull RecyclerView.AdapterDataObserver observer) {
+        super.unregisterAdapterDataObserver(observer);
+    }
+
+    public void setCocktailList(ArrayList<Cocktail> cocktailList) {
+        this.cocktailList = cocktailList;
+    }
 
     private int getImageID(String nome) {
         int imageResId;
@@ -107,13 +121,10 @@ public class CocktailRecyclerViewAdapter extends RecyclerView.Adapter <CocktailR
                 imageResId = R.drawable.moscowmule;
                 break;
             default:
-                imageResId = R.drawable.cocktail_app_icon; // Replace with your default image resource ID
+                imageResId = R.drawable.cocktail_app_icon;
         }
         return imageResId;
     }
-
-
-
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private Button addButton;
@@ -176,30 +187,22 @@ public class CocktailRecyclerViewAdapter extends RecyclerView.Adapter <CocktailR
 
         private void SpinnerInitializer(Spinner spinner,int position,Context context) {
             int amount = cocktailList.get(position).getQuantita();
-        
-            if(amount == 0){
-                int zero = 0;
-
-                ArrayAdapter<Integer> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, zero);
 
 
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-                spinner.setAdapter(adapter);
-            }else{
-                List<Integer> amounts_list = new ArrayList<>();
-                for (int i = 1; i <= amount; i++) {
-                    amounts_list.add(i);
-                }
-
-
-                ArrayAdapter<Integer> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, amounts_list);
-
-
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-                spinner.setAdapter(adapter);
+            List<Integer> amounts_list = new ArrayList<>();
+            for (int i = 1; i <= amount; i++) {
+                amounts_list.add(i);
             }
+
+
+            ArrayAdapter<Integer> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, amounts_list);
+
+
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+            spinner.setAdapter(adapter);
+
         }
 
     }

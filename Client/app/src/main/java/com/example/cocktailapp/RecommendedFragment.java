@@ -64,6 +64,9 @@ public class RecommendedFragment extends Fragment {
         allCocktails = new ArrayList<>();
         allShakes = new ArrayList<>();
 
+        recyclerView = view.findViewById(R.id.RecommendedRecyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
         model = new ViewModelProvider(requireActivity()).get(CartObserver.class);
         if(model.getAllCocktails() != null){
             allCocktailsString = model.getAllCocktails();
@@ -136,13 +139,42 @@ public class RecommendedFragment extends Fragment {
                         }
                     }
 
-                    recyclerView = view.findViewById(R.id.RecommendedRecyclerView);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
                     adapter = new RecommendedRecyclerViewAdapter(list, getContext(), recommendedCocktails, recommendedShakes, model);
                     recyclerView.setAdapter(adapter);
 
                 });
             });
+        }else{
+            recommendedCocktails = (ArrayList<Cocktail>) Cocktail.setCocktails(recommendedCocktailsString);
+            recommendedShakes = (ArrayList<Shake>) Shake.setShakes(recommendedShakesString);
+            allCocktails = (ArrayList<Cocktail>) Cocktail.setCocktails(allCocktailsString);
+            allShakes = (ArrayList<Shake>) Shake.setShakes(allShakesString);
+
+            for (Cocktail cocktail : recommendedCocktails) {
+                for (Cocktail c : allCocktails) {
+                    if (cocktail.getNome().equals(c.getNome())) {
+                        cocktail.setQuantita(c.getQuantita());
+                    }
+                }
+            }
+            for (Cocktail cocktail : recommendedCocktails) {
+                list.add(new RecommendedLayoutClass(cocktail));
+            }
+
+            for (Shake shake : recommendedShakes) {
+                for (Shake s : allShakes) {
+                    if (shake.getNome().equals(s.getNome())) {
+                        shake.setQuantita(s.getQuantita());
+                    }
+                }
+            }
+            for (Shake shake : recommendedShakes) {
+                list.add(new RecommendedLayoutClass(shake));
+            }
+
+            adapter = new RecommendedRecyclerViewAdapter(list, getContext(), recommendedCocktails, recommendedShakes, model);
+            recyclerView.setAdapter(adapter);
         }
 
         executor.shutdown();

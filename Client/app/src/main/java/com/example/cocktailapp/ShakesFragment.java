@@ -38,8 +38,8 @@ public class ShakesFragment extends Fragment {
     private CartObserver model;
     private ExecutorService executor;
     private Handler handler;
-
-
+    private RecyclerView.AdapterDataObserver observer;
+    private boolean isObserverRegistered = false;
 
 
     public ShakesFragment() {
@@ -77,6 +77,14 @@ public class ShakesFragment extends Fragment {
         recyclerView = view.findViewById(R.id.ShakesRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        observer = new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeRemoved(int positionStart, int itemCount) {
+                super.onItemRangeRemoved(positionStart, itemCount);
+                recyclerView.post(() -> fillShakes(itemCount));
+            }
+        };
+
         if(model.getAllShakes() != null){
             allShakes = model.getAllShakes();
         }else{
@@ -95,9 +103,12 @@ public class ShakesFragment extends Fragment {
                     for (Shake s : shakes) {
                         list.add(new ShakesLayoutClass(s.getNome(),s.getIngredienti(),s.getPrezzo(),s.getQuantita()));
                     }
-
                     adapter = new ShakesRecyclerViewAdapter(list,getContext(),shakes,model);
                     recyclerView.setAdapter(adapter);
+                    if(adapter != null && !isObserverRegistered) {
+                        adapter.registerAdapterDataObserver(observer);
+                        isObserverRegistered = true;
+                    }
                 });
             });
         }else{
@@ -106,9 +117,12 @@ public class ShakesFragment extends Fragment {
                 list.add(new ShakesLayoutClass(s.getNome(),s.getIngredienti(),s.getPrezzo(),s.getQuantita()));
             }
 
-
             adapter = new ShakesRecyclerViewAdapter(list,getContext(),shakes,model);
             recyclerView.setAdapter(adapter);
+            if(adapter != null && !isObserverRegistered) {
+                adapter.registerAdapterDataObserver(observer);
+                isObserverRegistered = true;
+            }
         }
 
 
@@ -117,17 +131,14 @@ public class ShakesFragment extends Fragment {
             Log.d("ShakesFragment", "resetShakes: " + resetShakes);
             if (resetShakes) {
                 executor.execute(() -> {
-                    allShakes = ShakesFragment.this.getAllShakes();
+                    allShakes = getAllShakes();
                     model.setAllShakes(allShakes);
                     handler.post(() -> {
                         shakes.clear();
                         shakes = (ArrayList<Shake>) Shake.setShakes(allShakes);
+                        int listSize = list.size();
                         list.clear();
-                        for (int i = 0; i < shakes.size(); i++) {
-                            list.add(new ShakesLayoutClass(shakes.get(i).getNome(), shakes.get(i).getIngredienti(), shakes.get(i).getPrezzo(), shakes.get(i).getQuantita()));
-                        }
-                        adapter.notifyDataSetChanged();
-                        model.setResetShakes(false);
+                        adapter.notifyItemRangeRemoved(0, listSize);
                     });
                 });
 
@@ -145,10 +156,28 @@ public class ShakesFragment extends Fragment {
         return client.bufferedReceive();
     }
 
+    public void fillShakes(int listSize){
+        adapter.setShakeslist(shakes);
+        for (Shake s: shakes) {
+            list.add(new ShakesLayoutClass(s.getNome(), s.getIngredienti(), s.getPrezzo(), s.getQuantita()));
+        }
+        adapter.notifyItemRangeInserted(0, listSize);
+        model.setResetShakes(false);
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
         executor.shutdown();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (adapter != null && isObserverRegistered) {
+            adapter.unregisterAdapterDataObserver(observer);
+            isObserverRegistered = false;
+        }
     }
 
 }

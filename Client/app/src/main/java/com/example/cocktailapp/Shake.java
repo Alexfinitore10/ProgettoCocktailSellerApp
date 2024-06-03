@@ -26,7 +26,7 @@ public class Shake extends Bevanda {
             ingredienti.addAll(Arrays.asList(ingredientiArray));
         }
 
-        float prezzo = Float.parseFloat(parts[2].trim());
+        double prezzo = Float.parseFloat(parts[2].trim());
         int quantita = Integer.parseInt(parts[3].trim());
 
         return new Shake(nome, prezzo,ingredienti, quantita);

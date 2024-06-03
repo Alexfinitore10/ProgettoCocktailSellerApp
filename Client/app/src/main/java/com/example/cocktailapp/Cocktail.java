@@ -28,12 +28,11 @@ public class Cocktail extends Bevanda {
     
         String nome = parts[0].trim();
     
-        // Rimuovi le parentesi quadre dagli ingredienti
         String ingredientiString = parts[1].substring(1, parts[1].length() - 1).trim();
         String[] ingredientiArray = ingredientiString.split(";");
     
-        float gradazioneAlcolica = Float.parseFloat(parts[2].trim());
-        float prezzo = Float.parseFloat(parts[3].trim());
+        double gradazioneAlcolica = Float.parseFloat(parts[2].trim());
+        double prezzo = Float.parseFloat(parts[3].trim());
         int quantita = Integer.parseInt(parts[4].trim());
     
         return new Cocktail(nome, prezzo, Arrays.asList(ingredientiArray), quantita, gradazioneAlcolica);

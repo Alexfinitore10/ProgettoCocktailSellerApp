@@ -54,7 +54,9 @@ public class ShakesRecyclerViewAdapter extends RecyclerView.Adapter<ShakesRecycl
         holder.shakePrice.setText("Prezzo: " + PrezzoShake +"€");
         holder.shakeIngredients.setText("Ingredienti: "+ingredienti);
 
-        holder.SpinnerInitializer(holder.amountSpinner, position, holder.itemView.getContext());
+        if(!shakeslayoutlist.isEmpty()){
+            holder.SpinnerInitializer(holder.amountSpinner, position, holder.itemView.getContext());
+        }
     }
 
     @Override
@@ -81,12 +83,14 @@ public class ShakesRecyclerViewAdapter extends RecyclerView.Adapter<ShakesRecycl
                 imageResId = R.drawable.frullatoesotico;
                 break;
             default:
-                imageResId = R.drawable.cocktail_app_icon; // Replace with your default image resource ID
+                imageResId = R.drawable.cocktail_app_icon;
         }
         return imageResId;
     }
 
-
+    public void setShakeslist(ArrayList<Shake> shakeslist) {
+        this.shakeslist = shakeslist;
+    }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
         private TextView shakeName, shakePrice, shakeIngredients;
@@ -120,10 +124,6 @@ public class ShakesRecyclerViewAdapter extends RecyclerView.Adapter<ShakesRecycl
                 }
                 selectedAmount = (int) amountSpinner.getSelectedItem();
 
-                if(selectedAmount == 0){
-                    Toast.makeText(itemView.getContext(), "Bevanda terminata" , Toast.LENGTH_SHORT).show();
-                    return;
-                }
 
                 if(carrello.isBeverageInCart(shake)) {
                     if ((selectedAmount + carrello.getAmountSelectedBeverage(shake)) > shakeslist.get(position).getQuantita()) {
@@ -149,45 +149,20 @@ public class ShakesRecyclerViewAdapter extends RecyclerView.Adapter<ShakesRecycl
 
         private void SpinnerInitializer(Spinner spinner,int position, Context context) {
             int amount = shakeslist.get(position).getQuantita();
-//            List<Integer> amounts_list = new ArrayList<>();
-//
-//            for (int i = 1; i <= amount; i++) {
-//                amounts_list.add(i);
-//            }
-//
-//            ArrayAdapter<Integer> adapter = new ArrayAdapter<>(
-//                    context,
-//                    android.R.layout.simple_spinner_item,
-//                    amounts_list
-//            );
-//            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//
-//
-//            spinner.setAdapter(adapter);
 
-            if(amount == 0){
-                int zero = 0;
-
-                ArrayAdapter<Integer> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, zero);
-
-
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-                spinner.setAdapter(adapter);
-            }else{
-                List<Integer> amounts_list = new ArrayList<>();
-                for (int i = 1; i <= amount; i++) {
-                    amounts_list.add(i);
-                }
-
-
-                ArrayAdapter<Integer> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, amounts_list);
-
-
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-                spinner.setAdapter(adapter);
+            List<Integer> amounts_list = new ArrayList<>();
+            for (int i = 1; i <= amount; i++) {
+                amounts_list.add(i);
             }
+
+
+            ArrayAdapter<Integer> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, amounts_list);
+
+
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+            spinner.setAdapter(adapter);
+
         }
 
 

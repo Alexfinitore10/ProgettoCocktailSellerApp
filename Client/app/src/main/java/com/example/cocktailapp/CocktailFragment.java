@@ -35,6 +35,10 @@ public class CocktailFragment extends Fragment {
     private CartObserver model;
     private ExecutorService executor;
     private Handler handler;
+    private RecyclerView.AdapterDataObserver observer;
+    private boolean isObserverRegistered = false;
+
+
 
 
 
@@ -73,6 +77,14 @@ public class CocktailFragment extends Fragment {
         recyclerView = view.findViewById(R.id.CocktailRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        observer = new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeRemoved(int positionStart, int itemCount) {
+                super.onItemRangeRemoved(positionStart, itemCount);
+                recyclerView.post(() -> fillCocktails(itemCount));
+            }
+        };
+
         if(model.getAllCocktails() != null){
             allCocktails = model.getAllCocktails();
         }else{
@@ -97,6 +109,10 @@ public class CocktailFragment extends Fragment {
 
                     adapter = new CocktailRecyclerViewAdapter(list,getContext(),cocktails,model);
                     recyclerView.setAdapter(adapter);
+                    if(adapter != null && !isObserverRegistered) {
+                        adapter.registerAdapterDataObserver(observer);
+                        isObserverRegistered = true;
+                    }
                 });
             });
         }else{
@@ -107,6 +123,10 @@ public class CocktailFragment extends Fragment {
 
             adapter = new CocktailRecyclerViewAdapter(list,getContext(),cocktails,model);
             recyclerView.setAdapter(adapter);
+            if(adapter != null && !isObserverRegistered) {
+                adapter.registerAdapterDataObserver(observer);
+                isObserverRegistered = true;
+            }
         }
 
 
@@ -123,12 +143,9 @@ public class CocktailFragment extends Fragment {
                      handler.post(() -> {
                          cocktails.clear();
                          cocktails = (ArrayList<Cocktail>) Cocktail.setCocktails(allCocktails);
+                         int listSize = list.size();
                          list.clear();
-                         for (int i = 0; i < cocktails.size(); i++) {
-                             list.add(new CocktailLayoutClass(cocktails.get(i).getNome(),cocktails.get(i).getIngredienti(),cocktails.get(i).getGradazione_alcolica(),cocktails.get(i).getPrezzo(),cocktails.get(i).getQuantita()));
-                         }
-                         adapter.notifyDataSetChanged();
-                         model.setResetCocktails(false);
+                         adapter.notifyItemRangeRemoved(0, listSize);
                      });
                  });
 
@@ -144,11 +161,30 @@ public class CocktailFragment extends Fragment {
         return client.bufferedReceive();
     }
 
+    private void fillCocktails(int listSize){
+        adapter.setCocktailList(cocktails);
+        for (Cocktail c : cocktails) {
+            list.add(new CocktailLayoutClass(c.getNome(),c.getIngredienti(),c.getGradazione_alcolica(),c.getPrezzo(),c.getQuantita()));
+        }
+        adapter.notifyItemRangeInserted(0,listSize);
+        model.setResetCocktails(false);
+    }
+
+
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         executor.shutdown();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (adapter != null && isObserverRegistered) {
+            adapter.unregisterAdapterDataObserver(observer);
+            isObserverRegistered = false;
+        }
     }
 }
 
