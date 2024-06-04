@@ -18,6 +18,11 @@ public class CartObserver extends ViewModel {
     private final MutableLiveData<Boolean> resetCocktails = new MutableLiveData<>();
     private final MutableLiveData<Boolean> resetShakes = new MutableLiveData<>();
     private final MutableLiveData<Boolean> resetCart = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> resetRecommended = new MutableLiveData<>();
+
+    public void setResetRecommended (Boolean resetRecommended) {
+        this.resetRecommended.postValue(resetRecommended);
+    }
 
     public void setResetCart(Boolean resetCart) {
         this.resetCart.postValue(resetCart);
@@ -119,6 +124,10 @@ public class CartObserver extends ViewModel {
 
     public LiveData<Boolean> getResetCart() {
         return resetCart;
+    }
+
+    public LiveData<Boolean> getResetRecommended() {
+        return resetRecommended;
     }
 
 }

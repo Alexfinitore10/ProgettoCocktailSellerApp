@@ -34,7 +34,6 @@ public class ShakesFragment extends Fragment {
     private Client client;
     private ArrayList<Shake> shakes;
     private String allShakes;
-    private Carrello carrello;
     private CartObserver model;
     private ExecutorService executor;
     private Handler handler;
@@ -55,7 +54,6 @@ public class ShakesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        carrello = Carrello.getInstance();
         client = Client.getIstance();
         
     }

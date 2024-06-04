@@ -3,7 +3,6 @@ package com.example.cocktailapp;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 public class Carrello {
     private ArrayList<Bevanda> beverages;

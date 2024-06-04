@@ -43,10 +43,9 @@ public class ShakesRecyclerViewAdapter extends RecyclerView.Adapter<ShakesRecycl
         ShakesLayoutClass shakesLayoutClass = shakeslayoutlist.get(position);
         holder.setPosition(position);
         String ingredienti = shakesLayoutClass.getIngredienti().toString();
-        String PrezzoShake = String.valueOf(shakesLayoutClass.getPrezzo());
+        String PrezzoShake = String.format("%.2f", shakesLayoutClass.getPrezzo());
         int imageID = getImageID(shakeslayoutlist.get(position).getNome());
 
-        PrezzoShake = String.format("%.2f", shakesLayoutClass.getPrezzo());
         ingredienti = ingredienti.substring(1,ingredienti.length()-1);
 
         holder.imageView.setImageResource(imageID);

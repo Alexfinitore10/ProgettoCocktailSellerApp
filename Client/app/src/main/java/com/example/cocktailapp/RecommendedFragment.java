@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,6 +31,10 @@ public class RecommendedFragment extends Fragment {
     private ArrayList<Shake> recommendedShakes,allShakes;
     private String recommendedCocktailsString, recommendedShakesString, allCocktailsString, allShakesString;
     private CartObserver model;
+    private ExecutorService executor;
+    private Handler handler;
+    private RecyclerView.AdapterDataObserver observer;
+    private boolean isObserverRegistered = false;
 
 
     public RecommendedFragment() {
@@ -67,6 +72,14 @@ public class RecommendedFragment extends Fragment {
         recyclerView = view.findViewById(R.id.RecommendedRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        observer = new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeRemoved(int positionStart, int itemCount) {
+                super.onItemRangeRemoved(positionStart, itemCount);
+                recyclerView.post(() -> fillRecommended());
+            }
+        };
+
         model = new ViewModelProvider(requireActivity()).get(CartObserver.class);
         if(model.getAllCocktails() != null){
             allCocktailsString = model.getAllCocktails();
@@ -92,8 +105,8 @@ public class RecommendedFragment extends Fragment {
             recommendedShakesString = "";
         }
 
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Handler handler = new Handler(Looper.getMainLooper());
+        executor = Executors.newSingleThreadExecutor();
+        handler = new Handler(Looper.getMainLooper());
 
 
         if(recommendedCocktails.isEmpty() || recommendedShakes.isEmpty()) {
@@ -142,6 +155,10 @@ public class RecommendedFragment extends Fragment {
 
                     adapter = new RecommendedRecyclerViewAdapter(list, getContext(), recommendedCocktails, recommendedShakes, model);
                     recyclerView.setAdapter(adapter);
+                    if(adapter != null && !isObserverRegistered) {
+                        adapter.registerAdapterDataObserver(observer);
+                        isObserverRegistered = true;
+                    }
 
                 });
             });
@@ -175,66 +192,68 @@ public class RecommendedFragment extends Fragment {
 
             adapter = new RecommendedRecyclerViewAdapter(list, getContext(), recommendedCocktails, recommendedShakes, model);
             recyclerView.setAdapter(adapter);
+            if(adapter != null && !isObserverRegistered) {
+                adapter.registerAdapterDataObserver(observer);
+                isObserverRegistered = true;
+            }
         }
 
-        executor.shutdown();
 
-//        Runnable getCocktailsTask = () -> {
-//            recommendedCocktailsString = getRecommendedCocktails();
-//            allCocktailsString = getAllCocktails();
-//        };
-//        Thread getCocktailsThread = new Thread(getCocktailsTask);
-//        getCocktailsThread.start();
-//
-//        try {
-//            getCocktailsThread.join();
-//        } catch (InterruptedException e) {
-//            Log.e("RecommendedFragment cocktail thread","Errore nella join del thread: " + e.getMessage());
-//        }
-//        Runnable getShakesTask = () -> {
-//            recommendedShakesString = getRecommendedShakes();
-//            allShakesString = getAllShakes();
-//        };
-//        Thread getShakesThread = new Thread(getShakesTask);
-//        getShakesThread.start();
-//
-//        try{
-//            getShakesThread.join();
-//        }catch(InterruptedException e){
-//            Log.e("RecommendedFragment shake thread","Errore nella join del thread: " + e.getMessage());
-//        }
-//        if(isGetCocktailsOk()){
-//            recommendedCocktails = (ArrayList<Cocktail>) Cocktail.setCocktails(recommendedCocktailsString);
-//            allCocktails = (ArrayList<Cocktail>) Cocktail.setCocktails(allCocktailsString);
-//            for(Cocktail cocktail : recommendedCocktails){
-//                for(Cocktail c : allCocktails){
-//                    if(cocktail.getNome().equals(c.getNome())){
-//                        cocktail.setQuantita(c.getQuantita());
-//                    }
-//                }
-//            }
-//            for(Cocktail cocktail : recommendedCocktails){
-//                list.add(new RecommendedLayoutClass(cocktail));
-//            }
-//        }
+        model.getResetRecommended().observe(getViewLifecycleOwner(), resetRecommended -> {
+            if(resetRecommended){
+                executor.execute(() -> {
+                    recommendedCocktailsString = getRecommendedCocktails();
+                    allCocktailsString = getAllCocktails();
+                    recommendedShakesString = getRecommendedShakes();
+                    allShakesString = getAllShakes();
 
-//        if(isGetShakesOk()){
-//            recommendedShakes = (ArrayList<Shake>) Shake.setShakes(recommendedShakesString);
-//            allShakes = (ArrayList<Shake>) Shake.setShakes(allShakesString);
-//            for(Shake shake : recommendedShakes){
-//                for(Shake s : allShakes) {
-//                    if (shake.getNome().equals(s.getNome())) {
-//                        shake.setQuantita(s.getQuantita());
-//                    }
-//                }
-//            }
-//            for(Shake shake : recommendedShakes){
-//                list.add(new RecommendedLayoutClass(shake));
-//            }
-//        }
+                    handler.post(() -> {
+                        int listSize = list.size();
+                        recommendedCocktails.clear();
+                        allCocktails.clear();
+                        recommendedShakes.clear();
+                        allShakes.clear();
 
 
+                        if (isGetCocktailsOk()) {
+                            model.setRecommendedCocktails(recommendedCocktailsString);
+                            model.setAllCocktails(allCocktailsString);
+                            recommendedCocktails = (ArrayList<Cocktail>) Cocktail.setCocktails(recommendedCocktailsString);
+                            allCocktails = (ArrayList<Cocktail>) Cocktail.setCocktails(allCocktailsString);
 
+                            for (Cocktail cocktail : recommendedCocktails) {
+                                for (Cocktail c : allCocktails) {
+                                    if (cocktail.getNome().equals(c.getNome())) {
+                                        cocktail.setQuantita(c.getQuantita());
+                                    }
+                                }
+                            }
+
+                        }
+
+                        if(isGetShakesOk()){
+                            model.setRecommendedShakes(recommendedShakesString);
+                            model.setAllShakes(allShakesString);
+                            recommendedShakes = (ArrayList<Shake>) Shake.setShakes(recommendedShakesString);
+                            allShakes = (ArrayList<Shake>) Shake.setShakes(allShakesString);
+
+                            for(Shake shake : recommendedShakes){
+                                for(Shake s : allShakes) {
+                                    if (shake.getNome().equals(s.getNome())) {
+                                        shake.setQuantita(s.getQuantita());
+                                    }
+                                }
+                            }
+                        }
+
+
+                        list.clear();
+                        adapter.notifyItemRangeRemoved(0, listSize);
+
+                    });
+                });
+            }
+        });
 
     }
 
@@ -295,6 +314,45 @@ public class RecommendedFragment extends Fragment {
                 return false;
             default:
                 return true;
+        }
+    }
+
+    private void fillRecommended() {
+        int addedItem = 0;
+
+        adapter.setCocktailList(recommendedCocktails);
+        if(!recommendedCocktails.isEmpty()){
+            for(Cocktail c : recommendedCocktails){
+                list.add(new RecommendedLayoutClass(c));
+                addedItem++;
+            }
+        }
+
+
+        adapter.setShakeList(recommendedShakes);
+        if(!recommendedShakes.isEmpty()){
+            for(Shake s : recommendedShakes){
+                list.add(new RecommendedLayoutClass(s));
+                addedItem++;
+            }
+        }
+
+        adapter.notifyItemRangeInserted(0, addedItem);
+        model.setResetRecommended(false);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        executor.shutdown();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (adapter != null && isObserverRegistered) {
+            adapter.unregisterAdapterDataObserver(observer);
+            isObserverRegistered = false;
         }
     }
 }

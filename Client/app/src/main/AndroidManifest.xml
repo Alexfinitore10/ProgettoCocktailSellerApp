@@ -3,9 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
-    <application
+     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -15,12 +14,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CocktailApp"
         tools:targetApi="31">
-        <service
-            android:name=".ClientService"
-            android:enabled="true"
-            android:exported="true">
-
-        </service>
 
         <activity
             android:name=".ShopActivity"

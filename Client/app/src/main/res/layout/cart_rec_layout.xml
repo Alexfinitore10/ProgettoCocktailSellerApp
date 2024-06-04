@@ -73,13 +73,13 @@
         android:layout_width="80dp"
         android:layout_height="25dp"
         android:layout_marginStart="15dp"
-        android:layout_marginTop="275dp"
+        android:layout_marginTop="225dp"
         android:textColor="@color/black"
         android:textSize="14sp" />
 
     <Button
         android:id="@+id/addAnotherButton"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="230dp"
         android:layout_marginTop="380dp"
@@ -90,14 +90,14 @@
         android:id="@+id/addAmountSpinner"
         android:layout_width="125dp"
         android:layout_height="50dp"
-        android:layout_marginStart="220dp"
+        android:layout_marginStart="240dp"
         android:layout_marginTop="320dp" />
 
     <Button
         android:id="@+id/removeAnotherButton"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="60dp"
+        android:layout_marginStart="30dp"
         android:layout_marginTop="380dp"
         android:backgroundTint="#FD8700"
         android:text="Rimuovi" />
@@ -106,7 +106,7 @@
         android:id="@+id/removeAmountSpinner"
         android:layout_width="125dp"
         android:layout_height="50dp"
-        android:layout_marginStart="50dp"
+        android:layout_marginStart="40dp"
         android:layout_marginTop="320dp" />
 
 </androidx.cardview.widget.CardView>

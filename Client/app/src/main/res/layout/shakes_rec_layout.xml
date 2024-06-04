@@ -13,7 +13,7 @@
 
     <Button
         android:id="@+id/shakes_addButton"
-        android:layout_width="125dp"
+        android:layout_width="150dp"
         android:layout_height="55dp"
         android:layout_marginStart="215dp"
         android:layout_marginTop="230dp"

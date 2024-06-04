@@ -1,14 +1,12 @@
 package com.example.cocktailapp;
 
-import androidx.annotation.NonNull;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class Shake extends Bevanda {
 
-    public Shake(String nome, double prezzo, List<String> ingredienti, int quantità) {
+    public Shake(String nome, float prezzo, List<String> ingredienti, int quantità) {
         super(nome, prezzo, ingredienti, quantità);
     }
 
@@ -26,19 +24,19 @@ public class Shake extends Bevanda {
             ingredienti.addAll(Arrays.asList(ingredientiArray));
         }
 
-        double prezzo = Float.parseFloat(parts[2].trim());
+        float prezzo = Float.parseFloat(parts[2].trim());
         int quantita = Integer.parseInt(parts[3].trim());
 
         return new Shake(nome, prezzo,ingredienti, quantita);
     }
 
     public static List<Shake> setShakes(String buffer) {
-        List<Shake> Shakes = new ArrayList<Shake>();
+        List<Shake> Shakes = new ArrayList<>();
         String[] shakes = buffer.split("\n");
 
         for (String shake : shakes) {
-            Shake recommendedCocktail = parseString(shake);
-            Shakes.add(recommendedCocktail);
+            Shake recommendedShakes = parseString(shake);
+            Shakes.add(recommendedShakes);
         }
         return Shakes;
     }

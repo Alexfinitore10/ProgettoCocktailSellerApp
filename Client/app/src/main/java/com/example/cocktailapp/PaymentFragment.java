@@ -20,7 +20,6 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PaymentFragment extends Fragment {
     private Button YesButton;
@@ -56,7 +55,7 @@ public class PaymentFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         model = new ViewModelProvider(requireActivity()).get(CartObserver.class);
-        YesButton = view.findViewById(R.id.YesButton);
+        YesButton = view.findViewById(R.id.PayButton);
 
 
         YesButton.setOnClickListener(v -> {
@@ -154,6 +153,7 @@ public class PaymentFragment extends Fragment {
                         model.setResetShakes(true);
                     }
                     model.setResetCart(true);
+                    model.setResetRecommended(true);
                     carrello.emptyCarrello();
                     Thread.sleep(1000);
                 } else {

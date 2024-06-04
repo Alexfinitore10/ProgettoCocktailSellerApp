@@ -1,16 +1,14 @@
 package com.example.cocktailapp;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class Cocktail extends Bevanda {
-    private double gradazione_alcolica;
+    private float gradazione_alcolica;
 
-    public Cocktail(String nome, double prezzo, List<String> ingredienti, int quantità, double grado_alcol) {
-        super(nome, prezzo, ingredienti, quantità);
+    public Cocktail(String nome, float prezzo, List<String> ingredienti, int quantita, float grado_alcol) {
+        super(nome, prezzo, ingredienti, quantita);
         this.gradazione_alcolica = grado_alcol;
     }
 
@@ -18,7 +16,7 @@ public class Cocktail extends Bevanda {
 
     }
 
-    public double getGradazione_alcolica() {
+    public float getGradazione_alcolica() {
         return gradazione_alcolica;
     }
 
@@ -31,8 +29,8 @@ public class Cocktail extends Bevanda {
         String ingredientiString = parts[1].substring(1, parts[1].length() - 1).trim();
         String[] ingredientiArray = ingredientiString.split(";");
     
-        double gradazioneAlcolica = Float.parseFloat(parts[2].trim());
-        double prezzo = Float.parseFloat(parts[3].trim());
+        float gradazioneAlcolica = Float.parseFloat(parts[2].trim());
+        float prezzo = Float.parseFloat(parts[3].trim());
         int quantita = Integer.parseInt(parts[4].trim());
     
         return new Cocktail(nome, prezzo, Arrays.asList(ingredientiArray), quantita, gradazioneAlcolica);
@@ -55,7 +53,7 @@ public class Cocktail extends Bevanda {
         return "Nome: " + getNome() + ",\n Ingredienti: " + getIngredienti() + ",\n Quantità: " + getQuantita() + ",\n Gradazione Alcolica: " + this.gradazione_alcolica+ ",\n Prezzo: " + getPrezzo();
     }
 
-    public void setGradazione_alcolica(double gradazione_alcolica) {
+    public void setGradazione_alcolica(float gradazione_alcolica) {
         this.gradazione_alcolica = gradazione_alcolica;
     }
 }

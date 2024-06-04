@@ -31,7 +31,6 @@ public class CocktailFragment extends Fragment {
     private Client client;
     private ArrayList<Cocktail> cocktails;
     private String allCocktails;
-    private Carrello carrello;
     private CartObserver model;
     private ExecutorService executor;
     private Handler handler;
@@ -54,7 +53,6 @@ public class CocktailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        carrello = Carrello.getInstance();
         client = Client.getIstance();
         
     }
@@ -135,7 +133,6 @@ public class CocktailFragment extends Fragment {
 
 
         model.getResetCocktails().observe(getViewLifecycleOwner(), resetCocktails -> {
-            Log.d("CocktailFragment", "resetCocktails: " + resetCocktails);
              if (resetCocktails) {
                  executor.execute(() -> {
                      allCocktails = getAllCocktails();

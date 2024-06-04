@@ -1,6 +1,7 @@
 package com.example.cocktailapp;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,15 +48,13 @@ public class RecommendedRecyclerViewAdapter extends RecyclerView.Adapter<Recomme
         holder.setPosition(position);
 
         String ingredienti = recommendedLayoutClass.getBevanda().getIngredienti().toString();
-        String prezzoBevanda = String.valueOf(recommendedLayoutClass.getBevanda().getPrezzo());
+        String prezzoBevanda = String.format("%.2f",recommendedLayoutClass.getBevanda().getPrezzo());
         if(recommendedLayoutClass.getBevanda() instanceof Cocktail){
-            String GradazioneAlcolica = String.valueOf(((Cocktail) recommendedLayoutClass.getBevanda()).getGradazione_alcolica());
-            GradazioneAlcolica = String.format("%.2f", ((Cocktail) recommendedLayoutClass.getBevanda()).getGradazione_alcolica());
+            String GradazioneAlcolica = String.format("%.2f", ((Cocktail) recommendedLayoutClass.getBevanda()).getGradazione_alcolica());
             holder.recommendedAlcoholVolume.setText("Gradazione Alcolica: "+GradazioneAlcolica+"%");
         }else{
             holder.recommendedAlcoholVolume.setText("Gradazione Alcolica: Analcolico");
         }
-        prezzoBevanda = String.format("%.2f",recommendedLayoutClass.getBevanda().getPrezzo());
         ingredienti = ingredienti.substring(1,ingredienti.length()-1);
 
         holder.recommendedName.setText(recommendedLayoutClass.getBevanda().getNome());
@@ -64,6 +63,27 @@ public class RecommendedRecyclerViewAdapter extends RecyclerView.Adapter<Recomme
         holder.RecommendedImageView.setImageResource(image_id);
         holder.SpinnerInitializer(holder.amountSpinner, position, holder.itemView.getContext());
 
+    }
+
+    @Override
+    public void registerAdapterDataObserver(@NonNull RecyclerView.AdapterDataObserver observer) {
+        super.registerAdapterDataObserver(observer);
+    }
+
+    @Override
+    public void unregisterAdapterDataObserver(@NonNull RecyclerView.AdapterDataObserver observer) {
+        super.unregisterAdapterDataObserver(observer);
+    }
+
+
+    public void setCocktailList(ArrayList<Cocktail> input) {
+        this.cocktailList = input;
+        Log.d("RecommendedAdapter","cocktailList: "+cocktailList);
+    }
+
+    public void setShakeList(ArrayList<Shake> shakeListInput) {
+        this.shakeList = shakeListInput;
+        Log.d("RecommendedAdapter","shakeList: "+shakeList);
     }
 
     @Override

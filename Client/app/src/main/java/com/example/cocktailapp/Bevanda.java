@@ -1,16 +1,14 @@
 package com.example.cocktailapp;
 
-import androidx.annotation.NonNull;
-
 import java.util.List;
 
 public class Bevanda {
     private String nome;
-    private double prezzo;
+    private float prezzo;
     private List<String> ingredienti;
     private int quantita;
 
-    public Bevanda(String nome, double prezzo, List<String> ingredienti, int quantita) {
+    public Bevanda(String nome, float prezzo, List<String> ingredienti, int quantita) {
         this.nome = nome;
         this.prezzo = prezzo;
         this.ingredienti = ingredienti;
@@ -28,11 +26,11 @@ public class Bevanda {
         this.nome = nome;
     }
 
-    public double getPrezzo() {
+    public float getPrezzo() {
         return prezzo;
     }
 
-    public void setPrezzo(double prezzo) {
+    public void setPrezzo(float prezzo) {
         this.prezzo = prezzo;
     }
 
