@@ -36,8 +36,8 @@ public class Cocktail extends Bevanda {
         return new Cocktail(nome, prezzo, Arrays.asList(ingredientiArray), quantita, gradazioneAlcolica);
     }
 
-    public static List<Cocktail> setCocktails(String buffer) {
-        List<Cocktail> Cocktails = new ArrayList<Cocktail>();
+    public static ArrayList<Cocktail> setCocktails(String buffer) {
+        ArrayList<Cocktail> Cocktails = new ArrayList<>();
         String[] cocktails = buffer.split("\n");
 
         for (String cocktail : cocktails) {

@@ -38,9 +38,6 @@ public class PagerAdapter extends FragmentStateAdapter {
                 case 5:
                     fragment = LogOutFragment.newInstance();
                     break;
-                default:
-                    fragment = CocktailFragment.newInstance();
-                    break;
             }
             fragmentCache.put(position, fragment);
         }

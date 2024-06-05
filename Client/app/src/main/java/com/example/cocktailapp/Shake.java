@@ -30,8 +30,8 @@ public class Shake extends Bevanda {
         return new Shake(nome, prezzo,ingredienti, quantita);
     }
 
-    public static List<Shake> setShakes(String buffer) {
-        List<Shake> Shakes = new ArrayList<>();
+    public static ArrayList<Shake> setShakes(String buffer) {
+        ArrayList<Shake> Shakes = new ArrayList<>();
         String[] shakes = buffer.split("\n");
 
         for (String shake : shakes) {

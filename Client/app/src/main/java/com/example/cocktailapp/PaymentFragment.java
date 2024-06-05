@@ -22,19 +22,20 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class PaymentFragment extends Fragment {
-    private Button YesButton;
+    private Button PayButton;
     private Carrello carrello;
     private Client client;
     private CartObserver model;
-
+    private boolean success;
+    private ExecutorService executor;
+    private Handler handler;
 
     public PaymentFragment() {
         // Required empty public constructor
     }
 
     public static PaymentFragment newInstance() {
-        PaymentFragment fragment = new PaymentFragment();
-        return fragment;
+        return new PaymentFragment();
     }
 
     @Override
@@ -55,48 +56,38 @@ public class PaymentFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         model = new ViewModelProvider(requireActivity()).get(CartObserver.class);
-        YesButton = view.findViewById(R.id.PayButton);
+        PayButton = view.findViewById(R.id.PayButton);
 
 
-        YesButton.setOnClickListener(v -> {
+        PayButton.setOnClickListener(v -> {
             if(carrello.calculateTotal() == 0) {
                 Toast.makeText(getContext(), "Carrello vuoto", Toast.LENGTH_SHORT).show();
             }else{
-                // Runnable sendToServer = () -> sendBeveragesToServer();
-                // Thread sendToServerStarter = new Thread(sendToServer);
-                // sendToServerStarter.start();
-                // try {
-                //     sendToServerStarter.join();
-                // } catch (InterruptedException e) {
-                //     Log.e("PaymentFragment", "Errore join");
-                //     return;
-                // }
-
-                // model.setTotalCartValue(carrello.calculateTotal());
-                // model.setPaymentSuccess(true);
-                // carrello.viewItems();
-                // Toast.makeText(getContext(), "Pagamento completato con successo!", Toast.LENGTH_SHORT).show();
-                Toast.makeText(getContext(), "Pagamento effettuato! Attendere prego...", Toast.LENGTH_SHORT).show();
+               Toast.makeText(getContext(), "Pagamento effettuato! Attendere prego...", Toast.LENGTH_SHORT).show();
                 
-                ExecutorService executor = Executors.newSingleThreadExecutor();
-                Handler handler = new Handler(Looper.getMainLooper());
+                executor = Executors.newSingleThreadExecutor();
+                handler = new Handler(Looper.getMainLooper());
 
                 executor.execute(() -> {
-                    sendBeveragesToServer();
+                    success = sendBeveragesToServer();
                     handler.post(() -> {
                         model.setTotalCartValue(carrello.calculateTotal());
                         carrello.viewItems();
-                        Toast.makeText(getContext(), "Pagamento completato con successo!", Toast.LENGTH_SHORT).show();
+                        if(success){
+                            Toast.makeText(getContext(), "Pagamento completato con successo!", Toast.LENGTH_SHORT).show();
+                        }else{
+                            Toast.makeText(getContext(), "Errore durante il pagamento", Toast.LENGTH_SHORT).show();
+                        }
                     });
                 });
 
-
+                executor.shutdown();
                 
             }
         });
     }
 
-    private void sendBeveragesToServer(){
+    private boolean sendBeveragesToServer(){
         boolean hasCocktails = false;
         boolean hasShakes = false;
 
@@ -105,7 +96,8 @@ public class PaymentFragment extends Fragment {
             ArrayList<String> shakes =  new ArrayList<>();
             if(carrello.getBeverages().isEmpty()){
                 Log.e("sendBeveragesToServer", "Carrello vuoto");
-                return;
+                Toast.makeText(getContext(), "Carrello vuoto", Toast.LENGTH_SHORT).show();
+                return false;
             }
 
             for (int i = 0; i < carrello.getBeverages().size(); i++) {
@@ -144,8 +136,8 @@ public class PaymentFragment extends Fragment {
                 String risposta = client.receiveData();
                 if (!risposta.equals("ERRORE")) {
                     System.out.println("Cancellazione completata di :");
-                    System.out.println("Cocktails: " + cocktails.toString());
-                    System.out.println("Shakes: " + shakes.toString());
+                    System.out.println("Cocktails: " + cocktails);
+                    System.out.println("Shakes: " + shakes);
                     if(hasCocktails){
                         model.setResetCocktails(true);
                     }
@@ -156,8 +148,20 @@ public class PaymentFragment extends Fragment {
                     model.setResetRecommended(true);
                     carrello.emptyCarrello();
                     Thread.sleep(1000);
+                    return true;
                 } else {
                     Log.e("sendBeveragesToServer","Il server ha riscontrato un errore nella cancellazione dei drink e dei frullati");
+                    if(hasCocktails){
+                        model.setResetCocktails(true);
+                    }
+                    if(hasShakes){
+                        model.setResetShakes(true);
+                    }
+                    model.setResetCart(true);
+                    model.setResetRecommended(true);
+                    carrello.emptyCarrello();
+                    Thread.sleep(1000);
+                    return false;
                 }
             } catch (Exception e) {
                 Log.e("sendBeveragesToServer", "\"Errore durante la ricezione della risposta al comando di cancellazione dei drink e dei frullati, impossibile cancellare");
@@ -170,6 +174,6 @@ public class PaymentFragment extends Fragment {
                 Log.e("sendBeveragesToServer","Errore durante la cancellazione dei drink e dei frullati: " + e.getMessage());
             }
         }
-
+        return false;
     }
 }

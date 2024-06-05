@@ -5,17 +5,16 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
@@ -43,13 +42,13 @@ public class RecommendedFragment extends Fragment {
 
 
     public static RecommendedFragment newInstance() {
-        RecommendedFragment fragment = new RecommendedFragment();
-        return fragment;
+        return new RecommendedFragment();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        client = Client.getIstance();
     }
 
     @Override
@@ -62,7 +61,6 @@ public class RecommendedFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        client = Client.getIstance();
         list = new ArrayList<>();
         recommendedCocktails = new ArrayList<>();
         recommendedShakes = new ArrayList<>();
@@ -121,8 +119,8 @@ public class RecommendedFragment extends Fragment {
                     if (isGetCocktailsOk()) {
                         model.setRecommendedCocktails(recommendedCocktailsString);
                         model.setAllCocktails(allCocktailsString);
-                        recommendedCocktails = (ArrayList<Cocktail>) Cocktail.setCocktails(recommendedCocktailsString);
-                        allCocktails = (ArrayList<Cocktail>) Cocktail.setCocktails(allCocktailsString);
+                        recommendedCocktails = Cocktail.setCocktails(recommendedCocktailsString);
+                        allCocktails = Cocktail.setCocktails(allCocktailsString);
                         for (Cocktail cocktail : recommendedCocktails) {
                             for (Cocktail c : allCocktails) {
                                 if (cocktail.getNome().equals(c.getNome())) {
@@ -138,8 +136,8 @@ public class RecommendedFragment extends Fragment {
                     if (isGetShakesOk()) {
                         model.setRecommendedShakes(recommendedShakesString);
                         model.setAllShakes(allShakesString);
-                        recommendedShakes = (ArrayList<Shake>) Shake.setShakes(recommendedShakesString);
-                        allShakes = (ArrayList<Shake>) Shake.setShakes(allShakesString);
+                        recommendedShakes = Shake.setShakes(recommendedShakesString);
+                        allShakes = Shake.setShakes(allShakesString);
                         for (Shake shake : recommendedShakes) {
                             for (Shake s : allShakes) {
                                 if (shake.getNome().equals(s.getNome())) {
@@ -163,32 +161,43 @@ public class RecommendedFragment extends Fragment {
                 });
             });
         }else{
-            recommendedCocktails = (ArrayList<Cocktail>) Cocktail.setCocktails(recommendedCocktailsString);
-            recommendedShakes = (ArrayList<Shake>) Shake.setShakes(recommendedShakesString);
-            allCocktails = (ArrayList<Cocktail>) Cocktail.setCocktails(allCocktailsString);
-            allShakes = (ArrayList<Shake>) Shake.setShakes(allShakesString);
+            if(!isGetCocktailsOk()){
+                Toast.makeText(getContext(), "Non ci sono cocktail da consigliare", Toast.LENGTH_SHORT).show();
+            }else{
+                recommendedCocktails = Cocktail.setCocktails(recommendedCocktailsString);
+                allCocktails = Cocktail.setCocktails(allCocktailsString);
 
-            for (Cocktail cocktail : recommendedCocktails) {
-                for (Cocktail c : allCocktails) {
-                    if (cocktail.getNome().equals(c.getNome())) {
-                        cocktail.setQuantita(c.getQuantita());
+                for (Cocktail cocktail : recommendedCocktails) {
+                    for (Cocktail c : allCocktails) {
+                        if (cocktail.getNome().equals(c.getNome())) {
+                            cocktail.setQuantita(c.getQuantita());
+                        }
                     }
                 }
-            }
-            for (Cocktail cocktail : recommendedCocktails) {
-                list.add(new RecommendedLayoutClass(cocktail));
-            }
 
-            for (Shake shake : recommendedShakes) {
-                for (Shake s : allShakes) {
-                    if (shake.getNome().equals(s.getNome())) {
-                        shake.setQuantita(s.getQuantita());
-                    }
+                for (Cocktail cocktail : recommendedCocktails) {
+                    list.add(new RecommendedLayoutClass(cocktail));
                 }
             }
-            for (Shake shake : recommendedShakes) {
-                list.add(new RecommendedLayoutClass(shake));
+            if(!isGetShakesOk()){
+                Toast.makeText(getContext(), "Non ci sono frullati da consigliare", Toast.LENGTH_SHORT).show();
+            }else{
+                recommendedShakes = Shake.setShakes(recommendedShakesString);
+                allShakes = Shake.setShakes(allShakesString);
+
+                for (Shake shake : recommendedShakes) {
+                    for (Shake s : allShakes) {
+                        if (shake.getNome().equals(s.getNome())) {
+                            shake.setQuantita(s.getQuantita());
+                        }
+                    }
+                }
+                for (Shake shake : recommendedShakes) {
+                    list.add(new RecommendedLayoutClass(shake));
+                }
+
             }
+
 
             adapter = new RecommendedRecyclerViewAdapter(list, getContext(), recommendedCocktails, recommendedShakes, model);
             recyclerView.setAdapter(adapter);
@@ -218,8 +227,8 @@ public class RecommendedFragment extends Fragment {
                         if (isGetCocktailsOk()) {
                             model.setRecommendedCocktails(recommendedCocktailsString);
                             model.setAllCocktails(allCocktailsString);
-                            recommendedCocktails = (ArrayList<Cocktail>) Cocktail.setCocktails(recommendedCocktailsString);
-                            allCocktails = (ArrayList<Cocktail>) Cocktail.setCocktails(allCocktailsString);
+                            recommendedCocktails = Cocktail.setCocktails(recommendedCocktailsString);
+                            allCocktails = Cocktail.setCocktails(allCocktailsString);
 
                             for (Cocktail cocktail : recommendedCocktails) {
                                 for (Cocktail c : allCocktails) {
@@ -234,8 +243,8 @@ public class RecommendedFragment extends Fragment {
                         if(isGetShakesOk()){
                             model.setRecommendedShakes(recommendedShakesString);
                             model.setAllShakes(allShakesString);
-                            recommendedShakes = (ArrayList<Shake>) Shake.setShakes(recommendedShakesString);
-                            allShakes = (ArrayList<Shake>) Shake.setShakes(allShakesString);
+                            recommendedShakes = Shake.setShakes(recommendedShakesString);
+                            allShakes = Shake.setShakes(allShakesString);
 
                             for(Shake shake : recommendedShakes){
                                 for(Shake s : allShakes) {

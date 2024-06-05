@@ -9,7 +9,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,7 +23,6 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 
 public class ShakesFragment extends Fragment {
@@ -47,15 +45,13 @@ public class ShakesFragment extends Fragment {
 
 
     public static ShakesFragment newInstance() {
-        ShakesFragment fragment = new ShakesFragment();
-        return fragment;
+        return new ShakesFragment();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         client = Client.getIstance();
-        
     }
 
     @Override
@@ -97,7 +93,7 @@ public class ShakesFragment extends Fragment {
                 allShakes = getAllShakes();
                 model.setAllShakes(allShakes);
                 handler.post(() -> {
-                    shakes = (ArrayList<Shake>) Shake.setShakes(allShakes);
+                    shakes = Shake.setShakes(allShakes);
                     for (Shake s : shakes) {
                         list.add(new ShakesLayoutClass(s.getNome(),s.getIngredienti(),s.getPrezzo(),s.getQuantita()));
                     }
@@ -110,7 +106,7 @@ public class ShakesFragment extends Fragment {
                 });
             });
         }else{
-            shakes = (ArrayList<Shake>) Shake.setShakes(allShakes);
+            shakes = Shake.setShakes(allShakes);
             for (Shake s : shakes) {
                 list.add(new ShakesLayoutClass(s.getNome(),s.getIngredienti(),s.getPrezzo(),s.getQuantita()));
             }
@@ -133,7 +129,7 @@ public class ShakesFragment extends Fragment {
                     model.setAllShakes(allShakes);
                     handler.post(() -> {
                         shakes.clear();
-                        shakes = (ArrayList<Shake>) Shake.setShakes(allShakes);
+                        shakes = Shake.setShakes(allShakes);
                         int listSize = list.size();
                         list.clear();
                         adapter.notifyItemRangeRemoved(0, listSize);

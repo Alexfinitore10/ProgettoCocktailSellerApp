@@ -43,7 +43,6 @@ public class CocktailRecyclerViewAdapter extends RecyclerView.Adapter <CocktailR
 
     @Override
     public void onBindViewHolder(@NonNull CocktailRecyclerViewAdapter.ViewHolder holder, int position) {
-        Log.d("CocktailRecyclerViewAdapter", "onBindViewHolder, cocktailList size = "+cocktailList.size());
         CocktailLayoutClass cocktailLayoutClass = cocktailLayoutArrayList.get(position);
         int image_id = getImageID(cocktailLayoutArrayList.get(position).getNome());
         holder.setPosition(position);

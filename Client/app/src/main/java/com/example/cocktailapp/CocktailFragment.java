@@ -46,8 +46,7 @@ public class CocktailFragment extends Fragment {
     }
 
     public static CocktailFragment newInstance() {
-        CocktailFragment fragment = new CocktailFragment();
-        return fragment;
+        return new CocktailFragment();
     }
 
     @Override
@@ -100,7 +99,7 @@ public class CocktailFragment extends Fragment {
                 model.setAllCocktails(allCocktails);
                 handler.post(() -> {
 
-                    cocktails = (ArrayList<Cocktail>) Cocktail.setCocktails(allCocktails);
+                    cocktails = Cocktail.setCocktails(allCocktails);
                     for (Cocktail c : cocktails) {
                         list.add(new CocktailLayoutClass(c.getNome(),c.getIngredienti(),c.getGradazione_alcolica(),c.getPrezzo(),c.getQuantita()));
                     }
@@ -114,7 +113,7 @@ public class CocktailFragment extends Fragment {
                 });
             });
         }else{
-            cocktails = (ArrayList<Cocktail>) Cocktail.setCocktails(allCocktails);
+            cocktails = Cocktail.setCocktails(allCocktails);
             for (Cocktail c : cocktails) {
                 list.add(new CocktailLayoutClass(c.getNome(),c.getIngredienti(),c.getGradazione_alcolica(),c.getPrezzo(),c.getQuantita()));
             }
@@ -139,7 +138,7 @@ public class CocktailFragment extends Fragment {
                      model.setAllCocktails(allCocktails);
                      handler.post(() -> {
                          cocktails.clear();
-                         cocktails = (ArrayList<Cocktail>) Cocktail.setCocktails(allCocktails);
+                         cocktails = Cocktail.setCocktails(allCocktails);
                          int listSize = list.size();
                          list.clear();
                          adapter.notifyItemRangeRemoved(0, listSize);

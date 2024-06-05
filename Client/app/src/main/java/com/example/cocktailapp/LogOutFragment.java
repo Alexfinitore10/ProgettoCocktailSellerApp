@@ -18,6 +18,7 @@ public class LogOutFragment extends Fragment {
     private Button LogOut;
     private Client client;
     private Carrello carrello;
+    private CartObserver model;
 
     public LogOutFragment() {
         // Required empty public constructor
@@ -46,7 +47,7 @@ public class LogOutFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-       CartObserver model = new ViewModelProvider(requireActivity()).get(CartObserver.class);
+       model = new ViewModelProvider(requireActivity()).get(CartObserver.class);
 
        LogOut = view.findViewById(R.id.LogOutButton);
 

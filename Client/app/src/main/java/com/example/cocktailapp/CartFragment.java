@@ -39,8 +39,7 @@ public class CartFragment extends Fragment {
 
 
     public static CartFragment newInstance() {
-        CartFragment fragment = new CartFragment();
-        return fragment;
+        return new CartFragment();
     }
 
     @Override
@@ -94,16 +93,16 @@ public class CartFragment extends Fragment {
                 handler.post(() -> {
                     model.setAllCocktails(allCocktails);
                     model.setAllShakes(allShakes);
-                    cocktailsList = (ArrayList<Cocktail>) Cocktail.setCocktails(allCocktails);
-                    shakesList = (ArrayList<Shake>) Shake.setShakes(allShakes);
+                    cocktailsList = Cocktail.setCocktails(allCocktails);
+                    shakesList = Shake.setShakes(allShakes);
                     adapter = new CartRecyclerViewAdapter(list,getContext(), cocktailsList, shakesList,model);
                     recyclerView.setAdapter(adapter);
                     observerCall();
                 });
             });
         }else {
-            cocktailsList = new ArrayList<>();
-            shakesList = new ArrayList<>();
+            cocktailsList = Cocktail.setCocktails(allCocktails);
+            shakesList = Shake.setShakes(allShakes);
             adapter = new CartRecyclerViewAdapter(list, getContext(), cocktailsList, shakesList, model);
             recyclerView.setAdapter(adapter);
             observerCall();
@@ -111,47 +110,6 @@ public class CartFragment extends Fragment {
 
         executor.shutdown();
         
-
-
-//        model.getToAddItems().observe(getViewLifecycleOwner(), queue -> {
-//            while(!queue.isEmpty()){
-//                CartLayoutClass item = queue.poll();
-//                list.add(item);
-//                adapter.notifyItemInserted(list.size() - 1);
-//            }
-//        });
-//
-//        model.getToUpdateItem().observe(getViewLifecycleOwner(), queue -> {
-//            while (!queue.isEmpty()) {
-//                CartLayoutClass item = queue.poll();
-//                int index = getElementIndex(item);
-//
-//                if(index != -1){
-//                    list.set(index,item);
-//                    adapter.notifyItemChanged(index);
-//                }else{
-//                    Log.e("CartFragment", "Item not found in list");
-//                }
-//            }
-//        });
-//
-//        model.getPaymentSuccess().observe(getViewLifecycleOwner(), paymentMade -> {
-//            if (paymentMade) {
-//                list.clear();
-//                adapter.notifyDataSetChanged();
-//                model.setPaymentSuccess(false);
-//            }
-//        });
-//
-//        model.getIsLoggedIn().observe(getViewLifecycleOwner(), loggedIn -> {
-//            if (!loggedIn) {
-//                list.clear();
-//                adapter.notifyDataSetChanged();
-//            }
-//        });
-
-
-
 
     }
 
@@ -181,16 +139,18 @@ public class CartFragment extends Fragment {
         model.getResetCart().observe(getViewLifecycleOwner(), resetCart -> {
             Log.d("CartFragment", "resetCart: " + resetCart);
             if (resetCart) {
+                int listSize = list.size();
                 list.clear();
-                adapter.notifyDataSetChanged();
+                adapter.notifyItemRangeRemoved(0, listSize);
                 model.setResetCart(false);
             }
         });
 
         model.getIsLoggedIn().observe(getViewLifecycleOwner(), loggedIn -> {
             if (!loggedIn) {
+                int listSize = list.size();
                 list.clear();
-                adapter.notifyDataSetChanged();
+                adapter.notifyItemRangeRemoved(0, listSize);
             }
         });
     }
