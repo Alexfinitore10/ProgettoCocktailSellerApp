@@ -87,9 +87,9 @@ public class PaymentFragment extends Fragment {
                         carrello.viewItems();
                         if(success){
                             waitingDialog.dismiss();
-
                             Toast.makeText(getContext(), "Pagamento completato con successo!", Toast.LENGTH_SHORT).show();
                         }else{
+                            waitingDialog.dismiss();
                             Toast.makeText(getContext(), "Errore durante il pagamento", Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -174,11 +174,20 @@ public class PaymentFragment extends Fragment {
                     model.setResetCart(true);
                     model.setResetRecommended(true);
                     carrello.emptyCarrello();
-                    Thread.sleep(1000);
                     return false;
                 }
             } catch (Exception e) {
                 Log.e("sendBeveragesToServer", "\"Errore durante la ricezione della risposta al comando di cancellazione dei drink e dei frullati, impossibile cancellare");
+            }finally {
+                if(hasCocktails){
+                    model.setResetCocktails(true);
+                }
+                if(hasShakes){
+                    model.setResetShakes(true);
+                }
+                model.setResetCart(true);
+                model.setResetRecommended(true);
+                carrello.emptyCarrello();
             }
 
         }catch (Exception e) {
@@ -187,6 +196,16 @@ public class PaymentFragment extends Fragment {
             }else{
                 Log.e("sendBeveragesToServer","Errore durante la cancellazione dei drink e dei frullati: " + e.getMessage());
             }
+        }finally {
+            if(hasCocktails){
+                model.setResetCocktails(true);
+            }
+            if(hasShakes){
+                model.setResetShakes(true);
+            }
+            model.setResetCart(true);
+            model.setResetRecommended(true);
+            carrello.emptyCarrello();
         }
         return false;
     }
