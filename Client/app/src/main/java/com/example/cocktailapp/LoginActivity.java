@@ -4,17 +4,23 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.*;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class LoginActivity extends AppCompatActivity {
     private Button sendLoginButton;
     private EditText EmailEditText, PasswordEditText;
     private Client client;
     private String risposta;
+    private ExecutorService executor;
+    private Handler handler;
 
 
     @Override
@@ -40,30 +46,26 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
 
-            String email = EmailEditText.getText().toString();
-            String password = PasswordEditText.getText().toString();
+            executor = Executors.newSingleThreadExecutor();
+            handler = new Handler(Looper.getMainLooper());
 
-            Runnable LoginTask = () -> risposta = sendLogin(email, password);
+            executor.execute(() -> {
+                risposta = sendLogin(EmailEditText.getText().toString(), PasswordEditText.getText().toString());
+                handler.post(() -> {
+                    if(risposta.equals("OK")){
+                        client.setLogged(true);
+                        Toast.makeText(this, "Login effettuato", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(this,ShopActivity.class));
+                    }else{
+                        Toast.makeText(this, "Login fallito: email o password errati", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            });
 
-                Thread LoginThread = new Thread(LoginTask);
-                LoginThread.start();
-                try {
-                    LoginThread.join();
-                } catch (InterruptedException e) {
-                    Log.e("sendLogin", "Errore nella join del thread:" +e.getMessage());
-                }
-
-
-
-            if(risposta.equals("OK")){
-                client.setLogged(true);
-                Toast.makeText(this, "Login effettuato", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(this,ShopActivity.class));
-            }else{
-                Toast.makeText(this, "Login fallito: email o password errati", Toast.LENGTH_SHORT).show();
-            }
+            executor.shutdown();
 
         });
+
     }
 
     private String sendLogin(String input_email, String input_password) {

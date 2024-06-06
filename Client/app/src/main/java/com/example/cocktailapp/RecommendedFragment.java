@@ -119,8 +119,8 @@ public class RecommendedFragment extends Fragment {
                     if (isGetCocktailsOk()) {
                         model.setRecommendedCocktails(recommendedCocktailsString);
                         model.setAllCocktails(allCocktailsString);
-                        recommendedCocktails = Cocktail.setCocktails(recommendedCocktailsString);
-                        allCocktails = Cocktail.setCocktails(allCocktailsString);
+                        recommendedCocktails = Cocktail.setRecommendedCocktails(recommendedCocktailsString);
+                        allCocktails = Cocktail.parseCocktails(allCocktailsString);
                         for (Cocktail cocktail : recommendedCocktails) {
                             for (Cocktail c : allCocktails) {
                                 if (cocktail.getNome().equals(c.getNome())) {
@@ -164,8 +164,8 @@ public class RecommendedFragment extends Fragment {
             if(!isGetCocktailsOk()){
                 Toast.makeText(getContext(), "Non ci sono cocktail da consigliare", Toast.LENGTH_SHORT).show();
             }else{
-                recommendedCocktails = Cocktail.setCocktails(recommendedCocktailsString);
-                allCocktails = Cocktail.setCocktails(allCocktailsString);
+                recommendedCocktails = Cocktail.setRecommendedCocktails(recommendedCocktailsString);
+                allCocktails = Cocktail.parseCocktails(allCocktailsString);
 
                 for (Cocktail cocktail : recommendedCocktails) {
                     for (Cocktail c : allCocktails) {
@@ -227,8 +227,8 @@ public class RecommendedFragment extends Fragment {
                         if (isGetCocktailsOk()) {
                             model.setRecommendedCocktails(recommendedCocktailsString);
                             model.setAllCocktails(allCocktailsString);
-                            recommendedCocktails = Cocktail.setCocktails(recommendedCocktailsString);
-                            allCocktails = Cocktail.setCocktails(allCocktailsString);
+                            recommendedCocktails = Cocktail.setRecommendedCocktails(recommendedCocktailsString);
+                            allCocktails = Cocktail.parseCocktails(allCocktailsString);
 
                             for (Cocktail cocktail : recommendedCocktails) {
                                 for (Cocktail c : allCocktails) {

@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -99,7 +98,7 @@ public class CocktailFragment extends Fragment {
                 model.setAllCocktails(allCocktails);
                 handler.post(() -> {
 
-                    cocktails = Cocktail.setCocktails(allCocktails);
+                    cocktails = Cocktail.parseCocktails(allCocktails);
                     for (Cocktail c : cocktails) {
                         list.add(new CocktailLayoutClass(c.getNome(),c.getIngredienti(),c.getGradazione_alcolica(),c.getPrezzo(),c.getQuantita()));
                     }
@@ -113,7 +112,7 @@ public class CocktailFragment extends Fragment {
                 });
             });
         }else{
-            cocktails = Cocktail.setCocktails(allCocktails);
+            cocktails = Cocktail.parseCocktails(allCocktails);
             for (Cocktail c : cocktails) {
                 list.add(new CocktailLayoutClass(c.getNome(),c.getIngredienti(),c.getGradazione_alcolica(),c.getPrezzo(),c.getQuantita()));
             }
@@ -138,7 +137,7 @@ public class CocktailFragment extends Fragment {
                      model.setAllCocktails(allCocktails);
                      handler.post(() -> {
                          cocktails.clear();
-                         cocktails = Cocktail.setCocktails(allCocktails);
+                         cocktails = Cocktail.parseCocktails(allCocktails);
                          int listSize = list.size();
                          list.clear();
                          adapter.notifyItemRangeRemoved(0, listSize);

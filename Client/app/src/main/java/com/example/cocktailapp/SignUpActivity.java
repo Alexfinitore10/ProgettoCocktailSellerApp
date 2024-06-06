@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -11,6 +13,8 @@ import android.widget.*;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class SignUpActivity extends AppCompatActivity {
@@ -18,6 +22,8 @@ public class SignUpActivity extends AppCompatActivity {
     private EditText Email, Password;
     private String risposta;
     private Client client;
+    private ExecutorService executor;
+    private Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,36 +49,32 @@ public class SignUpActivity extends AppCompatActivity {
                 return;
             }
 
-            String email = Email.getText().toString();
-            String password = Password.getText().toString();
-
-            boolean isValidEmail = client.checkEmailRegex(email);
+            boolean isValidEmail = client.checkEmailRegex(Email.getText().toString());
             if(!isValidEmail){
                 Toast.makeText(this, "Email non valida", Toast.LENGTH_SHORT).show();
                 return;
             }
+            executor = Executors.newSingleThreadExecutor();
+            handler = new Handler(Looper.getMainLooper());
 
+                executor.execute(() -> {
+                    risposta = sendSignup(Email.getText().toString(), Password.getText().toString());
+                    handler.post(() -> {
+                        if(risposta.equals("OK")){
+                            Toast.makeText(this, parseRispostaRegistrazione(risposta), Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(this,ShopActivity.class));
+                        }else{
+                            Toast.makeText(this, parseRispostaRegistrazione(risposta), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                });
 
-            Runnable SignupTask = () -> risposta = sendSignup(email, password);
-
-
-            Thread SignupThread = new Thread(SignupTask);
-            SignupThread.start();
-
-            try {
-                SignupThread.join();
-            } catch (InterruptedException e) {
-                Log.e("SignupActivity thread","Errore nella join del thread:" +e.getMessage());
-            }
-
-            if(risposta.equals("OK")){
-                Toast.makeText(this, parseRispostaRegistrazione(risposta), Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(this,ShopActivity.class));
-            }else{
-                Toast.makeText(this, parseRispostaRegistrazione(risposta), Toast.LENGTH_SHORT).show();
-            }
+            executor.shutdown();
 
         });
+
+
+
     }
 
     private String sendSignup(String input_email, String input_password) {

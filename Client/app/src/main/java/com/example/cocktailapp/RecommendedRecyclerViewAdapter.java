@@ -216,7 +216,8 @@ public class RecommendedRecyclerViewAdapter extends RecyclerView.Adapter<Recomme
         }
 
         private void SpinnerInitializer(Spinner spinner, int position, Context context) {
-            int amount = recommendedLayoutArrayList.get(position).getBevanda().getQuantita();
+            Bevanda bevanda = recommendedLayoutArrayList.get(position).getBevanda();
+            int amount = getRecommendedAmount(bevanda);
 
 
             List<Integer> amounts_list = new ArrayList<>();
