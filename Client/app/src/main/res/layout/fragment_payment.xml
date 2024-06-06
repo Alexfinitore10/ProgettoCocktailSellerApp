@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="90dp"
         android:layout_marginTop="320dp"
-        android:text="Vuoi davvero confermare l'acquisto?"
+        android:text="Premi qui per confermare l'acquisto"
         android:textAlignment="center"
         android:textSize="14sp"
         android:textStyle="bold" />
@@ -27,6 +27,15 @@
         android:backgroundTint="#F98500"/>
 
 
+    <ProgressBar
+        android:id="@+id/PaymentProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="180dp"
+        android:layout_marginTop="300dp"
+        android:backgroundTint="#F98500"
+        android:progressBackgroundTint="#F98500"
+        android:visibility="gone" />
 
 
 

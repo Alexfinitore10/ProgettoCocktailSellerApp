@@ -1,5 +1,7 @@
 package com.example.cocktailapp;
 
+
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -21,6 +23,8 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
+
 public class PaymentFragment extends Fragment {
     private Button PayButton;
     private Carrello carrello;
@@ -29,6 +33,9 @@ public class PaymentFragment extends Fragment {
     private boolean success;
     private ExecutorService executor;
     private Handler handler;
+    private SweetAlertDialog waitingDialog;
+
+
 
     public PaymentFragment() {
         // Required empty public constructor
@@ -43,6 +50,7 @@ public class PaymentFragment extends Fragment {
         super.onCreate(savedInstanceState);
         carrello = Carrello.getInstance();
         client = Client.getIstance();
+
     }
 
     @Override
@@ -58,15 +66,19 @@ public class PaymentFragment extends Fragment {
         model = new ViewModelProvider(requireActivity()).get(CartObserver.class);
         PayButton = view.findViewById(R.id.PayButton);
 
+        waitingDialog = new SweetAlertDialog(requireContext(), SweetAlertDialog.PROGRESS_TYPE);
+        waitingDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        waitingDialog.setTitleText("Attendere prego...");
+        waitingDialog.setCancelable(false);
+
 
         PayButton.setOnClickListener(v -> {
             if(carrello.calculateTotal() == 0) {
                 Toast.makeText(getContext(), "Carrello vuoto", Toast.LENGTH_SHORT).show();
             }else{
-               Toast.makeText(getContext(), "Pagamento effettuato! Attendere prego...", Toast.LENGTH_SHORT).show();
-                
                 executor = Executors.newSingleThreadExecutor();
                 handler = new Handler(Looper.getMainLooper());
+                waitingDialog.show();
 
                 executor.execute(() -> {
                     success = sendBeveragesToServer();
@@ -74,6 +86,8 @@ public class PaymentFragment extends Fragment {
                         model.setTotalCartValue(carrello.calculateTotal());
                         carrello.viewItems();
                         if(success){
+                            waitingDialog.dismiss();
+
                             Toast.makeText(getContext(), "Pagamento completato con successo!", Toast.LENGTH_SHORT).show();
                         }else{
                             Toast.makeText(getContext(), "Errore durante il pagamento", Toast.LENGTH_SHORT).show();

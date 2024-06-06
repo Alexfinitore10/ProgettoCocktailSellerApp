@@ -93,7 +93,7 @@ public class ShakesFragment extends Fragment {
                 allShakes = getAllShakes();
                 model.setAllShakes(allShakes);
                 handler.post(() -> {
-                    shakes = Shake.setShakes(allShakes);
+                    shakes = Shake.parseShake(allShakes);
                     for (Shake s : shakes) {
                         list.add(new ShakesLayoutClass(s.getNome(),s.getIngredienti(),s.getPrezzo(),s.getQuantita()));
                     }
@@ -102,11 +102,16 @@ public class ShakesFragment extends Fragment {
                     if(adapter != null && !isObserverRegistered) {
                         adapter.registerAdapterDataObserver(observer);
                         isObserverRegistered = true;
+                        observerCall();
+                    }else if(adapter == null){
+                        Log.e("ShakesFragment", "onCreateView: adapter null quando allShakes vuoto");
+                    }else{
+                        observerCall();
                     }
                 });
             });
         }else{
-            shakes = Shake.setShakes(allShakes);
+            shakes = Shake.parseShake(allShakes);
             for (Shake s : shakes) {
                 list.add(new ShakesLayoutClass(s.getNome(),s.getIngredienti(),s.getPrezzo(),s.getQuantita()));
             }
@@ -116,11 +121,22 @@ public class ShakesFragment extends Fragment {
             if(adapter != null && !isObserverRegistered) {
                 adapter.registerAdapterDataObserver(observer);
                 isObserverRegistered = true;
+                observerCall();
+            }else if(adapter == null){
+                Log.e("ShakesFragment", "onCreateView: adapter null quando allShakes NON vuoto");
+            }else{
+                observerCall();
             }
         }
 
 
 
+
+
+
+    }
+
+    private void observerCall(){
         model.getResetShakes().observe(getViewLifecycleOwner(), resetShakes -> {
             Log.d("ShakesFragment", "resetShakes: " + resetShakes);
             if (resetShakes) {
@@ -129,7 +145,7 @@ public class ShakesFragment extends Fragment {
                     model.setAllShakes(allShakes);
                     handler.post(() -> {
                         shakes.clear();
-                        shakes = Shake.setShakes(allShakes);
+                        shakes = Shake.parseShake(allShakes);
                         int listSize = list.size();
                         list.clear();
                         adapter.notifyItemRangeRemoved(0, listSize);
@@ -138,9 +154,6 @@ public class ShakesFragment extends Fragment {
 
             }
         });
-
-
-
     }
 
     private String getAllShakes() {

@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -108,6 +109,11 @@ public class CocktailFragment extends Fragment {
                     if(adapter != null && !isObserverRegistered) {
                         adapter.registerAdapterDataObserver(observer);
                         isObserverRegistered = true;
+                        observerCall();
+                    }else if(adapter == null){
+                        Log.e("CocktailFragment", "onCreateView: adapter null quando allCocktails vuoto");
+                    }else{
+                        observerCall();
                     }
                 });
             });
@@ -122,32 +128,35 @@ public class CocktailFragment extends Fragment {
             if(adapter != null && !isObserverRegistered) {
                 adapter.registerAdapterDataObserver(observer);
                 isObserverRegistered = true;
+                observerCall();
+            }else if(adapter == null){
+                Log.e("CocktailFragment", "onCreateView: adapter null quando allCocktails NON vuoto ");
+            }else{
+                observerCall();
             }
         }
 
 
-        
-        
 
+    }
 
+    private void observerCall(){
         model.getResetCocktails().observe(getViewLifecycleOwner(), resetCocktails -> {
-             if (resetCocktails) {
-                 executor.execute(() -> {
-                     allCocktails = getAllCocktails();
-                     model.setAllCocktails(allCocktails);
-                     handler.post(() -> {
-                         cocktails.clear();
-                         cocktails = Cocktail.parseCocktails(allCocktails);
-                         int listSize = list.size();
-                         list.clear();
-                         adapter.notifyItemRangeRemoved(0, listSize);
-                     });
-                 });
+            if (resetCocktails) {
+                executor.execute(() -> {
+                    allCocktails = getAllCocktails();
+                    model.setAllCocktails(allCocktails);
+                    handler.post(() -> {
+                        cocktails.clear();
+                        cocktails = Cocktail.parseCocktails(allCocktails);
+                        int listSize = list.size();
+                        list.clear();
+                        adapter.notifyItemRangeRemoved(0, listSize);
+                    });
+                });
 
-             }
+            }
         });
-
-
     }
     private String getAllCocktails(){
         String command = "3";

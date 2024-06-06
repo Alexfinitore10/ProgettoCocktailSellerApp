@@ -1,5 +1,7 @@
 package com.example.cocktailapp;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,6 +20,7 @@ public class Shake extends Bevanda {
         String nome = parts[0].trim();
 
         List<String> ingredienti = new ArrayList<>();
+        Log.d("paarseString Shakes","parts[1]: "+parts[1]);
         if (!parts[1].trim().equals("N/A")) {
             String ingredientiString = parts[1].substring(1, parts[1].length() - 1).trim();
             String[] ingredientiArray = ingredientiString.split(";");
@@ -30,7 +33,7 @@ public class Shake extends Bevanda {
         return new Shake(nome, prezzo,ingredienti, quantita);
     }
 
-    public static ArrayList<Shake> setShakes(String buffer) {
+    public static ArrayList<Shake> setRecommendedShakes(String buffer) {
         ArrayList<Shake> Shakes = new ArrayList<>();
         String[] shakes = buffer.split("\n");
 
@@ -40,6 +43,16 @@ public class Shake extends Bevanda {
         }
         return Shakes;
     }
+
+    public static ArrayList<Shake> parseShake(String bufferShake) {
+        ArrayList<Shake> shake = new ArrayList<>();
+        for (String c : bufferShake.split("\\n")) {
+            shake.add(Shake.parseString(c));
+        }
+        return shake;
+    }
+
+
 
     @Override
     public String toString() {

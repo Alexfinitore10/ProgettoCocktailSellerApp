@@ -94,18 +94,22 @@ public class CartFragment extends Fragment {
                     model.setAllCocktails(allCocktails);
                     model.setAllShakes(allShakes);
                     cocktailsList = Cocktail.parseCocktails(allCocktails);
-                    shakesList = Shake.setShakes(allShakes);
+                    shakesList = Shake.setRecommendedShakes(allShakes);
                     adapter = new CartRecyclerViewAdapter(list,getContext(), cocktailsList, shakesList,model);
                     recyclerView.setAdapter(adapter);
-                    observerCall();
+                    if(adapter != null){
+                        observerCall();
+                    }
                 });
             });
         }else {
             cocktailsList = Cocktail.parseCocktails(allCocktails);
-            shakesList = Shake.setShakes(allShakes);
+            shakesList = Shake.setRecommendedShakes(allShakes);
             adapter = new CartRecyclerViewAdapter(list, getContext(), cocktailsList, shakesList, model);
             recyclerView.setAdapter(adapter);
-            observerCall();
+            if(adapter != null){
+                observerCall();
+            }
         }
 
         executor.shutdown();

@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -136,8 +137,8 @@ public class RecommendedFragment extends Fragment {
                     if (isGetShakesOk()) {
                         model.setRecommendedShakes(recommendedShakesString);
                         model.setAllShakes(allShakesString);
-                        recommendedShakes = Shake.setShakes(recommendedShakesString);
-                        allShakes = Shake.setShakes(allShakesString);
+                        recommendedShakes = Shake.setRecommendedShakes(recommendedShakesString);
+                        allShakes = Shake.parseShake(allShakesString);
                         for (Shake shake : recommendedShakes) {
                             for (Shake s : allShakes) {
                                 if (shake.getNome().equals(s.getNome())) {
@@ -156,6 +157,10 @@ public class RecommendedFragment extends Fragment {
                     if(adapter != null && !isObserverRegistered) {
                         adapter.registerAdapterDataObserver(observer);
                         isObserverRegistered = true;
+                    }else if(adapter == null){
+                        Log.e("RecommendedFragment", "onCreateView: adapter null quando recommended cocktails/shakes vuoto");
+                    }else{
+                        observerCall();
                     }
 
                 });
@@ -182,8 +187,8 @@ public class RecommendedFragment extends Fragment {
             if(!isGetShakesOk()){
                 Toast.makeText(getContext(), "Non ci sono frullati da consigliare", Toast.LENGTH_SHORT).show();
             }else{
-                recommendedShakes = Shake.setShakes(recommendedShakesString);
-                allShakes = Shake.setShakes(allShakesString);
+                recommendedShakes = Shake.setRecommendedShakes(recommendedShakesString);
+                allShakes = Shake.parseShake(allShakesString);
 
                 for (Shake shake : recommendedShakes) {
                     for (Shake s : allShakes) {
@@ -204,10 +209,18 @@ public class RecommendedFragment extends Fragment {
             if(adapter != null && !isObserverRegistered) {
                 adapter.registerAdapterDataObserver(observer);
                 isObserverRegistered = true;
+                observerCall();
+            }else if(adapter == null){
+                Log.e("RecommendedFragment", "onCreateView: adapter null quando recommended cocktails/shakes non vuoti");
+            }else{
+                observerCall();
             }
         }
 
 
+    }
+
+    private void observerCall() {
         model.getResetRecommended().observe(getViewLifecycleOwner(), resetRecommended -> {
             if(resetRecommended){
                 executor.execute(() -> {
@@ -243,8 +256,8 @@ public class RecommendedFragment extends Fragment {
                         if(isGetShakesOk()){
                             model.setRecommendedShakes(recommendedShakesString);
                             model.setAllShakes(allShakesString);
-                            recommendedShakes = Shake.setShakes(recommendedShakesString);
-                            allShakes = Shake.setShakes(allShakesString);
+                            recommendedShakes = Shake.setRecommendedShakes(recommendedShakesString);
+                            allShakes = Shake.parseShake(allShakesString);
 
                             for(Shake shake : recommendedShakes){
                                 for(Shake s : allShakes) {
@@ -263,7 +276,6 @@ public class RecommendedFragment extends Fragment {
                 });
             }
         });
-
     }
 
     private String getRecommendedCocktails() {
