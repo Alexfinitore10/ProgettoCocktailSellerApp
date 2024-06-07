@@ -9,6 +9,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -70,6 +73,7 @@ public class ShakesFragment extends Fragment {
         shakes = new ArrayList<>();
         recyclerView = view.findViewById(R.id.ShakesRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        
 
         observer = new RecyclerView.AdapterDataObserver() {
             @Override
@@ -90,10 +94,29 @@ public class ShakesFragment extends Fragment {
 
         if(allShakes.isEmpty()){
             executor.execute(() -> {
-                allShakes = getAllShakes();
+                try {
+                    allShakes = getAllShakes();
+                } catch (IOException e) {
+                    Log.e("ShakesFragment", "Impossibile recuperare la lista dei frullati: " +e.getMessage());
+                    allShakes = "";
+                } catch (InterruptedException e){
+                    Log.e("ShakesFragment", "Errore esecuzione recupero lista dei frullati: " +e.getMessage());
+                    allShakes = "";
+                } catch(Exception e){
+                    Log.e( "ShakesFragment", "Errore generico riempimento lista dei frullati: " +e.getMessage());
+                    allShakes = "";
+                }
                 model.setAllShakes(allShakes);
                 handler.post(() -> {
-                    shakes = Shake.parseShake(allShakes);
+                    try {
+                        shakes = Shake.parseShake(allShakes);
+                    } catch (IndexOutOfBoundsException e) {
+                        Log.e( "ShakesFragment", "Non ci sono frullati nella lista: " +e.getMessage());
+                        shakes = new ArrayList<>();
+                    } catch(Exception e){
+                        Log.e( "ShakesFragment", "Errore parsing lista dei frullati: " +e.getMessage());
+                        shakes = new ArrayList<>();
+                    }
                     for (Shake s : shakes) {
                         list.add(new ShakesLayoutClass(s.getNome(),s.getIngredienti(),s.getPrezzo(),s.getQuantita()));
                     }
@@ -105,13 +128,21 @@ public class ShakesFragment extends Fragment {
                         observerCall();
                     }else if(adapter == null){
                         Log.e("ShakesFragment", "onCreateView: adapter null quando allShakes vuoto");
-                    }else{
+                    }else {
                         observerCall();
                     }
                 });
             });
         }else{
-            shakes = Shake.parseShake(allShakes);
+            try {
+                shakes = Shake.parseShake(allShakes);
+            } catch (IndexOutOfBoundsException e) {
+                Log.e( "ShakesFragment", "Non ci sono frullati nella lista: " +e.getMessage());
+                shakes = new ArrayList<>();
+            } catch(Exception e){
+                Log.e( "ShakesFragment", "Errore parsing lista dei frullati: " +e.getMessage());
+                shakes = new ArrayList<>();
+            }
             for (Shake s : shakes) {
                 list.add(new ShakesLayoutClass(s.getNome(),s.getIngredienti(),s.getPrezzo(),s.getQuantita()));
             }
@@ -141,11 +172,30 @@ public class ShakesFragment extends Fragment {
             Log.d("ShakesFragment", "resetShakes: " + resetShakes);
             if (resetShakes) {
                 executor.execute(() -> {
-                    allShakes = getAllShakes();
+                    try {
+                        allShakes = getAllShakes();
+                    } catch (IOException e) {
+                        Log.e("ShakesFragment", "Impossibile recuperare la lista dei frullati: " +e.getMessage());
+                        allShakes = "";
+                    } catch (InterruptedException e){
+                        Log.e("ShakesFragment", "Errore esecuzione recupero lista dei frullati: " +e.getMessage());
+                        allShakes = "";
+                    } catch(Exception e){
+                        Log.e( "ShakesFragment", "Errore generico riempimento lista dei frullati: " +e.getMessage());
+                        allShakes = "";
+                    }
                     model.setAllShakes(allShakes);
                     handler.post(() -> {
                         shakes.clear();
-                        shakes = Shake.parseShake(allShakes);
+                        try {
+                            shakes = Shake.parseShake(allShakes);
+                        } catch (IndexOutOfBoundsException e) {
+                            Log.e("ShakesFragment", "Non ci sono frullati nella lista: " +e.getMessage());
+                            shakes = new ArrayList<>();
+                        }catch(Exception e){
+                            Log.e("ShakesFragment", "Errore parsing lista dei frullati: " +e.getMessage());
+                            shakes = new ArrayList<>();
+                        }
                         int listSize = list.size();
                         list.clear();
                         adapter.notifyItemRangeRemoved(0, listSize);
@@ -156,7 +206,7 @@ public class ShakesFragment extends Fragment {
         });
     }
 
-    private String getAllShakes() {
+    private String getAllShakes() throws IOException, InterruptedException{
         String command = "4";
         client.sendData(command);
         client.setSocketTimeout(3000);
@@ -179,11 +229,20 @@ public class ShakesFragment extends Fragment {
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onPause() {
+        super.onPause();
         if (adapter != null && isObserverRegistered) {
             adapter.unregisterAdapterDataObserver(observer);
             isObserverRegistered = false;
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (adapter != null && !isObserverRegistered) {
+            adapter.registerAdapterDataObserver(observer);
+            isObserverRegistered = true;
         }
     }
 

@@ -69,7 +69,7 @@ public class SignUpActivity extends AppCompatActivity {
                     });
                 });
 
-            executor.shutdown();
+
 
         });
 
@@ -116,5 +116,11 @@ public class SignUpActivity extends AppCompatActivity {
             default:
                 return "Risposta dal server non valida";
         }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        executor.shutdown();
     }
 }

@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -73,7 +74,7 @@ public class PaymentFragment extends Fragment {
 
 
         PayButton.setOnClickListener(v -> {
-            if(carrello.calculateTotal() == 0) {
+            if(carrello.getBeverages().isEmpty()) {
                 Toast.makeText(getContext(), "Carrello vuoto", Toast.LENGTH_SHORT).show();
             }else{
                 executor = Executors.newSingleThreadExecutor();
@@ -86,9 +87,11 @@ public class PaymentFragment extends Fragment {
                         model.setTotalCartValue(carrello.calculateTotal());
                         carrello.viewItems();
                         if(success){
+                            Log.d("PaymentFragment", "Sto nell'if del pagamento e success è " +success);
                             waitingDialog.dismiss();
                             Toast.makeText(getContext(), "Pagamento completato con successo!", Toast.LENGTH_SHORT).show();
                         }else{
+                            Log.d("PaymentFragment", "Sto nell'else del pagamento e success è " +success);
                             waitingDialog.dismiss();
                             Toast.makeText(getContext(), "Errore durante il pagamento", Toast.LENGTH_SHORT).show();
                         }
@@ -102,17 +105,12 @@ public class PaymentFragment extends Fragment {
     }
 
     private boolean sendBeveragesToServer(){
-        boolean hasCocktails = false;
-        boolean hasShakes = false;
-
         try {
+            boolean hasCocktails = false;
+            boolean hasShakes = false;
             ArrayList<String> cocktails = new ArrayList<>();
             ArrayList<String> shakes =  new ArrayList<>();
-            if(carrello.getBeverages().isEmpty()){
-                Log.e("sendBeveragesToServer", "Carrello vuoto");
-                Toast.makeText(getContext(), "Carrello vuoto", Toast.LENGTH_SHORT).show();
-                return false;
-            }
+
 
             for (int i = 0; i < carrello.getBeverages().size(); i++) {
                 if(carrello.getBeverages().get(i) instanceof Cocktail){
@@ -126,26 +124,29 @@ public class PaymentFragment extends Fragment {
 
             client.sendData("8");
             for (String c : cocktails) {
+                Log.d("sendBeveragesToServer","Sto per inviare il cocktail: " +c);
                 client.sendData(c);
                 try {
+                    Log.d("sendBeveragesToServer","Sto dormendo");
                     Thread.sleep(500);
                 } catch (InterruptedException e) {
-                    Log.e("sendBeveragesToServer", "Errore sleep durante l'invio dei cocktail");
+                    Log.e("sendBeveragesToServer", "Errore sleep durante l'invio dei cocktail: " + e.getMessage());
                 }
             }
             for (String c : shakes) {
+                Log.d("sendBeveragesToServer","Sto per inviare il frullato: " +c);
                 client.sendData(c);
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException e) {
-                    Log.e("sendBeveragesToServer", "Errore sleep durante l'invio dei frullati");
+                    Log.e("sendBeveragesToServer", "Errore sleep durante l'invio dei frullati: " +e.getMessage());
                 }
             }
 
 
             try {
                 client.sendData("Fine");
-                client.setSocketTimeout(3000);
+                client.setSocketTimeout(10000);
                 System.out.println("Aspetto la risposta dal server....");
                 String risposta = client.receiveData();
                 if (!risposta.equals("ERRORE")) {
@@ -176,37 +177,17 @@ public class PaymentFragment extends Fragment {
                     carrello.emptyCarrello();
                     return false;
                 }
-            } catch (Exception e) {
-                Log.e("sendBeveragesToServer", "\"Errore durante la ricezione della risposta al comando di cancellazione dei drink e dei frullati, impossibile cancellare");
-            }finally {
-                if(hasCocktails){
-                    model.setResetCocktails(true);
-                }
-                if(hasShakes){
-                    model.setResetShakes(true);
-                }
-                model.setResetCart(true);
-                model.setResetRecommended(true);
-                carrello.emptyCarrello();
+            }catch (IOException e) {
+                Log.e("sendBeveragesToServer", "Errore durante l'invio/ricezione dei dati: " + e.getMessage());
+            }catch(Exception e) {
+                Log.e("sendBeveragesToServer", "Errore durante la ricezione della risposta al comando di cancellazione dei drink e dei frullati, impossibile cancellare: " + e.getMessage());
             }
 
         }catch (Exception e) {
-            if(e instanceof InterruptedException){
-                Log.e("sendBeveragesToServer","InterruptedException durante la sospensione del thread: " + e.getMessage());
-            }else{
-                Log.e("sendBeveragesToServer","Errore durante la cancellazione dei drink e dei frullati: " + e.getMessage());
-            }
-        }finally {
-            if(hasCocktails){
-                model.setResetCocktails(true);
-            }
-            if(hasShakes){
-                model.setResetShakes(true);
-            }
-            model.setResetCart(true);
-            model.setResetRecommended(true);
-            carrello.emptyCarrello();
+            Log.e("PaymentFragment", "Errore durante l'invio dei drink e dei frullati: " + e.getMessage());
         }
+
+
         return false;
     }
 }

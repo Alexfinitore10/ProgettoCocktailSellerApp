@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -87,7 +88,18 @@ public class CartFragment extends Fragment {
 
         if(allCocktails.isEmpty() || allShakes.isEmpty()){
             executor.execute(() -> {
-                allCocktails = getAllCocktails();
+                try {
+                    allCocktails = getAllCocktails();
+                } catch (IOException e) {
+                    Log.e("CartFragment", "Impossibile recuperare la lista dei cocktail: " +e.getMessage());
+                    allCocktails = "";
+                } catch (InterruptedException e){
+                    Log.e("CartFragment", "Errore esecuzione recupero lista dei cocktail: " +e.getMessage());
+                    allCocktails = "";
+                } catch(Exception e){
+                    Log.e( "CartFragment", "Errore generico riempimento lista dei cocktail: " +e.getMessage());
+                    allCocktails = "";
+                }
                 allShakes = getAllShakes();
 
                 handler.post(() -> {
@@ -158,7 +170,7 @@ public class CartFragment extends Fragment {
             }
         });
     }
-    private String getAllCocktails(){
+    private String getAllCocktails() throws IOException, InterruptedException {
         String command = "3";
         client.sendData(command);
         return client.bufferedReceive();

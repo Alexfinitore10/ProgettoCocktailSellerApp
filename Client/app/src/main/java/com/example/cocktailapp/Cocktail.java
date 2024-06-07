@@ -1,5 +1,7 @@
 package com.example.cocktailapp;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,20 +23,63 @@ public class Cocktail extends Bevanda {
     }
 
 
-    public static Cocktail parseString(String input) {
+    public static Cocktail parseString(String input) throws IndexOutOfBoundsException{
         String[] parts = input.split(", ");
-    
+
+        if(parts.length < 5) {
+            throw new IndexOutOfBoundsException("Cocktail string has less than 5 parts");
+        }
+
         String nome = parts[0].trim();
-    
+
         String ingredientiString = parts[1].substring(1, parts[1].length() - 1).trim();
         String[] ingredientiArray = ingredientiString.split(";");
-    
+
         float gradazioneAlcolica = Float.parseFloat(parts[2].trim());
         float prezzo = Float.parseFloat(parts[3].trim());
         int quantita = Integer.parseInt(parts[4].trim());
-    
+
         return new Cocktail(nome, prezzo, Arrays.asList(ingredientiArray), quantita, gradazioneAlcolica);
     }
+
+//    public static Cocktail parseString(String input) throws IndexOutOfBoundsException {
+//        String[] parts = input.split(", ");
+//        Log.d("Cocktail Parse String", "Parts size: " + parts.length);
+//        Log.d("Cocktail Parse String", "parse array: " + Arrays.toString(parts));
+//
+//        if(parts.length < 5) {
+//            throw new IndexOutOfBoundsException("Cocktail string has less than 5 parts");
+//        }
+//            String nome = parts[0].trim();
+//
+//            Log.d("Cocktail Parse string", "Nome: " + nome);
+//
+//            String ingredientiString = parts[1].substring(1, parts[1].length() - 1).trim();
+//            Log.d("Cocktail Parse String", "Ingredienti string: " + ingredientiString);
+//            String[] ingredientiArray = ingredientiString.split(";");
+//            Log.d("Cocktail Parse String", "Ingredienti array: " + Arrays.toString(ingredientiArray));
+//
+//            float gradazioneAlcolica = Float.parseFloat(parts[2].trim());
+//
+//            Log.d("Cocktail Parse String", "Gradazione alcolica: " + gradazioneAlcolica);
+//
+//            float prezzo = Float.parseFloat(parts[3].trim());
+//
+//            Log.d("Cocktail Parse String", "Prezzo: " + prezzo);
+//
+//            int quantita = Integer.parseInt(parts[4].trim());
+//
+//            Log.d("Cocktail Parse String", "Quantita: " + quantita);
+//
+//
+//            Cocktail cocktail = new Cocktail(nome, prezzo, Arrays.asList(ingredientiArray), quantita, gradazioneAlcolica);
+//
+//            Log.d("Cocktail Parse String", "Sto per stampare il Cocktail: " + cocktail);
+//
+//            return cocktail;
+//            //return new Cocktail(nome, prezzo, Arrays.asList(ingredientiArray), quantita, gradazioneAlcolica);
+//
+//    }
 
     public static ArrayList<Cocktail> setRecommendedCocktails(String buffer) {
         ArrayList<Cocktail> Cocktails = new ArrayList<>();

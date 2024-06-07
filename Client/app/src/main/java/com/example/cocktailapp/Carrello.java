@@ -78,8 +78,8 @@ public class Carrello {
 
 
     // Calcola il totale del carrello
-    public double calculateTotal() {
-        double total = 0;
+    public float calculateTotal() {
+        float total = 0;
 
         // Calcola il totale dei cocktail
         for (int i = 0; i < beverages.size(); i++) {

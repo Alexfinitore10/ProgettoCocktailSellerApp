@@ -3,13 +3,11 @@ package com.example.cocktailapp;
 import androidx.lifecycle.*;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class CartObserver extends ViewModel {
     private final MutableLiveData<Queue<CartLayoutClass>> toAddItems = new MutableLiveData<>(new LinkedList<>());
     private final MutableLiveData<Queue<CartLayoutClass>> toUpdateItems = new MutableLiveData<>(new LinkedList<>());
-    private final MutableLiveData<Queue<Double>> totalCartValue = new MutableLiveData<>(new LinkedList<>());
+    private final MutableLiveData<Queue<Float>> totalCartValue = new MutableLiveData<>(new LinkedList<>());
     private final MutableLiveData<Boolean> isLoggedIn = new MutableLiveData<>();
     private final MutableLiveData<String> allCocktails = new MutableLiveData<>();
     private final MutableLiveData<String> allShakes = new MutableLiveData<>();
@@ -68,8 +66,8 @@ public class CartObserver extends ViewModel {
         this.toUpdateItems.setValue(currentItems);
     }
 
-    public void setTotalCartValue(double value){
-        Queue<Double> currentItems = totalCartValue.getValue();
+    public void setTotalCartValue(Float value){
+        Queue<Float> currentItems = totalCartValue.getValue();
         assert currentItems != null;
         currentItems.add(value);
         this.totalCartValue.setValue(currentItems);
@@ -80,7 +78,7 @@ public class CartObserver extends ViewModel {
     }
 
 
-    public LiveData<Queue<Double>> getTotalCartValue() {
+    public LiveData<Queue<Float>> getTotalCartValue() {
         return totalCartValue;
     }
 

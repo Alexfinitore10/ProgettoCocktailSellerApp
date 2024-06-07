@@ -2,7 +2,6 @@ package com.example.cocktailapp;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 

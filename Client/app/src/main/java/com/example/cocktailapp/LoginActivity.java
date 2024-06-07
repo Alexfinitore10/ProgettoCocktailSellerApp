@@ -62,7 +62,6 @@ public class LoginActivity extends AppCompatActivity {
                 });
             });
 
-            executor.shutdown();
 
         });
 
@@ -99,4 +98,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        executor.shutdown();
+    }
 }

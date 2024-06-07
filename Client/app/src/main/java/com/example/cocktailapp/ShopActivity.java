@@ -2,22 +2,15 @@ package com.example.cocktailapp;
 
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
-import android.graphics.pdf.PdfDocument;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
-
-import java.util.ArrayList;
 
 public class ShopActivity extends AppCompatActivity {
     private TextView TotalPrice;
@@ -70,9 +63,8 @@ public class ShopActivity extends AppCompatActivity {
 
         model.getTotalCartValue().observe(this, queue -> {
             while (!queue.isEmpty()) {
-                Double prezzo = queue.poll();
-                String prezzo_string = String.valueOf(prezzo);
-                prezzo_string = String.format("%.2f", prezzo);
+                Float prezzo = queue.poll();
+                String prezzo_string = String.format("%.2f", prezzo);
                 TotalPrice.setText("Totale carrello: " + prezzo_string + "€");
             }
         });

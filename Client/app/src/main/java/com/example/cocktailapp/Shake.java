@@ -14,13 +14,16 @@ public class Shake extends Bevanda {
 
 
 
-    public static Shake parseString(String input) {
+    public static Shake parseString(String input) throws IndexOutOfBoundsException{
         String[] parts = input.split(", ");
+
+        if(parts.length < 4) {
+            throw new IndexOutOfBoundsException("Shake string has less than 4 parts");
+        }
 
         String nome = parts[0].trim();
 
         List<String> ingredienti = new ArrayList<>();
-        Log.d("paarseString Shakes","parts[1]: "+parts[1]);
         if (!parts[1].trim().equals("N/A")) {
             String ingredientiString = parts[1].substring(1, parts[1].length() - 1).trim();
             String[] ingredientiArray = ingredientiString.split(";");
@@ -32,6 +35,46 @@ public class Shake extends Bevanda {
 
         return new Shake(nome, prezzo,ingredienti, quantita);
     }
+
+//    public static Shake parseString(String input) {
+//        String[] parts = input.split(", ");
+//        Log.d("Shake Parse String", "Parts size: " + parts.length);
+//        Log.d("Shake Parse String", "parse array: " + Arrays.toString(parts));
+//        String nome = parts[0].trim();
+//
+//        Log.d("Shake Parse string", "Nome: " + nome);
+//
+//        List<String> ingredienti = new ArrayList<>();
+//        Log.d("parseString Shakes","parts[1]: "+parts[1]);
+//        if (!parts[1].trim().equals("N/A")) {
+//            Log.d("Shake Parse string", "Sto nell'if");
+//
+//            String ingredientiString = parts[1].substring(1, parts[1].length() - 1).trim();
+//
+//            Log.d("Shake Parse string", "Ingredienti string: " + ingredientiString);
+//
+//            String[] ingredientiArray = ingredientiString.split(";");
+//
+//            Log.d("Shake Parse string", "Ingredienti Array: " + Arrays.toString(ingredientiArray));
+//
+//            ingredienti.addAll(Arrays.asList(ingredientiArray));
+//
+//            Log.d("Shake Parse string", "Ingredienti List: " + ingredienti);
+//
+//        }
+//
+//        float prezzo = Float.parseFloat(parts[2].trim());
+//
+//        Log.d("Shake Parse string", "Prezzo: " + prezzo);
+//
+//        int quantita = Integer.parseInt(parts[3].trim());
+//
+//        Log.d("Shake Parse string", "Quantita: " + quantita);
+//        Shake shake = new Shake(nome, prezzo,ingredienti, quantita);
+//
+//        return shake;
+//        //return new Shake(nome, prezzo,ingredienti, quantita);
+//    }
 
     public static ArrayList<Shake> setRecommendedShakes(String buffer) {
         ArrayList<Shake> Shakes = new ArrayList<>();

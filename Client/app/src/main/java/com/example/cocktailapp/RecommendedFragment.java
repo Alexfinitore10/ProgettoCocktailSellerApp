@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -112,9 +113,31 @@ public class RecommendedFragment extends Fragment {
 
             executor.execute(() -> {
                 recommendedCocktailsString = getRecommendedCocktails();
-                allCocktailsString = getAllCocktails();
+                try {
+                    allCocktailsString = getAllCocktails();
+                } catch (IOException e) {
+                    Log.e("RecommendedFragment", "Impossibile recuperare la lista dei cocktail: " +e.getMessage());
+                    allCocktailsString = "";
+                } catch (InterruptedException e) {
+                    Log.e("RecommendedFragment", "Errore esecuzione recupero lista dei cocktail: " +e.getMessage());
+                    allCocktailsString = "";
+                }catch (Exception e){
+                    Log.e("RecommendedFragment", "Errore generico riempimento lista dei cocktail: " +e.getMessage());
+                    allCocktailsString = "";
+                }
                 recommendedShakesString = getRecommendedShakes();
-                allShakesString = getAllShakes();
+                try {
+                    allShakesString = getAllShakes();
+                }catch (IOException e){
+                    Log.e("RecommendedFragment", "Impossibile recuperare la lista dei frullati: " +e.getMessage());
+                    allShakesString = "";
+                }catch (InterruptedException e){
+                    Log.e("RecommendedFragment", "Errore esecuzione recupero lista dei frullati: " +e.getMessage());
+                    allShakesString = "";
+                }catch (Exception e){
+                    Log.e("RecommendedFragment", "Errore generico riempimento lista dei frullati: " +e.getMessage());
+                    allShakesString = "";
+                }
 
                 handler.post(() -> {
                     if (isGetCocktailsOk()) {
@@ -225,9 +248,31 @@ public class RecommendedFragment extends Fragment {
             if(resetRecommended){
                 executor.execute(() -> {
                     recommendedCocktailsString = getRecommendedCocktails();
-                    allCocktailsString = getAllCocktails();
+                    try {
+                        allCocktailsString = getAllCocktails();
+                    } catch (IOException e) {
+                        Log.e("RecommendedFragment", "Impossibile recuperare la lista dei cocktail: " +e.getMessage());
+                        allCocktailsString = "";
+                    } catch (InterruptedException e) {
+                        Log.e("RecommendedFragment", "Errore esecuzione recupero lista dei cocktail: " +e.getMessage());
+                        allCocktailsString = "";
+                    }catch (Exception e){
+                        Log.e("RecommendedFragment", "Errore generico riempimento lista dei cocktail: " +e.getMessage());
+                        allCocktailsString = "";
+                    }
                     recommendedShakesString = getRecommendedShakes();
-                    allShakesString = getAllShakes();
+                    try {
+                        allShakesString = getAllShakes();
+                    } catch (IOException e) {
+                        Log.e("RecommendedFragment", "Impossibile recuperare la lista dei frullati: " +e.getMessage());
+                        allShakesString = "";
+                    } catch (InterruptedException e){
+                        Log.e("RecommendedFragment", "Errore esecuzione recupero lista dei frullati: " +e.getMessage());
+                        allShakesString = "";
+                    } catch(Exception e){
+                        Log.e( "RecommendedFragment", "Errore generico riempimento lista dei frullati: " +e.getMessage());
+                        allShakesString = "";
+                    }
 
                     handler.post(() -> {
                         int listSize = list.size();
@@ -278,14 +323,14 @@ public class RecommendedFragment extends Fragment {
         });
     }
 
-    private String getRecommendedCocktails() {
+    private String getRecommendedCocktails(){
         String command = "9";
         client.sendData(command);
         client.setSocketTimeout(3000);
         return client.bufferedReceive();
     }
 
-    private String getAllCocktails(){
+    private String getAllCocktails() throws IOException, InterruptedException{
         String command = "3";
         client.sendData(command);
         client.setSocketTimeout(3000);
@@ -314,7 +359,7 @@ public class RecommendedFragment extends Fragment {
         client.setSocketTimeout(3000);
         return client.bufferedReceive();
     }
-    private String getAllShakes() {
+    private String getAllShakes() throws IOException, InterruptedException{
         String command = "4";
         client.sendData(command);
         client.setSocketTimeout(3000);

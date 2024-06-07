@@ -77,12 +77,13 @@ public class Client {
     }
 
     public int sendData(String dati){
+        Log.d("Client","Dati inviati al client: " +dati);
         out.println(dati);
         Log.v("Client","Messaggio inviato");
         try {
             return clientSocket.getSendBufferSize();
         } catch (SocketException e) {
-            Log.e("Client","Non riesco a capie quanti byte sono stati inviati: " + e.getMessage());
+            Log.e("Client","Non riesco a capire quanti byte sono stati inviati: " + e.getMessage());
             return -1;
         }
     }
@@ -93,11 +94,7 @@ public class Client {
             data = input.readLine();
             return data;
         }catch (IOException e){
-            if (e instanceof SocketTimeoutException) {
-                Log.e("Client","Errore durante la ricezione del messaggio, SocketTimedOut: " + e.getMessage());
-            } else {
-                Log.e("Client","Errore durante la lettura: " + e.getMessage());
-            }
+            Log.e("Client","Errore durante la ricezione del messaggio, SocketTimedOut: " + e.getMessage());
         }catch (Exception e){
             Log.e("Client","Errore durante la ricezione del messaggio, exception generale: " + e.getMessage());
         }
