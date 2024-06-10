@@ -404,12 +404,12 @@ void handle_get_recommended_shakes(int client_fd) {
 void handle_remove_drink_and_shake(const int client_fd) {
   // devo far in modo di ricevere pacchetti continuamente da quando dice INICIO
   // A QUANDO DICE FINE;
-  char buffer[MAX_BUFFER_SIZE] = {0};<
+  char buffer[MAX_BUFFER_SIZE] = {0};
 
   while (strcmp(buffer, "Fine\n") != 0) {
     int res = recv(client_fd, buffer, MAX_BUFFER_SIZE, 0);
     if (res > 0) {
-      if (strcmp(buffer, "Fine\n") == 0) {2
+      if (strcmp(buffer, "Fine\n") == 0) {
         break;
       }
       log_debug("Stringa arrivata dal client: %s", buffer);
