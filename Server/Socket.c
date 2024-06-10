@@ -315,7 +315,7 @@ void handle_get_all_shakes(int client_fd) {
   int status = send(client_fd, shakes, strlen(shakes), 0);
 
   if (status > 0) {
-    log_info("[Server] Dati dei Cocktail inviati al client\n");
+    log_info("Dati degli shakes inviati al client\n");
   } else {
     log_error("send error: %s", strerror(errno));
   }
@@ -404,12 +404,12 @@ void handle_get_recommended_shakes(int client_fd) {
 void handle_remove_drink_and_shake(const int client_fd) {
   // devo far in modo di ricevere pacchetti continuamente da quando dice INICIO
   // A QUANDO DICE FINE;
-  char buffer[MAX_BUFFER_SIZE] = {0};
+  char buffer[MAX_BUFFER_SIZE] = {0};<
 
-  while (strcmp(buffer, "Fine") != true) {
+  while (strcmp(buffer, "Fine\n") != 0) {
     int res = recv(client_fd, buffer, MAX_BUFFER_SIZE, 0);
     if (res > 0) {
-      if (strcmp(buffer, "Fine") == true) {
+      if (strcmp(buffer, "Fine\n") == 0) {2
         break;
       }
       log_debug("Stringa arrivata dal client: %s", buffer);
