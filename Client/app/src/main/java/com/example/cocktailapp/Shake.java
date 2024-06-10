@@ -18,6 +18,7 @@ public class Shake extends Bevanda {
         String[] parts = input.split(", ");
 
         if(parts.length < 4) {
+            Log.e("Shakes parse String","Stringa che ha causato errore:" +input);
             throw new IndexOutOfBoundsException("Shake string has less than 4 parts");
         }
 
@@ -38,6 +39,10 @@ public class Shake extends Bevanda {
 
 //    public static Shake parseString(String input) {
 //        String[] parts = input.split(", ");
+//        if(parts.length != 4) {
+//            Log.e("Shakes parse String","Stringa che ha causato errore:" +input);
+//            throw new IndexOutOfBoundsException("Shake string has number of parts = " +parts.length);
+//        }
 //        Log.d("Shake Parse String", "Parts size: " + parts.length);
 //        Log.d("Shake Parse String", "parse array: " + Arrays.toString(parts));
 //        String nome = parts[0].trim();

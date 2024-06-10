@@ -9,8 +9,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,16 +38,28 @@ public class ShakesFragment extends Fragment {
     private Handler handler;
     private RecyclerView.AdapterDataObserver observer;
     private boolean isObserverRegistered = false;
+    private static ShakesFragment instance;
 
 
-    public ShakesFragment() {
-        // Required empty public constructor
+
+//    public ShakesFragment() {
+//        // Required empty public constructor
+//    }
+
+    private ShakesFragment(){
+
     }
 
-
-    public static ShakesFragment newInstance() {
-        return new ShakesFragment();
+    public static ShakesFragment getInstance(){
+        if(instance == null){
+            instance = new ShakesFragment();
+        }
+        return instance;
     }
+
+//    public static ShakesFragment newInstance() {
+//        return new ShakesFragment();
+//    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -125,14 +135,12 @@ public class ShakesFragment extends Fragment {
                     if(adapter != null && !isObserverRegistered) {
                         adapter.registerAdapterDataObserver(observer);
                         isObserverRegistered = true;
-                        observerCall();
                     }else if(adapter == null){
                         Log.e("ShakesFragment", "onCreateView: adapter null quando allShakes vuoto");
-                    }else {
-                        observerCall();
                     }
                 });
             });
+            executor.shutdown();
         }else{
             try {
                 shakes = Shake.parseShake(allShakes);
@@ -152,64 +160,106 @@ public class ShakesFragment extends Fragment {
             if(adapter != null && !isObserverRegistered) {
                 adapter.registerAdapterDataObserver(observer);
                 isObserverRegistered = true;
-                observerCall();
             }else if(adapter == null){
                 Log.e("ShakesFragment", "onCreateView: adapter null quando allShakes NON vuoto");
-            }else{
-                observerCall();
             }
         }
 
+        //observerCall();
 
-
-
-
-
-    }
-
-    private void observerCall(){
         model.getResetShakes().observe(getViewLifecycleOwner(), resetShakes -> {
-            Log.d("ShakesFragment", "resetShakes: " + resetShakes);
+            Log.i("ShakesFragment", "Sto nell'observer e resetShakes: " + resetShakes);
             if (resetShakes) {
-                executor.execute(() -> {
-                    try {
-                        allShakes = getAllShakes();
-                    } catch (IOException e) {
-                        Log.e("ShakesFragment", "Impossibile recuperare la lista dei frullati: " +e.getMessage());
-                        allShakes = "";
-                    } catch (InterruptedException e){
-                        Log.e("ShakesFragment", "Errore esecuzione recupero lista dei frullati: " +e.getMessage());
-                        allShakes = "";
-                    } catch(Exception e){
-                        Log.e( "ShakesFragment", "Errore generico riempimento lista dei frullati: " +e.getMessage());
-                        allShakes = "";
-                    }
-                    model.setAllShakes(allShakes);
-                    handler.post(() -> {
-                        shakes.clear();
+                ExecutorService localExecutor = Executors.newSingleThreadExecutor();
+                Handler localHandler = new Handler(Looper.getMainLooper());
+                localExecutor.execute(() -> {
+
+                    boolean parsingSuccessful = false;
+
+                    do{
+                        Log.d("ShakesFragment", "parsingSuccessful:" +parsingSuccessful);
                         try {
+                            allShakes = getAllShakes();
+                            Log.d("ShakesFragment", "allShakes:" +allShakes);
+                            model.setAllShakes(allShakes);
                             shakes = Shake.parseShake(allShakes);
+                            Log.d("ShakesFragment", "cocktails:" +shakes);
+                            parsingSuccessful = true;
+                        } catch (IOException e) {
+                            Log.e("ShakesFragment", "Impossibile recuperare la lista dei frullati: " +e.getMessage());
+                        } catch (InterruptedException e){
+                            Log.e("ShakesFragment", "Errore esecuzione recupero lista dei frullati: " +e.getMessage());
                         } catch (IndexOutOfBoundsException e) {
                             Log.e("ShakesFragment", "Non ci sono frullati nella lista: " +e.getMessage());
-                            shakes = new ArrayList<>();
-                        }catch(Exception e){
+                        } catch (Exception e){
                             Log.e("ShakesFragment", "Errore parsing lista dei frullati: " +e.getMessage());
-                            shakes = new ArrayList<>();
                         }
+                    }while(!parsingSuccessful);
+                    localHandler.post(() -> {
                         int listSize = list.size();
                         list.clear();
                         adapter.notifyItemRangeRemoved(0, listSize);
                     });
                 });
 
+                localExecutor.shutdown();
             }
+            Log.i("ShakesFragment", "observerCall: rimozione observer");
+            model.getResetShakes().removeObservers(getViewLifecycleOwner());
         });
+
+
+
+
     }
 
+//    private void observerCall(){
+//        model.getResetShakes().observe(getViewLifecycleOwner(), resetShakes -> {
+//            Log.d("ShakesFragment", "observerCall: Sto nell'observer e resetShakes: " + resetShakes);
+//            if (resetShakes) {
+//                executor = Executors.newSingleThreadExecutor();
+//                handler = new Handler(Looper.getMainLooper());
+//                executor.execute(() -> {
+//
+//                    boolean parsingSuccessful = false;
+//
+//                    do{
+//                        Log.d("ShakesFragment", "parsingSuccessful:" +parsingSuccessful);
+//                        try {
+//                            allShakes = getAllShakes();
+//                            Log.d("ShakesFragment", "allShakes:" +allShakes);
+//                            model.setAllShakes(allShakes);
+//                            shakes = Shake.parseShake(allShakes);
+//                            Log.d("ShakesFragment", "cocktails:" +shakes);
+//                            parsingSuccessful = true;
+//                        } catch (IOException e) {
+//                            Log.e("ShakesFragment", "Impossibile recuperare la lista dei frullati: " +e.getMessage());
+//                        } catch (InterruptedException e){
+//                            Log.e("ShakesFragment", "Errore esecuzione recupero lista dei frullati: " +e.getMessage());
+//                        } catch (IndexOutOfBoundsException e) {
+//                            Log.e("ShakesFragment", "Non ci sono frullati nella lista: " +e.getMessage());
+//                        } catch (Exception e){
+//                            Log.e("ShakesFragment", "Errore parsing lista dei frullati: " +e.getMessage());
+//                        }
+//                    }while(!parsingSuccessful);
+//                    handler.post(() -> {
+//                        int listSize = list.size();
+//                        list.clear();
+//                        adapter.notifyItemRangeRemoved(0, listSize);
+//                    });
+//                });
+//
+//                executor.shutdown();
+//            }
+//            model.getResetShakes().removeObservers(getViewLifecycleOwner());
+//        });
+//    }
+
     private String getAllShakes() throws IOException, InterruptedException{
+        Log.i("ShakesFragment", "getAllShakes");
         String command = "4";
         client.sendData(command);
-        client.setSocketTimeout(3000);
+        client.setSocketTimeout(5000);
         return client.bufferedReceive();
     }
 
@@ -222,20 +272,7 @@ public class ShakesFragment extends Fragment {
         model.setResetShakes(false);
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        executor.shutdown();
-    }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (adapter != null && isObserverRegistered) {
-            adapter.unregisterAdapterDataObserver(observer);
-            isObserverRegistered = false;
-        }
-    }
 
     @Override
     public void onResume() {
@@ -243,7 +280,64 @@ public class ShakesFragment extends Fragment {
         if (adapter != null && !isObserverRegistered) {
             adapter.registerAdapterDataObserver(observer);
             isObserverRegistered = true;
+        }else{
+            Log.e("ShakesFragment", "onResume: adapter null");
         }
+        //observerCall();
+
+        model.getResetShakes().observe(getViewLifecycleOwner(), resetShakes -> {
+            Log.i("ShakesFragment", "Sto nell'observer e resetShakes: " + resetShakes);
+            if (resetShakes) {
+                ExecutorService localExecutor = Executors.newSingleThreadExecutor();
+                Handler localHandler = new Handler(Looper.getMainLooper());
+                localExecutor.execute(() -> {
+
+                    boolean parsingSuccessful = false;
+
+                    do{
+                        Log.d("ShakesFragment", "parsingSuccessful:" +parsingSuccessful);
+                        try {
+                            allShakes = getAllShakes();
+                            Log.d("ShakesFragment", "allShakes:" +allShakes);
+                            model.setAllShakes(allShakes);
+                            shakes = Shake.parseShake(allShakes);
+                            Log.d("ShakesFragment", "cocktails:" +shakes);
+                            parsingSuccessful = true;
+                        } catch (IOException e) {
+                            Log.e("ShakesFragment", "Impossibile recuperare la lista dei frullati: " +e.getMessage());
+                        } catch (InterruptedException e){
+                            Log.e("ShakesFragment", "Errore esecuzione recupero lista dei frullati: " +e.getMessage());
+                        } catch (IndexOutOfBoundsException e) {
+                            Log.e("ShakesFragment", "Non ci sono frullati nella lista: " +e.getMessage());
+                        } catch (Exception e){
+                            Log.e("ShakesFragment", "Errore parsing lista dei frullati: " +e.getMessage());
+                        }
+                    }while(!parsingSuccessful);
+                    localHandler.post(() -> {
+                        int listSize = list.size();
+                        list.clear();
+                        adapter.notifyItemRangeRemoved(0, listSize);
+                    });
+                });
+
+                localExecutor.shutdown();
+            }
+            Log.i("ShakesFragment", "observerCall: rimozione observer");
+            model.getResetShakes().removeObservers(getViewLifecycleOwner());
+        });
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (adapter != null && isObserverRegistered) {
+            adapter.unregisterAdapterDataObserver(observer);
+            isObserverRegistered = false;
+        }else if(adapter == null){
+            Log.e("ShakesFragment", "onResume: adapter null quando recommended cocktails/shakes vuoto e isObserverRegistered: "+isObserverRegistered);
+        }
+//        Log.d("ShakesFragment", "observerCall: sto rimovendo l'observer");
+//        model.getResetShakes().removeObservers(getViewLifecycleOwner());
     }
 
 }

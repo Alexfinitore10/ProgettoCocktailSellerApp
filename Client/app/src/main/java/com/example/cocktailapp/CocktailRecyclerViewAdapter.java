@@ -83,6 +83,10 @@ public class CocktailRecyclerViewAdapter extends RecyclerView.Adapter <CocktailR
         this.cocktailList = cocktailList;
     }
 
+    public void setCocktailLayoutArrayList(ArrayList<CocktailLayoutClass> cocktailLayoutArrayList) {
+        this.cocktailLayoutArrayList = cocktailLayoutArrayList;
+    }
+
     private int getImageID(String nome) {
         int imageResId;
         switch (nome) {

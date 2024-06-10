@@ -8,40 +8,43 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 public class PagerAdapter extends FragmentStateAdapter {
-    private final SparseArray<Fragment> fragmentCache = new SparseArray<>();
 
     public PagerAdapter(@NonNull FragmentActivity fragmentActivity) {
         super(fragmentActivity);
+        registerFragmentTransactionCallback(new CustomFragmentTransactionCallBack());
     }
 
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        Fragment fragment = fragmentCache.get(position);
-        if (fragment == null) {
             switch (position) {
                 case 0:
-                    fragment = CocktailFragment.newInstance();
-                    break;
+                    //fragment = CocktailFragment.newInstance();
+                    return CocktailFragment.getInstance();
+                    //break;
                 case 1:
-                    fragment = ShakesFragment.newInstance();
-                    break;
+                    //fragment = ShakesFragment.newInstance();
+                    return ShakesFragment.getInstance();
+                    //break;
                 case 2:
-                    fragment = RecommendedFragment.newInstance();
-                    break;
+                    //fragment = RecommendedFragment.newInstance();
+                    return RecommendedFragment.getInstance();
+                    //break;
                 case 3:
-                    fragment = CartFragment.newInstance();
-                    break;
+                    //fragment = CartFragment.newInstance();
+                    return CartFragment.getInstance();
+                    //break;
                 case 4:
-                    fragment = PaymentFragment.newInstance();
-                    break;
+                    //fragment = PaymentFragment.newInstance();
+                    return PaymentFragment.getInstance();
+                    //break;
                 case 5:
-                    fragment = LogOutFragment.newInstance();
-                    break;
+                    //fragment = LogOutFragment.newInstance();
+                    return LogOutFragment.getInstance();
+                    //break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + position);
             }
-            fragmentCache.put(position, fragment);
-        }
-        return fragment;
     }
 
     @Override

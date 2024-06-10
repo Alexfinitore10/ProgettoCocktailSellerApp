@@ -77,7 +77,11 @@ public class Client {
     }
 
     public int sendData(String dati){
-        Log.d("Client","Dati inviati al client: " +dati);
+        if(dati.isEmpty()){
+            Log.e("Client","Dati vuoti, invio annullato");
+            return 0;
+        }
+        Log.d("Client","Dati inviati al server: " +dati);
         out.println(dati);
         Log.v("Client","Messaggio inviato");
         try {
@@ -172,7 +176,5 @@ public class Client {
         }
     }
 
-    public boolean isConnected() {
-        return connected;
-    }
+
 }

@@ -5,14 +5,14 @@ import java.util.List;
 public class ShakesLayoutClass {
     private String nome;
     private List<String> ingredienti;
-    private double prezzo;
-    private int quantità;
+    private float prezzo;
+    private int quantita;
 
-    public ShakesLayoutClass(String nome, List<String> ingredienti, double prezzo, int quantità) {
+    public ShakesLayoutClass(String nome, List<String> ingredienti, float prezzo, int quantita) {
         this.nome = nome;
         this.ingredienti = ingredienti;
         this.prezzo = prezzo;
-        this.quantità = quantità;
+        this.quantita = quantita;
     }
 
     public String getNome() {
@@ -31,19 +31,19 @@ public class ShakesLayoutClass {
         this.ingredienti = ingredienti;
     }
 
-    public double getPrezzo() {
+    public float getPrezzo() {
         return prezzo;
     }
 
-    public void setPrezzo(double prezzo) {
+    public void setPrezzo(float prezzo) {
         this.prezzo = prezzo;
     }
 
-    public int getQuantità() {
-        return quantità;
+    public int getQuantita() {
+        return quantita;
     }
 
-    public void setQuantità(int quantità) {
-        this.quantità = quantità;
+    public void setQuantita(int quantita) {
+        this.quantita = quantita;
     }
 }

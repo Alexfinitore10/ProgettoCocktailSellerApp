@@ -3,10 +3,14 @@ package com.example.cocktailapp;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.google.android.material.tabs.TabLayout;
@@ -32,6 +36,30 @@ public class ShopActivity extends AppCompatActivity {
         viewPager.setAdapter(adapter);
         TotalPrice = findViewById(R.id.TotalTextView);
         TotalPrice.setText("Totale carrello: ");
+
+
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                Log.d("ViewPager2", "Page selected: " + position);
+                Fragment fragment = getSupportFragmentManager().findFragmentByTag("f" + position);
+
+                if(fragment instanceof CocktailFragment){
+                    Log.d("ShopActivity", "CocktailFragment selected");
+                }else if(fragment instanceof ShakesFragment){
+                    Log.d("ShopActivity", "ShakesFragment selected");
+                }else if(fragment instanceof RecommendedFragment){
+                    Log.d("ShopActivity", "RecommendedFragment selected");
+                }else if(fragment instanceof CartFragment){
+                    Log.d("ShopActivity", "CartFragment selected");
+                }else if(fragment instanceof PaymentFragment){
+                    Log.d("ShopActivity", "PaymentFragment selected");
+                }else if(fragment instanceof LogOutFragment){
+                    Log.d("ShopActivity", "LogOutFragment selected");
+                }
+            }
+        });
 
 
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
@@ -79,6 +107,17 @@ public class ShopActivity extends AppCompatActivity {
 
 
 
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        FragmentManager manager = getSupportFragmentManager();
+        FragmentTransaction trans = manager.beginTransaction();
+        for (int i = 0; i < manager.getFragments().size(); i++) {
+            trans.remove(manager.getFragments().get(i));
+        }
+        trans.commit();
     }
 
 }

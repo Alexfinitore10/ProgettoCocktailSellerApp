@@ -48,6 +48,7 @@ public class Cocktail extends Bevanda {
 //        Log.d("Cocktail Parse String", "parse array: " + Arrays.toString(parts));
 //
 //        if(parts.length < 5) {
+//            Log.e("Cocktail parse String","Stringa che ha causato errore:" +input);
 //            throw new IndexOutOfBoundsException("Cocktail string has less than 5 parts");
 //        }
 //            String nome = parts[0].trim();

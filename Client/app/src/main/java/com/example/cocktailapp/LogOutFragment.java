@@ -19,14 +19,27 @@ public class LogOutFragment extends Fragment {
     private Client client;
     private Carrello carrello;
     private CartObserver model;
+    private static LogOutFragment instance;
 
-    public LogOutFragment() {
-        // Required empty public constructor
+
+//    public LogOutFragment() {
+//        // Required empty public constructor
+//    }
+
+
+//    public static LogOutFragment newInstance() {
+//        return new LogOutFragment();
+//    }
+
+    private LogOutFragment(){
+
     }
 
-
-    public static LogOutFragment newInstance() {
-        return new LogOutFragment();
+    public static LogOutFragment getInstance() {
+        if (instance == null) {
+            instance = new LogOutFragment();
+        }
+        return instance;
     }
 
     @Override

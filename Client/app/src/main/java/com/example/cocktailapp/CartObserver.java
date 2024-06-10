@@ -1,5 +1,7 @@
 package com.example.cocktailapp;
 
+import android.util.Log;
+
 import androidx.lifecycle.*;
 
 import java.util.*;
@@ -19,6 +21,7 @@ public class CartObserver extends ViewModel {
     private final MutableLiveData<Boolean> resetRecommended = new MutableLiveData<>();
 
     public void setResetRecommended (Boolean resetRecommended) {
+        Log.d("CartObserver", "setResetRecommended: " + resetRecommended);
         this.resetRecommended.postValue(resetRecommended);
     }
 

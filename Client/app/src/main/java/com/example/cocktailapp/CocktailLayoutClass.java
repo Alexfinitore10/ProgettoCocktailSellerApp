@@ -5,11 +5,11 @@ import java.util.List;
 public class CocktailLayoutClass {
     private String nome;
     private List<String> ingredienti;
-    private double gradazione_alcolica;
-    private double prezzo;
+    private float gradazione_alcolica;
+    private float prezzo;
     private int quantita;
 
-    public CocktailLayoutClass(String nome, List<String> ingredienti, double gradazione_alcolica, double prezzo, int amount) {
+    public CocktailLayoutClass(String nome, List<String> ingredienti, float gradazione_alcolica, float prezzo, int amount) {
         this.nome = nome;
         this.ingredienti = ingredienti;
         this.gradazione_alcolica = gradazione_alcolica;
@@ -33,19 +33,19 @@ public class CocktailLayoutClass {
         this.ingredienti = ingredienti;
     }
 
-    public double getGradazione_alcolica() {
+    public float getGradazione_alcolica() {
         return gradazione_alcolica;
     }
 
-    public void setGradazione_alcolica(double gradazione_alcolica) {
+    public void setGradazione_alcolica(float gradazione_alcolica) {
         this.gradazione_alcolica = gradazione_alcolica;
     }
 
-    public double getPrezzo() {
+    public float getPrezzo() {
         return prezzo;
     }
 
-    public void setPrezzo(double prezzo) {
+    public void setPrezzo(float prezzo) {
         this.prezzo = prezzo;
     }
 

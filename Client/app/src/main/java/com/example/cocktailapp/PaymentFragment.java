@@ -35,15 +35,25 @@ public class PaymentFragment extends Fragment {
     private ExecutorService executor;
     private Handler handler;
     private SweetAlertDialog waitingDialog;
+    private static PaymentFragment instance;
 
+//    public PaymentFragment() {
+//        // Required empty public constructor
+//    }
 
+//    public static PaymentFragment newInstance() {
+//        return new PaymentFragment();
+//    }
 
-    public PaymentFragment() {
-        // Required empty public constructor
+    private PaymentFragment() {
+
     }
 
-    public static PaymentFragment newInstance() {
-        return new PaymentFragment();
+    public static PaymentFragment getInstance() {
+        if (instance == null) {
+            instance = new PaymentFragment();
+        }
+        return instance;
     }
 
     @Override
@@ -146,7 +156,7 @@ public class PaymentFragment extends Fragment {
 
             try {
                 client.sendData("Fine");
-                client.setSocketTimeout(10000);
+                client.setSocketTimeout(5000);
                 System.out.println("Aspetto la risposta dal server....");
                 String risposta = client.receiveData();
                 if (!risposta.equals("ERRORE")) {

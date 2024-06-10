@@ -39,24 +39,32 @@ public class CocktailFragment extends Fragment {
     private Handler handler;
     private RecyclerView.AdapterDataObserver observer;
     private boolean isObserverRegistered = false;
+    private static CocktailFragment instance;
 
 
+//    public CocktailFragment() {
+//        // Required empty public constructor
+//    }
 
+    private CocktailFragment() {
 
-
-    public CocktailFragment() {
-        // Required empty public constructor
     }
 
-    public static CocktailFragment newInstance() {
-        return new CocktailFragment();
+    public static CocktailFragment getInstance() {
+        if (instance == null) {
+            instance = new CocktailFragment();
+        }
+        return instance;
     }
+
+//    public static CocktailFragment newInstance() {
+//        return new CocktailFragment();
+//    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         client = Client.getIstance();
-        
     }
 
     @Override
@@ -70,10 +78,9 @@ public class CocktailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-
-        model = new ViewModelProvider(requireActivity()).get(CartObserver.class);
         list = new ArrayList<>();
         cocktails = new ArrayList<>();
+        model = new ViewModelProvider(requireActivity()).get(CartObserver.class);
         recyclerView = view.findViewById(R.id.CocktailRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -98,30 +105,26 @@ public class CocktailFragment extends Fragment {
 
         if(allCocktails.isEmpty()){
             executor.execute(() -> {
-                try {
-                    allCocktails = getAllCocktails();
-                } catch (IOException e) {
-                    Log.e("CocktailFragment", "Impossibile recuperare la lista dei cocktail: " +e.getMessage());
-                    allCocktails = "";
-                } catch (InterruptedException e){
-                    Log.e("CocktailFragment", "Errore esecuzione recupero lista dei cocktail: " +e.getMessage());
-                    allCocktails = "";
-                } catch(Exception e){
-                    Log.e( "CocktailFragment", "Errore generico riempimento lista dei cocktail: " +e.getMessage());
-                    allCocktails = "";
-                }
-                model.setAllCocktails(allCocktails);
-                handler.post(() -> {
+                boolean parsingSuccessful = false;
 
+                do {
                     try {
+                        allCocktails = getAllCocktails();
+                        model.setAllCocktails(allCocktails);
                         cocktails = Cocktail.parseCocktails(allCocktails);
+                        parsingSuccessful = true;
+                    } catch (IOException e) {
+                        Log.e("CocktailFragment", "Impossibile recuperare la lista dei cocktail: " +e.getMessage());
+                    } catch (InterruptedException e){
+                        Log.e("CocktailFragment", "Errore esecuzione recupero lista dei cocktail: " +e.getMessage());
                     } catch (IndexOutOfBoundsException e) {
                         Log.e("CocktailFragment", "Non ci sono cocktails nella lista: " +e.getMessage());
-                        cocktails = new ArrayList<>();
                     } catch (Exception e){
                         Log.e("CocktailFragment", "Errore parsing lista dei cocktail: " +e.getMessage());
-                        cocktails = new ArrayList<>();
                     }
+                } while (!parsingSuccessful);
+
+                handler.post(() -> {
 
                     for (Cocktail c : cocktails) {
                         list.add(new CocktailLayoutClass(c.getNome(),c.getIngredienti(),c.getGradazione_alcolica(),c.getPrezzo(),c.getQuantita()));
@@ -131,16 +134,17 @@ public class CocktailFragment extends Fragment {
                     if(adapter != null && !isObserverRegistered) {
                         adapter.registerAdapterDataObserver(observer);
                         isObserverRegistered = true;
-                        observerCall();
-                    }else if(adapter == null){
+                    }else if(adapter == null) {
                         Log.e("CocktailFragment", "onCreateView: adapter null quando allCocktails vuoto");
-                    }else{
-                        observerCall();
                     }
+
                 });
             });
+
+            executor.shutdown();
         }else{
             try {
+                Log.d("CocktailFragment",cocktails.toString());
                 cocktails = Cocktail.parseCocktails(allCocktails);
             } catch (IndexOutOfBoundsException e) {
                 Log.e("CocktailFragment", "Non ci sono cocktails nella lista: " +e.getMessage());
@@ -158,59 +162,102 @@ public class CocktailFragment extends Fragment {
             if(adapter != null && !isObserverRegistered) {
                 adapter.registerAdapterDataObserver(observer);
                 isObserverRegistered = true;
-                observerCall();
-            }else if(adapter == null){
+            }else if(adapter == null) {
                 Log.e("CocktailFragment", "onCreateView: adapter null quando allCocktails NON vuoto ");
-            }else{
-                observerCall();
             }
         }
 
+        //observerCall();
 
 
-    }
-
-    private void observerCall(){
         model.getResetCocktails().observe(getViewLifecycleOwner(), resetCocktails -> {
+            Log.i("CocktailFragment", "observerCall resetCocktails: " +resetCocktails);
+            ExecutorService localExecutor = Executors.newSingleThreadExecutor();
+            Handler localHandler = new Handler(Looper.getMainLooper());
             if (resetCocktails) {
-                executor.execute(() -> {
-                    try {
-                        allCocktails = getAllCocktails();
-                    } catch (IOException e) {
-                        Log.e("CocktailFragment", "Impossibile recuperare la lista dei cocktail: " +e.getMessage());
-                        allCocktails = "";
-                    } catch (InterruptedException e){
-                        Log.e("CocktailFragment", "Errore esecuzione recupero lista dei cocktail: " +e.getMessage());
-                        allCocktails = "";
-                    } catch(Exception e){
-                        Log.e( "CocktailFragment", "Errore generico riempimento lista dei cocktail: " +e.getMessage());
-                        allCocktails = "";
-                    }
-                    model.setAllCocktails(allCocktails);
-                    handler.post(() -> {
-                        cocktails.clear();
+                localExecutor.execute(() -> {
+                    boolean parsingSuccessful = false;
+                    do {
+                        Log.d("CocktailFragment", "parsingSuccessful:" +parsingSuccessful);
                         try {
+                            allCocktails = getAllCocktails();
+                            Log.d("CocktailFragment", "allCocktails:" +allCocktails);
+                            model.setAllCocktails(allCocktails);
                             cocktails = Cocktail.parseCocktails(allCocktails);
+                            Log.d("CocktailFragment", "cocktails:" +cocktails);
+                            parsingSuccessful = true;
+                        } catch (IOException e) {
+                            Log.e("CocktailFragment", "Impossibile recuperare la lista dei cocktail: " +e.getMessage());
+                        } catch (InterruptedException e){
+                            Log.e("CocktailFragment", "Errore esecuzione recupero lista dei cocktail: " +e.getMessage());
                         } catch (IndexOutOfBoundsException e) {
                             Log.e("CocktailFragment", "Non ci sono cocktails nella lista: " +e.getMessage());
-                            cocktails = new ArrayList<>();
                         } catch (Exception e){
                             Log.e("CocktailFragment", "Errore parsing lista dei cocktail: " +e.getMessage());
-                            cocktails = new ArrayList<>();
                         }
+                    } while (!parsingSuccessful);
+
+                    localHandler.post(() -> {
                         int listSize = list.size();
                         list.clear();
                         adapter.notifyItemRangeRemoved(0, listSize);
                     });
                 });
-
+                localExecutor.shutdown();
             }
+            Log.i("CocktailFragment", "observerCall: rimozione observer");
+            model.getResetCocktails().removeObservers(getViewLifecycleOwner());
         });
+
+
     }
+
+//    private void observerCall(){
+//        model.getResetCocktails().observe(getViewLifecycleOwner(), resetCocktails -> {
+//            Log.i("CocktailFragment", "observerCall resetCocktails: " +resetCocktails);
+//            executor = Executors.newSingleThreadExecutor();
+//            handler = new Handler(Looper.getMainLooper());
+//            if (resetCocktails) {
+//                executor.execute(() -> {
+//                    boolean parsingSuccessful = false;
+//                    do {
+//                        Log.d("CocktailFragment", "parsingSuccessful:" +parsingSuccessful);
+//                        try {
+//                            allCocktails = getAllCocktails();
+//                            Log.d("CocktailFragment", "allCocktails:" +allCocktails);
+//                            model.setAllCocktails(allCocktails);
+//                            cocktails = Cocktail.parseCocktails(allCocktails);
+//                            Log.d("CocktailFragment", "cocktails:" +cocktails);
+//                            parsingSuccessful = true;
+//                        } catch (IOException e) {
+//                            Log.e("CocktailFragment", "Impossibile recuperare la lista dei cocktail: " +e.getMessage());
+//                        } catch (InterruptedException e){
+//                            Log.e("CocktailFragment", "Errore esecuzione recupero lista dei cocktail: " +e.getMessage());
+//                        } catch (IndexOutOfBoundsException e) {
+//                            Log.e("CocktailFragment", "Non ci sono cocktails nella lista: " +e.getMessage());
+//                        } catch (Exception e){
+//                            Log.e("CocktailFragment", "Errore parsing lista dei cocktail: " +e.getMessage());
+//                        }
+//                    } while (!parsingSuccessful);
+//
+//                    handler.post(() -> {
+//                        int listSize = list.size();
+//                        list.clear();
+//                        adapter.notifyItemRangeRemoved(0, listSize);
+//                    });
+//                });
+//                executor.shutdown();
+//            }
+//            Log.i("CocktailFragment", "observerCall: rimozione observer");
+//            model.getResetCocktails().removeObservers(getViewLifecycleOwner());
+//        });
+//
+//    }
     private String getAllCocktails() throws IOException, InterruptedException {
+        Log.i("CocktailFragment", "getAllCocktails ");
         String command = "3";
         client.sendData(command);
-        client.setSocketTimeout(3000);
+        client.setSocketTimeout(5000);
         return client.bufferedReceive();
     }
 
@@ -226,22 +273,6 @@ public class CocktailFragment extends Fragment {
     }
 
 
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        executor.shutdown();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (adapter != null && isObserverRegistered) {
-            adapter.unregisterAdapterDataObserver(observer);
-            isObserverRegistered = false;
-        }
-    }
-
     @Override
     public void onResume() {
         super.onResume();
@@ -249,6 +280,63 @@ public class CocktailFragment extends Fragment {
             adapter.registerAdapterDataObserver(observer);
             isObserverRegistered = true;
         }
+
+
+        Log.d("CocktailFragment", "onResume: sto per chiamare l'observer");
+        //observerCall();
+
+        model.getResetCocktails().observe(getViewLifecycleOwner(), resetCocktails -> {
+            Log.i("CocktailFragment", "observerCall resetCocktails: " +resetCocktails);
+            ExecutorService localExecutor = Executors.newSingleThreadExecutor();
+            Handler localHandler = new Handler(Looper.getMainLooper());
+            if (resetCocktails) {
+                localExecutor.execute(() -> {
+                    boolean parsingSuccessful = false;
+                    do {
+                        Log.d("CocktailFragment", "parsingSuccessful:" +parsingSuccessful);
+                        try {
+                            allCocktails = getAllCocktails();
+                            Log.d("CocktailFragment", "allCocktails:" +allCocktails);
+                            model.setAllCocktails(allCocktails);
+                            cocktails = Cocktail.parseCocktails(allCocktails);
+                            Log.d("CocktailFragment", "cocktails:" +cocktails);
+                            parsingSuccessful = true;
+                        } catch (IOException e) {
+                            Log.e("CocktailFragment", "Impossibile recuperare la lista dei cocktail: " +e.getMessage());
+                        } catch (InterruptedException e){
+                            Log.e("CocktailFragment", "Errore esecuzione recupero lista dei cocktail: " +e.getMessage());
+                        } catch (IndexOutOfBoundsException e) {
+                            Log.e("CocktailFragment", "Non ci sono cocktails nella lista: " +e.getMessage());
+                        } catch (Exception e){
+                            Log.e("CocktailFragment", "Errore parsing lista dei cocktail: " +e.getMessage());
+                        }
+                    } while (!parsingSuccessful);
+
+                    localHandler.post(() -> {
+                        int listSize = list.size();
+                        list.clear();
+                        adapter.notifyItemRangeRemoved(0, listSize);
+                    });
+                });
+                localExecutor.shutdown();
+            }
+            Log.i("CocktailFragment", "observerCall: rimozione observer");
+            model.getResetCocktails().removeObservers(getViewLifecycleOwner());
+        });
+
+
     }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (adapter != null && isObserverRegistered) {
+            adapter.unregisterAdapterDataObserver(observer);
+            isObserverRegistered = false;
+        }else if(adapter == null){
+            Log.e("CocktailFragment", "onResume: adapter null e isObserverRegistered: "+isObserverRegistered);
+        }
+    }
+
 }
 

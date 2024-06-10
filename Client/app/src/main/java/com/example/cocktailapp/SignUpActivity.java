@@ -69,7 +69,7 @@ public class SignUpActivity extends AppCompatActivity {
                     });
                 });
 
-
+                executor.shutdown();
 
         });
 
@@ -118,9 +118,5 @@ public class SignUpActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        executor.shutdown();
-    }
+
 }

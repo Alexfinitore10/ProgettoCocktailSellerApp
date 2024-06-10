@@ -62,7 +62,7 @@ public class LoginActivity extends AppCompatActivity {
                 });
             });
 
-
+            executor.shutdown();
         });
 
     }
@@ -82,8 +82,9 @@ public class LoginActivity extends AppCompatActivity {
         String risposta = "";
 
         try {
-            client.sendData(dati);
-            client.setSocketTimeout(3000);
+            int bytes_sent = client.sendData(dati);
+            Log.d("sendLogin", "Bytes sent: " + bytes_sent);
+            client.setSocketTimeout(5000);
             risposta = client.receiveData();
             return risposta;
         } catch (IOException e) {
@@ -98,9 +99,5 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        executor.shutdown();
-    }
+
 }

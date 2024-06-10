@@ -33,15 +33,26 @@ public class CartFragment extends Fragment {
     private Client client;
     private String allCocktails,allShakes;
     private CartObserver model;
+    private static CartFragment instance;
 
-    public CartFragment() {
-        // Required empty public constructor
+//    public CartFragment() {
+//        // Required empty public constructor
+//    }
+
+    private CartFragment() {
+
+    }
+    public static CartFragment getInstance() {
+        if (instance == null) {
+            instance = new CartFragment();
+        }
+        return instance;
     }
 
 
-    public static CartFragment newInstance() {
-        return new CartFragment();
-    }
+//    public static CartFragment newInstance() {
+//        return new CartFragment();
+//    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
