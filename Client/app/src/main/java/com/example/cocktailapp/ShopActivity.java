@@ -16,6 +16,8 @@ import android.widget.TextView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import java.math.BigDecimal;
+
 public class ShopActivity extends AppCompatActivity {
     private TextView TotalPrice;
     private Carrello carrello;
@@ -91,8 +93,8 @@ public class ShopActivity extends AppCompatActivity {
 
         model.getTotalCartValue().observe(this, queue -> {
             while (!queue.isEmpty()) {
-                Float prezzo = queue.poll();
-                String prezzo_string = String.format("%.2f", prezzo);
+                BigDecimal prezzo = queue.poll();
+                String prezzo_string = prezzo.toString();
                 TotalPrice.setText("Totale carrello: " + prezzo_string + "€");
             }
         });
@@ -114,10 +116,21 @@ public class ShopActivity extends AppCompatActivity {
         super.onDestroy();
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction trans = manager.beginTransaction();
-        for (int i = 0; i < manager.getFragments().size(); i++) {
-            trans.remove(manager.getFragments().get(i));
+        try {
+            for (Fragment fragment : manager.getFragments()) {
+                if (fragment != null) {
+                    trans.remove(fragment);
+                }
+            }
+            trans.commitAllowingStateLoss();
+        } catch (IllegalStateException e) {
+            Log.e("ShopActivity", "onDestroy: errore nella rimozione dei fragment:" +e.getMessage());
+            client.closeConnection();
+        } catch(Exception e){
+            Log.e("ShopActivity", "onDestroy: errore generico nella rimozione dei fragment:" +e.getMessage());
+            client.closeConnection();
         }
-        trans.commit();
     }
+
 
 }

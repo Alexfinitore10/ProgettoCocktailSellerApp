@@ -4,12 +4,13 @@ import android.util.Log;
 
 import androidx.lifecycle.*;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 public class CartObserver extends ViewModel {
     private final MutableLiveData<Queue<CartLayoutClass>> toAddItems = new MutableLiveData<>(new LinkedList<>());
     private final MutableLiveData<Queue<CartLayoutClass>> toUpdateItems = new MutableLiveData<>(new LinkedList<>());
-    private final MutableLiveData<Queue<Float>> totalCartValue = new MutableLiveData<>(new LinkedList<>());
+    private final MutableLiveData<Queue<BigDecimal>> totalCartValue = new MutableLiveData<>(new LinkedList<>());
     private final MutableLiveData<Boolean> isLoggedIn = new MutableLiveData<>();
     private final MutableLiveData<String> allCocktails = new MutableLiveData<>();
     private final MutableLiveData<String> allShakes = new MutableLiveData<>();
@@ -69,8 +70,8 @@ public class CartObserver extends ViewModel {
         this.toUpdateItems.setValue(currentItems);
     }
 
-    public void setTotalCartValue(Float value){
-        Queue<Float> currentItems = totalCartValue.getValue();
+    public void setTotalCartValue(BigDecimal value){
+        Queue<BigDecimal> currentItems = totalCartValue.getValue();
         assert currentItems != null;
         currentItems.add(value);
         this.totalCartValue.setValue(currentItems);
@@ -81,7 +82,7 @@ public class CartObserver extends ViewModel {
     }
 
 
-    public LiveData<Queue<Float>> getTotalCartValue() {
+    public LiveData<Queue<BigDecimal>> getTotalCartValue() {
         return totalCartValue;
     }
 

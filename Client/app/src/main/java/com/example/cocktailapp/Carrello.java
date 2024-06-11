@@ -2,6 +2,7 @@ package com.example.cocktailapp;
 
 import android.util.Log;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 public class Carrello {
@@ -78,12 +79,14 @@ public class Carrello {
 
 
     // Calcola il totale del carrello
-    public float calculateTotal() {
-        float total = 0;
+    public BigDecimal calculateTotal() {
+        BigDecimal total = BigDecimal.ZERO;
 
         // Calcola il totale dei cocktail
         for (int i = 0; i < beverages.size(); i++) {
-            total += beverages.get(i).getPrezzo()*beverages.get(i).getQuantita();
+            BigDecimal price = beverages.get(i).getPrezzo();
+            int quantity = beverages.get(i).getQuantita();
+            total = total.add(price.multiply(BigDecimal.valueOf(quantity)));
         }
 
         return total;

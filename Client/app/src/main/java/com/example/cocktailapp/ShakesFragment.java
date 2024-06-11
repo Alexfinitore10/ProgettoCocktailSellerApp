@@ -104,29 +104,30 @@ public class ShakesFragment extends Fragment {
 
         if(allShakes.isEmpty()){
             executor.execute(() -> {
-                try {
-                    allShakes = getAllShakes();
-                } catch (IOException e) {
-                    Log.e("ShakesFragment", "Impossibile recuperare la lista dei frullati: " +e.getMessage());
-                    allShakes = "";
-                } catch (InterruptedException e){
-                    Log.e("ShakesFragment", "Errore esecuzione recupero lista dei frullati: " +e.getMessage());
-                    allShakes = "";
-                } catch(Exception e){
-                    Log.e( "ShakesFragment", "Errore generico riempimento lista dei frullati: " +e.getMessage());
-                    allShakes = "";
-                }
-                model.setAllShakes(allShakes);
-                handler.post(() -> {
+                boolean parsingSuccessful = false;
+
+                do{
+                    Log.d("ShakesFragment", "parsingSuccessful:" +parsingSuccessful);
                     try {
-                        shakes = Shake.parseShake(allShakes);
+                        allShakes = getAllShakes();
+                        Log.d("ShakesFragment", "allShakes:" +allShakes);
+                        model.setAllShakes(allShakes);
+                        shakes = Shake.parseShakes(allShakes);
+                        Log.d("ShakesFragment", "cocktails:" +shakes);
+                        parsingSuccessful = true;
+                    } catch (IOException e) {
+                        Log.e("ShakesFragment", "Impossibile recuperare la lista dei frullati: " +e.getMessage());
+                    } catch (InterruptedException e){
+                        Log.e("ShakesFragment", "Errore esecuzione recupero lista dei frullati: " +e.getMessage());
                     } catch (IndexOutOfBoundsException e) {
-                        Log.e( "ShakesFragment", "Non ci sono frullati nella lista: " +e.getMessage());
-                        shakes = new ArrayList<>();
-                    } catch(Exception e){
-                        Log.e( "ShakesFragment", "Errore parsing lista dei frullati: " +e.getMessage());
-                        shakes = new ArrayList<>();
+                        Log.e("ShakesFragment", "Non ci sono frullati nella lista: " +e.getMessage());
+                    } catch (Exception e){
+                        Log.e("ShakesFragment", "Errore parsing lista dei frullati: " +e.getMessage());
                     }
+                }while(!parsingSuccessful);
+
+                handler.post(() -> {
+
                     for (Shake s : shakes) {
                         list.add(new ShakesLayoutClass(s.getNome(),s.getIngredienti(),s.getPrezzo(),s.getQuantita()));
                     }
@@ -143,7 +144,7 @@ public class ShakesFragment extends Fragment {
             executor.shutdown();
         }else{
             try {
-                shakes = Shake.parseShake(allShakes);
+                shakes = Shake.parseShakes(allShakes);
             } catch (IndexOutOfBoundsException e) {
                 Log.e( "ShakesFragment", "Non ci sono frullati nella lista: " +e.getMessage());
                 shakes = new ArrayList<>();
@@ -182,7 +183,7 @@ public class ShakesFragment extends Fragment {
                             allShakes = getAllShakes();
                             Log.d("ShakesFragment", "allShakes:" +allShakes);
                             model.setAllShakes(allShakes);
-                            shakes = Shake.parseShake(allShakes);
+                            shakes = Shake.parseShakes(allShakes);
                             Log.d("ShakesFragment", "cocktails:" +shakes);
                             parsingSuccessful = true;
                         } catch (IOException e) {
@@ -300,7 +301,7 @@ public class ShakesFragment extends Fragment {
                             allShakes = getAllShakes();
                             Log.d("ShakesFragment", "allShakes:" +allShakes);
                             model.setAllShakes(allShakes);
-                            shakes = Shake.parseShake(allShakes);
+                            shakes = Shake.parseShakes(allShakes);
                             Log.d("ShakesFragment", "cocktails:" +shakes);
                             parsingSuccessful = true;
                         } catch (IOException e) {

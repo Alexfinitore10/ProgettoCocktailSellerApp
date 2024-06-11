@@ -1,15 +1,16 @@
 package com.example.cocktailapp;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class CocktailLayoutClass {
     private String nome;
     private List<String> ingredienti;
-    private float gradazione_alcolica;
-    private float prezzo;
+    private BigDecimal gradazione_alcolica;
+    private BigDecimal prezzo;
     private int quantita;
 
-    public CocktailLayoutClass(String nome, List<String> ingredienti, float gradazione_alcolica, float prezzo, int amount) {
+    public CocktailLayoutClass(String nome, List<String> ingredienti, BigDecimal gradazione_alcolica, BigDecimal prezzo, int amount) {
         this.nome = nome;
         this.ingredienti = ingredienti;
         this.gradazione_alcolica = gradazione_alcolica;
@@ -33,19 +34,19 @@ public class CocktailLayoutClass {
         this.ingredienti = ingredienti;
     }
 
-    public float getGradazione_alcolica() {
+    public BigDecimal getGradazione_alcolica() {
         return gradazione_alcolica;
     }
 
-    public void setGradazione_alcolica(float gradazione_alcolica) {
+    public void setGradazione_alcolica(BigDecimal gradazione_alcolica) {
         this.gradazione_alcolica = gradazione_alcolica;
     }
 
-    public float getPrezzo() {
+    public BigDecimal getPrezzo() {
         return prezzo;
     }
 
-    public void setPrezzo(float prezzo) {
+    public void setPrezzo(BigDecimal prezzo) {
         this.prezzo = prezzo;
     }
 

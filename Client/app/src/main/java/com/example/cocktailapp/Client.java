@@ -55,6 +55,10 @@ public class Client {
         if(istanza == null){
             try {
                 istanza = new Client();
+                Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
+                    istanza.closeConnection();
+                    Log.e("Client", "Eccezione non gestita:", throwable);
+                });
             } catch (InterruptedException e) {
                 Log.e("Client","Errore durante la creazione dell'istanza del client: " + e.getMessage());
             }
@@ -151,6 +155,7 @@ public class Client {
     public void closeConnection() {
         try {
             this.isLogged = false;
+            connected = false;
             out.close();
             input.close();
             clientSocket.close();

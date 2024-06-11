@@ -155,7 +155,7 @@ public class RecommendedFragment extends Fragment {
                         Log.i("RecommendedFragment","getAllShakes r:160");
                         allShakesString = getAllShakes();
                         model.setAllShakes(allShakesString);
-                        allShakes = Shake.parseShake(allShakesString);
+                        allShakes = Shake.parseShakes(allShakesString);
                         parsingShakesSuccessful = true;
                     }catch (IOException e){
                         Log.e("RecommendedFragment", "Impossibile recuperare la lista dei frullati: " +e.getMessage());
@@ -240,7 +240,7 @@ public class RecommendedFragment extends Fragment {
                 Toast.makeText(getContext(), "Non ci sono frullati da consigliare", Toast.LENGTH_SHORT).show();
             }else{
                 recommendedShakes = Shake.setRecommendedShakes(recommendedShakesString);
-                allShakes = Shake.parseShake(allShakesString);
+                allShakes = Shake.parseShakes(allShakesString);
 
                 for (Shake shake : recommendedShakes) {
                     for (Shake s : allShakes) {
@@ -301,7 +301,7 @@ public class RecommendedFragment extends Fragment {
                         try {
                             allShakesString = getAllShakes();
                             model.setAllShakes(allShakesString);
-                            allShakes = Shake.parseShake(allShakesString);
+                            allShakes = Shake.parseShakes(allShakesString);
                             parsingShakesSuccessful = true;
                         }catch (IOException e){
                             Log.e("RecommendedFragment", "Impossibile recuperare la lista dei frullati: " +e.getMessage());
@@ -584,7 +584,7 @@ public class RecommendedFragment extends Fragment {
                         try {
                             allShakesString = getAllShakes();
                             model.setAllShakes(allShakesString);
-                            allShakes = Shake.parseShake(allShakesString);
+                            allShakes = Shake.parseShakes(allShakesString);
                             parsingShakesSuccessful = true;
                         }catch (IOException e){
                             Log.e("RecommendedFragment", "Impossibile recuperare la lista dei frullati: " +e.getMessage());

@@ -2,14 +2,16 @@ package com.example.cocktailapp;
 
 import android.util.Log;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class Cocktail extends Bevanda {
-    private float gradazione_alcolica;
+    private BigDecimal gradazione_alcolica;
 
-    public Cocktail(String nome, float prezzo, List<String> ingredienti, int quantita, float grado_alcol) {
+    public Cocktail(String nome, BigDecimal prezzo, List<String> ingredienti, int quantita, BigDecimal grado_alcol) {
         super(nome, prezzo, ingredienti, quantita);
         this.gradazione_alcolica = grado_alcol;
     }
@@ -18,7 +20,7 @@ public class Cocktail extends Bevanda {
 
     }
 
-    public float getGradazione_alcolica() {
+    public BigDecimal getGradazione_alcolica() {
         return gradazione_alcolica;
     }
 
@@ -35,8 +37,11 @@ public class Cocktail extends Bevanda {
         String ingredientiString = parts[1].substring(1, parts[1].length() - 1).trim();
         String[] ingredientiArray = ingredientiString.split(";");
 
-        float gradazioneAlcolica = Float.parseFloat(parts[2].trim());
-        float prezzo = Float.parseFloat(parts[3].trim());
+        //float gradazioneAlcolica = Float.parseFloat(parts[2].trim());
+        BigDecimal gradazioneAlcolica = new BigDecimal(parts[2].trim());
+        gradazioneAlcolica = gradazioneAlcolica.setScale(2, RoundingMode.HALF_UP);
+        BigDecimal prezzo = new BigDecimal(parts[3].trim());
+        prezzo = prezzo.setScale(2, RoundingMode.HALF_UP);
         int quantita = Integer.parseInt(parts[4].trim());
 
         return new Cocktail(nome, prezzo, Arrays.asList(ingredientiArray), quantita, gradazioneAlcolica);
@@ -60,11 +65,11 @@ public class Cocktail extends Bevanda {
 //            String[] ingredientiArray = ingredientiString.split(";");
 //            Log.d("Cocktail Parse String", "Ingredienti array: " + Arrays.toString(ingredientiArray));
 //
-//            float gradazioneAlcolica = Float.parseFloat(parts[2].trim());
+//            BigDecimal gradazioneAlcolica = new BigDecimal(parts[2].trim());
 //
 //            Log.d("Cocktail Parse String", "Gradazione alcolica: " + gradazioneAlcolica);
 //
-//            float prezzo = Float.parseFloat(parts[3].trim());
+//            BigDecimal prezzo = new BigDecimal(parts[3].trim());
 //
 //            Log.d("Cocktail Parse String", "Prezzo: " + prezzo);
 //
@@ -107,7 +112,7 @@ public class Cocktail extends Bevanda {
         return "Nome: " + getNome() + ",\n Ingredienti: " + getIngredienti() + ",\n Quantità: " + getQuantita() + ",\n Gradazione Alcolica: " + this.gradazione_alcolica+ ",\n Prezzo: " + getPrezzo();
     }
 
-    public void setGradazione_alcolica(float gradazione_alcolica) {
+    public void setGradazione_alcolica(BigDecimal gradazione_alcolica) {
         this.gradazione_alcolica = gradazione_alcolica;
     }
 }

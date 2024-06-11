@@ -48,8 +48,8 @@ public class CocktailRecyclerViewAdapter extends RecyclerView.Adapter <CocktailR
 
 
         String ingredienti = cocktailLayoutClass.getIngredienti().toString();
-        String PrezzoCocktail = String.format("%.2f",cocktailLayoutClass.getPrezzo());
-        String GradazioneAlcolica = String.format("%.2f",cocktailLayoutClass.getGradazione_alcolica());
+        String PrezzoCocktail = cocktailLayoutClass.getPrezzo().toString();
+        String GradazioneAlcolica = cocktailLayoutClass.getGradazione_alcolica().toString();
         ingredienti = ingredienti.substring(1,ingredienti.length()-1);
 
         holder.cocktailName.setText(cocktailLayoutClass.getNome());

@@ -48,7 +48,7 @@ public class RecommendedRecyclerViewAdapter extends RecyclerView.Adapter<Recomme
         holder.setPosition(position);
 
         String ingredienti = recommendedLayoutClass.getBevanda().getIngredienti().toString();
-        String prezzoBevanda = String.format("%.2f",recommendedLayoutClass.getBevanda().getPrezzo());
+        String prezzoBevanda = recommendedLayoutClass.getBevanda().getPrezzo().toString();
         if(recommendedLayoutClass.getBevanda() instanceof Cocktail){
             String GradazioneAlcolica = String.format("%.2f", ((Cocktail) recommendedLayoutClass.getBevanda()).getGradazione_alcolica());
             holder.recommendedAlcoholVolume.setText("Gradazione Alcolica: "+GradazioneAlcolica+"%");

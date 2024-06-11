@@ -17,6 +17,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -52,16 +54,19 @@ public class CartRecyclerViewAdapter extends RecyclerView.Adapter <CartRecyclerV
                 int image_id = getImageID(cartLayoutClassArrayList.get(position).getBevanda().getNome());
                 holder.setPosition(position);
 
+                BigDecimal prezzoTot = BigDecimal.ONE;
+                prezzoTot = prezzoTot.multiply(cartLayoutClass.getBevanda().getPrezzo()).multiply(BigDecimal.valueOf(cartLayoutClass.getBevanda().getQuantita())).setScale(2, RoundingMode.HALF_UP);
+
+
                 String ingredienti = cartLayoutClass.getBevanda().getIngredienti().toString();
-                String prezzoBevanda = String.valueOf(cartLayoutClass.getBevanda().getPrezzo()*cartLayoutClass.getBevanda().getQuantita());
+                String prezzoBevanda = prezzoTot.toString();
                 if(cartLayoutClass.getBevanda() instanceof Cocktail){
-                    String GradazioneAlcolica = String.valueOf(((Cocktail) cartLayoutClass.getBevanda()).getGradazione_alcolica());
-                    GradazioneAlcolica = String.format("%.2f", ((Cocktail) cartLayoutClass.getBevanda()).getGradazione_alcolica());
+                    String GradazioneAlcolica = ((Cocktail) cartLayoutClass.getBevanda()).getGradazione_alcolica().toString();
                     holder.beverageAlcoholVolume.setText("Gradazione Alcolica: "+GradazioneAlcolica+"%");
                 }else{
                     holder.beverageAlcoholVolume.setText("Gradazione Alcolica: Analcolico");
                 }
-                prezzoBevanda = String.format("%.2f",cartLayoutClass.getBevanda().getPrezzo()*cartLayoutClass.getBevanda().getQuantita());
+
                 ingredienti = ingredienti.substring(1,ingredienti.length()-1);
 
                 holder.beverageName.setText(cartLayoutClass.getBevanda().getNome());

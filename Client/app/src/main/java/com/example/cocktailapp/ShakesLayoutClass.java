@@ -1,14 +1,15 @@
 package com.example.cocktailapp;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class ShakesLayoutClass {
     private String nome;
     private List<String> ingredienti;
-    private float prezzo;
+    private BigDecimal prezzo;
     private int quantita;
 
-    public ShakesLayoutClass(String nome, List<String> ingredienti, float prezzo, int quantita) {
+    public ShakesLayoutClass(String nome, List<String> ingredienti, BigDecimal prezzo, int quantita) {
         this.nome = nome;
         this.ingredienti = ingredienti;
         this.prezzo = prezzo;
@@ -31,11 +32,11 @@ public class ShakesLayoutClass {
         this.ingredienti = ingredienti;
     }
 
-    public float getPrezzo() {
+    public BigDecimal getPrezzo() {
         return prezzo;
     }
 
-    public void setPrezzo(float prezzo) {
+    public void setPrezzo(BigDecimal prezzo) {
         this.prezzo = prezzo;
     }
 

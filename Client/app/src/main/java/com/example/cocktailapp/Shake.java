@@ -2,13 +2,15 @@ package com.example.cocktailapp;
 
 import android.util.Log;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class Shake extends Bevanda {
 
-    public Shake(String nome, float prezzo, List<String> ingredienti, int quantità) {
+    public Shake(String nome, BigDecimal prezzo, List<String> ingredienti, int quantità) {
         super(nome, prezzo, ingredienti, quantità);
     }
 
@@ -31,7 +33,8 @@ public class Shake extends Bevanda {
             ingredienti.addAll(Arrays.asList(ingredientiArray));
         }
 
-        float prezzo = Float.parseFloat(parts[2].trim());
+        BigDecimal prezzo = new BigDecimal(parts[2].trim());
+        prezzo = prezzo.setScale(2, RoundingMode.HALF_UP);
         int quantita = Integer.parseInt(parts[3].trim());
 
         return new Shake(nome, prezzo,ingredienti, quantita);
@@ -68,7 +71,7 @@ public class Shake extends Bevanda {
 //
 //        }
 //
-//        float prezzo = Float.parseFloat(parts[2].trim());
+//        BigDecimal prezzo = new BigDecimal(parts[2].trim());
 //
 //        Log.d("Shake Parse string", "Prezzo: " + prezzo);
 //
@@ -92,7 +95,7 @@ public class Shake extends Bevanda {
         return Shakes;
     }
 
-    public static ArrayList<Shake> parseShake(String bufferShake) {
+    public static ArrayList<Shake> parseShakes(String bufferShake) {
         ArrayList<Shake> shake = new ArrayList<>();
         for (String c : bufferShake.split("\\n")) {
             shake.add(Shake.parseString(c));
