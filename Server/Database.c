@@ -6,7 +6,7 @@
 #include <string.h>
 
 // Variables
-// pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 PGconn *conn = NULL;
 PGresult *res = NULL;
 int id_vendita = 0;
@@ -112,12 +112,12 @@ void cocktail_and_shake_population() {
 
 void connection_lock() {
   log_debug("Mutex locked");
-  // pthread_mutex_lock(&mutex);
+  pthread_mutex_lock(&mutex);
 }
 
 void connection_unlock() {
   log_debug("Mutex unlocked");
-  // pthread_mutex_unlock(&mutex);
+  pthread_mutex_unlock(&mutex);
 }
 
 // A test for the reachability of the Database
@@ -505,7 +505,7 @@ char signup(char *email, char *password) {
   }
 }
 
-bool is_already_logged(char* email){
+bool is_already_logged(char *email) {
 
   char *isLoggedQuery = "SELECT isLogged FROM Cliente WHERE email = $1";
   const char *paramValues[1] = {email};
@@ -530,12 +530,12 @@ bool signin(char *email, char *password) {
     int paramLengths[1] = {strlen(email)};
     int paramFormats[1] = {0};
 
-    // connection_lock();
+    connection_lock();
 
     res = PQexecParams(conn, isLogged, 1, NULL, paramValues, paramLengths,
                        paramFormats, 0);
 
-    // connection_unlock();
+    connection_unlock();
 
     if (checkres(res)) {
       log_info("Login effettuato con successo\n");
