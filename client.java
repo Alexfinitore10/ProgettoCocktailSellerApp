@@ -243,7 +243,6 @@ public class client {
                 default:
                     break;
             }
-            scanner.close();
             return rispostaServer;
         } catch (IOException e) {
             System.err.println("IOException durante la lettura: " + e.getMessage());

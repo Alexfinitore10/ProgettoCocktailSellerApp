@@ -504,9 +504,27 @@ char signup(char *email, char *password) {
     }
   }
 }
+
+bool is_already_logged(char* email){
+
+  char *isLoggedQuery = "SELECT isLogged FROM Cliente WHERE email = $1";
+  const char *paramValues[1] = {email};
+  int paramLengths[1] = {strlen(email)};
+  int paramFormats[1] = {0};
+
+  res = PQexecParams(conn, isLoggedQuery, 1, NULL, paramValues, paramLengths,
+                     paramFormats, 0);
+
+  if (PQntuples(res) == 1 && PQgetvalue(res, 0, 0)[0] == 't') {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 // Log-in Utente
 bool signin(char *email, char *password) {
-  if (are_credentials_correct(email, password)) {
+  if (are_credentials_correct(email, password) && !is_already_logged(email)) {
     char *isLogged = "UPDATE Cliente SET isLogged = true WHERE email = $1";
     const char *paramValues[1] = {email};
     int paramLengths[1] = {strlen(email)};
