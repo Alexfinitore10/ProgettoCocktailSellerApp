@@ -1,4 +1,4 @@
-package com.example.cocktailapp;
+package com.example.cocktailapp.Adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -13,6 +13,12 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.cocktailapp.Model.CartObserver;
+import com.example.cocktailapp.Model.Carrello;
+import com.example.cocktailapp.Model.Cocktail;
+import com.example.cocktailapp.Model.Shake;
+import com.example.cocktailapp.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,6 +91,14 @@ public class ShakesRecyclerViewAdapter extends RecyclerView.Adapter<ShakesRecycl
                 imageResId = R.drawable.cocktail_app_icon;
         }
         return imageResId;
+    }
+
+    public void updateData(ArrayList<Shake> shakeslist, ArrayList<ShakesLayoutClass> list){
+        this.shakeslist.clear();
+        this.shakeslist.addAll(shakeslist);
+        this.shakeslayoutlist.clear();
+        this.shakeslayoutlist.addAll(list);
+        notifyDataSetChanged();
     }
 
     public void setShakeslist(ArrayList<Shake> shakeslist) {

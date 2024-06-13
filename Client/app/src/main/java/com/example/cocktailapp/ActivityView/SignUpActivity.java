@@ -1,4 +1,4 @@
-package com.example.cocktailapp;
+package com.example.cocktailapp.ActivityView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -6,10 +6,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.*;
+
+import com.example.cocktailapp.Model.Client;
+import com.example.cocktailapp.R;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;

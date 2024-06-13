@@ -1,6 +1,4 @@
-package com.example.cocktailapp;
-
-import android.util.Log;
+package com.example.cocktailapp.Model;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

@@ -1,11 +1,17 @@
-package com.example.cocktailapp;
-
-import android.util.SparseArray;
+package com.example.cocktailapp.Adapter;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
+
+import com.example.cocktailapp.Model.CustomFragmentTransactionCallBack;
+import com.example.cocktailapp.FragmentView.CartFragment;
+import com.example.cocktailapp.FragmentView.CocktailFragment;
+import com.example.cocktailapp.FragmentView.LogOutFragment;
+import com.example.cocktailapp.FragmentView.PaymentFragment;
+import com.example.cocktailapp.FragmentView.RecommendedFragment;
+import com.example.cocktailapp.FragmentView.ShakesFragment;
 
 public class PagerAdapter extends FragmentStateAdapter {
 

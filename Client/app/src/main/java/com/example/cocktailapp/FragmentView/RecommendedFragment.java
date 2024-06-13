@@ -1,10 +1,11 @@
-package com.example.cocktailapp;
+package com.example.cocktailapp.FragmentView;
 
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,6 +17,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import com.example.cocktailapp.Model.CartObserver;
+import com.example.cocktailapp.Model.Client;
+import com.example.cocktailapp.Model.Cocktail;
+import com.example.cocktailapp.Model.Shake;
+import com.example.cocktailapp.R;
+import com.example.cocktailapp.Adapter.RecommendedLayoutClass;
+import com.example.cocktailapp.Adapter.RecommendedRecyclerViewAdapter;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -209,7 +218,11 @@ public class RecommendedFragment extends Fragment {
                     if(adapter != null && !isObserverRegistered) {
                         adapter.registerAdapterDataObserver(observer);
                         isObserverRegistered = true;
-                        //observerCall();
+                        getViewLifecycleOwnerLiveData().observe(getViewLifecycleOwner(), lifecycleOwner -> {
+                            if (lifecycleOwner != null) {
+                                observerCall(lifecycleOwner);
+                            }
+                        });
                     }else if(adapter == null){
                         Log.e("RecommendedFragment", "onCreateView: adapter null quando recommended cocktails/shakes vuoto");
                     }
@@ -261,7 +274,11 @@ public class RecommendedFragment extends Fragment {
             if(adapter != null && !isObserverRegistered) {
                 adapter.registerAdapterDataObserver(observer);
                 isObserverRegistered = true;
-                //observerCall();
+                getViewLifecycleOwnerLiveData().observe(getViewLifecycleOwner(), lifecycleOwner -> {
+                    if (lifecycleOwner != null) {
+                        observerCall(lifecycleOwner);
+                    }
+                });
             }else if(adapter == null){
                 Log.e("RecommendedFragment", "onCreateView: adapter null quando recommended cocktails/shakes non vuoti");
             }
@@ -269,7 +286,12 @@ public class RecommendedFragment extends Fragment {
 
 
 
-        model.getResetRecommended().observe(getViewLifecycleOwner(), resetRecommended -> {
+
+
+    }
+
+    private void observerCall(LifecycleOwner lifecycleOwner){
+        model.getResetRecommended().observe(lifecycleOwner, resetRecommended -> {
             Log.d("RecommendedFragment", "observerCall: Sto nell'observer e resetRecommended e' " +resetRecommended);
             if(resetRecommended){
                 ExecutorService localExecutor = Executors.newSingleThreadExecutor();
@@ -357,98 +379,7 @@ public class RecommendedFragment extends Fragment {
             }
             model.getResetRecommended().removeObservers(getViewLifecycleOwner());
         });
-
     }
-
-//    private void observerCall() {
-//        model.getResetRecommended().observe(getViewLifecycleOwner(), resetRecommended -> {
-//            Log.d("RecommendedFragment", "observerCall: Sto nell'observer e resetRecommended e' " +resetRecommended);
-//            if(resetRecommended){
-//                executor = Executors.newSingleThreadExecutor();
-//                handler = new Handler(Looper.getMainLooper());
-//                executor.execute(() -> {
-//                    boolean parsingCocktailsSuccessful = false;
-//                    boolean parsingShakesSuccessful = false;
-//                    recommendedCocktailsString = getRecommendedCocktails();
-//                    do {
-//                        try {
-//                            allCocktailsString = getAllCocktails();
-//                            model.setAllCocktails(allCocktailsString);
-//                            allCocktails = Cocktail.parseCocktails(allCocktailsString);
-//                            parsingCocktailsSuccessful = true;
-//                        } catch (IOException e) {
-//                            Log.e("RecommendedFragment", "Impossibile recuperare la lista dei cocktail: " +e.getMessage());
-//                            allCocktailsString = "";
-//                        } catch (InterruptedException e) {
-//                            Log.e("RecommendedFragment", "Errore esecuzione recupero lista dei cocktail: " +e.getMessage());
-//                            allCocktailsString = "";
-//                        }catch (Exception e){
-//                            Log.e("RecommendedFragment", "Errore generico riempimento lista dei cocktail: " +e.getMessage());
-//                            allCocktailsString = "";
-//                        }
-//                    } while (!parsingCocktailsSuccessful);
-//
-//                    recommendedShakesString = getRecommendedShakes();
-//                    do {
-//                        try {
-//                            allShakesString = getAllShakes();
-//                            model.setAllShakes(allShakesString);
-//                            allShakes = Shake.parseShake(allShakesString);
-//                            parsingShakesSuccessful = true;
-//                        }catch (IOException e){
-//                            Log.e("RecommendedFragment", "Impossibile recuperare la lista dei frullati: " +e.getMessage());
-//                            allShakesString = "";
-//                        }catch (InterruptedException e){
-//                            Log.e("RecommendedFragment", "Errore esecuzione recupero lista dei frullati: " +e.getMessage());
-//                            allShakesString = "";
-//                        }catch (Exception e){
-//                            Log.e("RecommendedFragment", "Errore generico riempimento lista dei frullati: " +e.getMessage());
-//                            allShakesString = "";
-//                        }
-//                    } while (!parsingShakesSuccessful);
-//
-//
-//                    handler.post(() -> {
-//                        int listSize = list.size();
-//                        recommendedCocktails.clear();
-//                        recommendedShakes.clear();
-//
-//
-//                        if (isGetCocktailsOk()) {
-//                            recommendedCocktails = Cocktail.setRecommendedCocktails(recommendedCocktailsString);
-//
-//                            for (Cocktail cocktail : recommendedCocktails) {
-//                                for (Cocktail c : allCocktails) {
-//                                    if (cocktail.getNome().equals(c.getNome())) {
-//                                        cocktail.setQuantita(c.getQuantita());
-//                                    }
-//                                }
-//                            }
-//
-//                        }
-//
-//                        if(isGetShakesOk()){
-//                            recommendedShakes = Shake.setRecommendedShakes(recommendedShakesString);
-//
-//                            for(Shake shake : recommendedShakes){
-//                                for(Shake s : allShakes) {
-//                                    if (shake.getNome().equals(s.getNome())) {
-//                                        shake.setQuantita(s.getQuantita());
-//                                    }
-//                                }
-//                            }
-//                        }
-//
-//
-//                        list.clear();
-//                        adapter.notifyItemRangeRemoved(0, listSize);
-//
-//                    });
-//                });
-//                executor.shutdown();
-//            }
-//        });
-//    }
 
     private String getRecommendedCocktails(){
         Log.i("RecommendedFragment", "getRecommendedCocktails ");
@@ -546,100 +477,19 @@ public class RecommendedFragment extends Fragment {
         super.onResume();
 
         if (adapter != null && !isObserverRegistered) {
+            Log.e("RecommendedFragment", "onResume: adapter not null");
             adapter.registerAdapterDataObserver(observer);
             isObserverRegistered = true;
+            getViewLifecycleOwnerLiveData().observe(getViewLifecycleOwner(), lifecycleOwner -> {
+                if (lifecycleOwner != null) {
+                    observerCall(lifecycleOwner);
+                }
+            });
         }else if(adapter == null){
             Log.e("RecommendedFragment", "onResume: adapter null quando recommended cocktails/shakes vuoto e isObserverRegistered: "+isObserverRegistered);
         }
 
-        model.getResetRecommended().observe(getViewLifecycleOwner(), resetRecommended -> {
-            Log.d("RecommendedFragment", "observerCall: Sto nell'observer e resetRecommended e' " +resetRecommended);
-            if(resetRecommended){
-                ExecutorService localExecutor = Executors.newSingleThreadExecutor();
-                Handler localHandler = new Handler(Looper.getMainLooper());
-                localExecutor.execute(() -> {
-                    boolean parsingCocktailsSuccessful = false;
-                    boolean parsingShakesSuccessful = false;
-                    recommendedCocktailsString = getRecommendedCocktails();
-                    do {
-                        try {
-                            allCocktailsString = getAllCocktails();
-                            model.setAllCocktails(allCocktailsString);
-                            allCocktails = Cocktail.parseCocktails(allCocktailsString);
-                            parsingCocktailsSuccessful = true;
-                        } catch (IOException e) {
-                            Log.e("RecommendedFragment", "Impossibile recuperare la lista dei cocktail: " +e.getMessage());
-                            allCocktailsString = "";
-                        } catch (InterruptedException e) {
-                            Log.e("RecommendedFragment", "Errore esecuzione recupero lista dei cocktail: " +e.getMessage());
-                            allCocktailsString = "";
-                        }catch (Exception e){
-                            Log.e("RecommendedFragment", "Errore generico riempimento lista dei cocktail: " +e.getMessage());
-                            allCocktailsString = "";
-                        }
-                    } while (!parsingCocktailsSuccessful);
 
-                    recommendedShakesString = getRecommendedShakes();
-                    do {
-                        try {
-                            allShakesString = getAllShakes();
-                            model.setAllShakes(allShakesString);
-                            allShakes = Shake.parseShakes(allShakesString);
-                            parsingShakesSuccessful = true;
-                        }catch (IOException e){
-                            Log.e("RecommendedFragment", "Impossibile recuperare la lista dei frullati: " +e.getMessage());
-                            allShakesString = "";
-                        }catch (InterruptedException e){
-                            Log.e("RecommendedFragment", "Errore esecuzione recupero lista dei frullati: " +e.getMessage());
-                            allShakesString = "";
-                        }catch (Exception e){
-                            Log.e("RecommendedFragment", "Errore generico riempimento lista dei frullati: " +e.getMessage());
-                            allShakesString = "";
-                        }
-                    } while (!parsingShakesSuccessful);
-
-
-                    localHandler.post(() -> {
-                        int listSize = list.size();
-                        recommendedCocktails.clear();
-                        recommendedShakes.clear();
-
-
-                        if (isGetCocktailsOk()) {
-                            recommendedCocktails = Cocktail.setRecommendedCocktails(recommendedCocktailsString);
-
-                            for (Cocktail cocktail : recommendedCocktails) {
-                                for (Cocktail c : allCocktails) {
-                                    if (cocktail.getNome().equals(c.getNome())) {
-                                        cocktail.setQuantita(c.getQuantita());
-                                    }
-                                }
-                            }
-
-                        }
-
-                        if(isGetShakesOk()){
-                            recommendedShakes = Shake.setRecommendedShakes(recommendedShakesString);
-
-                            for(Shake shake : recommendedShakes){
-                                for(Shake s : allShakes) {
-                                    if (shake.getNome().equals(s.getNome())) {
-                                        shake.setQuantita(s.getQuantita());
-                                    }
-                                }
-                            }
-                        }
-
-
-                        list.clear();
-                        adapter.notifyItemRangeRemoved(0, listSize);
-
-                    });
-                });
-                localExecutor.shutdown();
-            }
-            model.getResetRecommended().removeObservers(getViewLifecycleOwner());
-        });
 
     }
 

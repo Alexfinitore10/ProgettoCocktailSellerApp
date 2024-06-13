@@ -1,4 +1,4 @@
-package com.example.cocktailapp;
+package com.example.cocktailapp.ActivityView;
 
 
 import androidx.activity.OnBackPressedCallback;
@@ -13,6 +13,17 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.example.cocktailapp.Model.CartObserver;
+import com.example.cocktailapp.FragmentView.CartFragment;
+import com.example.cocktailapp.FragmentView.CocktailFragment;
+import com.example.cocktailapp.FragmentView.LogOutFragment;
+import com.example.cocktailapp.FragmentView.PaymentFragment;
+import com.example.cocktailapp.FragmentView.ShakesFragment;
+import com.example.cocktailapp.Model.Carrello;
+import com.example.cocktailapp.Model.Client;
+import com.example.cocktailapp.Adapter.PagerAdapter;
+import com.example.cocktailapp.R;
+import com.example.cocktailapp.FragmentView.RecommendedFragment;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -22,7 +33,6 @@ public class ShopActivity extends AppCompatActivity {
     private TextView TotalPrice;
     private Carrello carrello;
     private Client client;
-
 
 
     @Override

@@ -1,4 +1,4 @@
-package com.example.cocktailapp;
+package com.example.cocktailapp.FragmentView;
 
 
 import android.graphics.Color;
@@ -18,6 +18,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+
+import com.example.cocktailapp.Model.CartObserver;
+import com.example.cocktailapp.Model.Carrello;
+import com.example.cocktailapp.Model.Client;
+import com.example.cocktailapp.Model.Cocktail;
+import com.example.cocktailapp.R;
 
 import java.io.IOException;
 import java.util.ArrayList;

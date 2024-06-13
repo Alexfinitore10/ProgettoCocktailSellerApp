@@ -5,16 +5,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import android.app.AlertDialog;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.os.StrictMode;
-import android.util.Log;
 import android.widget.Button;
+
+import com.example.cocktailapp.ActivityView.LoginActivity;
+import com.example.cocktailapp.ActivityView.SignUpActivity;
+import com.example.cocktailapp.Model.Client;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -54,11 +53,11 @@ public class MainActivity extends AppCompatActivity {
         });
 
         signupButton.setOnClickListener(v -> {
-            startActivity(new Intent(this,SignUpActivity.class));
+            startActivity(new Intent(this, SignUpActivity.class));
         });
 
         loginButton.setOnClickListener(v -> {
-               startActivity(new Intent(this,LoginActivity.class));
+               startActivity(new Intent(this, LoginActivity.class));
         });
     }
 

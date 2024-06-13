@@ -1,4 +1,4 @@
-package com.example.cocktailapp;
+package com.example.cocktailapp.Adapter;
 
 import java.math.BigDecimal;
 import java.util.List;

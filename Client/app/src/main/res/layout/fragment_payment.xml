@@ -4,7 +4,7 @@
     android:id="@+id/PaymentFrameLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".PaymentFragment" >
+    tools:context=".FragmentView.PaymentFragment" >
 
     <TextView
         android:id="@+id/LogOutQuestionTextView"

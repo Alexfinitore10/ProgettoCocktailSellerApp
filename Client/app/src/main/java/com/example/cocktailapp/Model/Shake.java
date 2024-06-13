@@ -1,4 +1,4 @@
-package com.example.cocktailapp;
+package com.example.cocktailapp.Model;
 
 import android.util.Log;
 

@@ -1,4 +1,4 @@
-package com.example.cocktailapp;
+package com.example.cocktailapp.FragmentView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +12,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
+import com.example.cocktailapp.Model.CartObserver;
+import com.example.cocktailapp.MainActivity;
+import com.example.cocktailapp.Model.Carrello;
+import com.example.cocktailapp.Model.Client;
+import com.example.cocktailapp.R;
 
 
 public class LogOutFragment extends Fragment {
@@ -69,7 +75,7 @@ public class LogOutFragment extends Fragment {
            model.setIsLoggedIn(client.isLogged());
            carrello.emptyCarrello();
 
-           startActivity(new Intent(getContext(),MainActivity.class));
+           startActivity(new Intent(getContext(), MainActivity.class));
        });
 
 

@@ -1,4 +1,4 @@
-package com.example.cocktailapp;
+package com.example.cocktailapp.Adapter;
 
 import android.content.Context;
 import android.util.Log;
@@ -14,6 +14,13 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.cocktailapp.Model.CartObserver;
+import com.example.cocktailapp.Model.Bevanda;
+import com.example.cocktailapp.Model.Carrello;
+import com.example.cocktailapp.Model.Cocktail;
+import com.example.cocktailapp.Model.Shake;
+import com.example.cocktailapp.R;
 
 import java.util.ArrayList;
 import java.util.List;

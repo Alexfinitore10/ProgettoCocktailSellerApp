@@ -1,9 +1,6 @@
-package com.example.cocktailapp;
+package com.example.cocktailapp.Adapter;
 
-import android.view.ViewGroup;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
+import com.example.cocktailapp.Model.Bevanda;
 
 public class RecommendedLayoutClass {
     private Bevanda bevanda;

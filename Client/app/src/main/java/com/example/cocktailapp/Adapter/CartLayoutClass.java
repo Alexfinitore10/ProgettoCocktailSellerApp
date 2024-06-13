@@ -1,7 +1,6 @@
-package com.example.cocktailapp;
+package com.example.cocktailapp.Adapter;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.example.cocktailapp.Model.Bevanda;
 
 public class CartLayoutClass {
     private Bevanda bevanda;

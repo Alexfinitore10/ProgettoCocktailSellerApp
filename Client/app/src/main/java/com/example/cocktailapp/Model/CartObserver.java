@@ -1,8 +1,10 @@
-package com.example.cocktailapp;
+package com.example.cocktailapp.Model;
 
 import android.util.Log;
 
 import androidx.lifecycle.*;
+
+import com.example.cocktailapp.Adapter.CartLayoutClass;
 
 import java.math.BigDecimal;
 import java.util.*;

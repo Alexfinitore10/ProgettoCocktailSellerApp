@@ -1,4 +1,4 @@
-package com.example.cocktailapp;
+package com.example.cocktailapp.FragmentView;
 
 
 import android.os.Bundle;
@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,6 +17,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.example.cocktailapp.Adapter.CartLayoutClass;
+import com.example.cocktailapp.Model.CartObserver;
+import com.example.cocktailapp.Adapter.CartRecyclerViewAdapter;
+import com.example.cocktailapp.Model.Carrello;
+import com.example.cocktailapp.Model.Client;
+import com.example.cocktailapp.Model.Cocktail;
+import com.example.cocktailapp.Model.Shake;
+import com.example.cocktailapp.R;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -80,6 +90,8 @@ public class CartFragment extends Fragment {
         shakesList = new ArrayList<>();
         recyclerView = view.findViewById(R.id.CartRecycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new CartRecyclerViewAdapter(list,getContext(), cocktailsList, shakesList,model);
+        recyclerView.setAdapter(adapter);
 
         if(model.getAllCocktails() != null){
             allCocktails = model.getAllCocktails();
@@ -149,12 +161,20 @@ public class CartFragment extends Fragment {
             shakesList = Shake.parseShakes(allShakes);
             adapter = new CartRecyclerViewAdapter(list, getContext(), cocktailsList, shakesList, model);
             recyclerView.setAdapter(adapter);
-
         }
+
+        getViewLifecycleOwnerLiveData().observe(getViewLifecycleOwner(), lifecycleOwner -> {
+            if (lifecycleOwner != null) {
+                observerCall(lifecycleOwner);
+            }
+        });
 
         executor.shutdown();
 
-        model.getToAddItems().observe(getViewLifecycleOwner(), queue -> {
+    }
+
+    public void observerCall(LifecycleOwner lifecycleOwner){
+        model.getToAddItems().observe(lifecycleOwner, queue -> {
             while(!queue.isEmpty()){
                 CartLayoutClass item = queue.poll();
                 list.add(item);
@@ -163,7 +183,7 @@ public class CartFragment extends Fragment {
             model.getToAddItems().removeObservers(getViewLifecycleOwner());
         });
 
-        model.getToUpdateItem().observe(getViewLifecycleOwner(), queue -> {
+        model.getToUpdateItem().observe(lifecycleOwner, queue -> {
             while (!queue.isEmpty()) {
                 CartLayoutClass item = queue.poll();
                 int index = getElementIndex(item);
@@ -178,7 +198,7 @@ public class CartFragment extends Fragment {
             model.getToUpdateItem().removeObservers(getViewLifecycleOwner());
         });
 
-        model.getResetCart().observe(getViewLifecycleOwner(), resetCart -> {
+        model.getResetCart().observe(lifecycleOwner, resetCart -> {
             Log.d("CartFragment", "resetCart: " + resetCart);
             if (resetCart) {
                 int listSize = list.size();
@@ -189,61 +209,15 @@ public class CartFragment extends Fragment {
             model.getResetCart().removeObservers(getViewLifecycleOwner());
         });
 
-        model.getIsLoggedIn().observe(getViewLifecycleOwner(), loggedIn -> {
-            Log.v("CartFragment", "getIsLoggedIn");
-            if (!loggedIn && !list.isEmpty()) {
+        model.getIsLoggedIn().observe(lifecycleOwner, loggedIn -> {
+            if (!loggedIn) {
                 int listSize = list.size();
                 list.clear();
                 adapter.notifyItemRangeRemoved(0, listSize);
             }
-            Log.v("CartFragment", "unregistering getIsLoggedIn");
             model.getIsLoggedIn().removeObservers(getViewLifecycleOwner());
         });
-        
-
     }
-
-//    public void observerCall(){
-//        model.getToAddItems().observe(getViewLifecycleOwner(), queue -> {
-//            while(!queue.isEmpty()){
-//                CartLayoutClass item = queue.poll();
-//                list.add(item);
-//                adapter.notifyItemInserted(list.size() - 1);
-//            }
-//        });
-//
-//        model.getToUpdateItem().observe(getViewLifecycleOwner(), queue -> {
-//            while (!queue.isEmpty()) {
-//                CartLayoutClass item = queue.poll();
-//                int index = getElementIndex(item);
-//
-//                if(index != -1){
-//                    list.set(index,item);
-//                    adapter.notifyItemChanged(index);
-//                }else{
-//                    Log.e("CartFragment", "Item not found in list");
-//                }
-//            }
-//        });
-//
-//        model.getResetCart().observe(getViewLifecycleOwner(), resetCart -> {
-//            Log.d("CartFragment", "resetCart: " + resetCart);
-//            if (resetCart) {
-//                int listSize = list.size();
-//                list.clear();
-//                adapter.notifyItemRangeRemoved(0, listSize);
-//                model.setResetCart(false);
-//            }
-//        });
-//
-//        model.getIsLoggedIn().observe(getViewLifecycleOwner(), loggedIn -> {
-//            if (!loggedIn) {
-//                int listSize = list.size();
-//                list.clear();
-//                adapter.notifyItemRangeRemoved(0, listSize);
-//            }
-//        });
-//    }
     private String getAllCocktails() throws IOException, InterruptedException {
         String command = "3";
         client.sendData(command);
@@ -271,56 +245,18 @@ public class CartFragment extends Fragment {
 
         Log.d("CartFragment", "onResume");
 
-        model.getToAddItems().observe(getViewLifecycleOwner(), queue -> {
-            Log.v("CartFragment", "getToAddItems");
-            while(!queue.isEmpty()){
-                CartLayoutClass item = queue.poll();
-                list.add(item);
-                adapter.notifyItemInserted(list.size() - 1);
-            }
-            Log.v("CartFragment", "unregistering getToAddItems");
-            model.getToAddItems().removeObservers(getViewLifecycleOwner());
-        });
-
-        model.getToUpdateItem().observe(getViewLifecycleOwner(), queue -> {
-            Log.v("CartFragment", "getToUpdateItem");
-            while (!queue.isEmpty()) {
-                CartLayoutClass item = queue.poll();
-                int index = getElementIndex(item);
-
-                if(index != -1){
-                    list.set(index,item);
-                    adapter.notifyItemChanged(index);
-                }else{
-                    Log.e("CartFragment", "Item not found in list");
+        if(adapter != null){
+            Log.v( "CartFragment", "adapter not null");
+            getViewLifecycleOwnerLiveData().observe(getViewLifecycleOwner(), lifecycleOwner -> {
+                if (lifecycleOwner != null) {
+                    observerCall(lifecycleOwner);
                 }
-            }
-            Log.v( "CartFragment", "unregistering getToUpdateItem");
-            model.getToUpdateItem().removeObservers(getViewLifecycleOwner());
-        });
+            });
+        }else{
+            Log.v( "CartFragment", "adapter null");
+        }
 
-        model.getResetCart().observe(getViewLifecycleOwner(), resetCart -> {
-            Log.v("CartFragment", "resetCart: " + resetCart);
-            if (resetCart) {
-                int listSize = list.size();
-                list.clear();
-                adapter.notifyItemRangeRemoved(0, listSize);
-                model.setResetCart(false);
-            }
-            Log.v("CartFragment", "unregistering getResetCart");
-            model.getResetCart().removeObservers(getViewLifecycleOwner());
-        });
 
-        model.getIsLoggedIn().observe(getViewLifecycleOwner(), loggedIn -> {
-            Log.v("CartFragment", "getIsLoggedIn");
-            if (!loggedIn && !list.isEmpty()) {
-                int listSize = list.size();
-                list.clear();
-                adapter.notifyItemRangeRemoved(0, listSize);
-            }
-            Log.v("CartFragment", "unregistering getIsLoggedIn");
-            model.getIsLoggedIn().removeObservers(getViewLifecycleOwner());
-        });
 
     }
 }

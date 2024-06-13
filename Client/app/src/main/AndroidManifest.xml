@@ -17,13 +17,13 @@
         android:enableOnBackInvokedCallback="true">
 
         <activity
-            android:name=".ShopActivity"
+            android:name=".ActivityView.ShopActivity"
             android:exported="false" />
         <activity
-            android:name=".SignUpActivity"
+            android:name=".ActivityView.SignUpActivity"
             android:exported="false" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".ActivityView.LoginActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

@@ -1,4 +1,4 @@
-package com.example.cocktailapp;
+package com.example.cocktailapp.Adapter;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -16,6 +16,13 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.cocktailapp.Model.CartObserver;
+import com.example.cocktailapp.Model.Bevanda;
+import com.example.cocktailapp.Model.Carrello;
+import com.example.cocktailapp.Model.Cocktail;
+import com.example.cocktailapp.Model.Shake;
+import com.example.cocktailapp.R;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -137,7 +144,15 @@ public class CartRecyclerViewAdapter extends RecyclerView.Adapter <CartRecyclerV
         return imageResId;
     }
 
-
+    public void updateData(ArrayList<Cocktail> cocktailsList, ArrayList<Shake> shakesList, ArrayList<CartLayoutClass> list) {
+        this.cartLayoutClassArrayList.clear();
+        this.cartLayoutClassArrayList.addAll(list);
+        this.cocktailList.clear();
+        this.cocktailList.addAll(cocktailsList);
+        this.shakeList.clear();
+        this.shakeList.addAll(shakesList);
+        notifyDataSetChanged();
+    }
 
 
     public class ViewHolder extends RecyclerView.ViewHolder{
