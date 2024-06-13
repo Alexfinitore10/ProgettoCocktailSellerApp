@@ -227,7 +227,7 @@ public class ShakesFragment extends Fragment {
                 localExecutor.shutdown();
             }
             Log.i("ShakesFragment", "observerCall: rimozione observer");
-            model.getResetShakes().removeObservers(getViewLifecycleOwner());
+            model.getResetShakes().removeObservers(lifecycleOwner);
         });
     }
 

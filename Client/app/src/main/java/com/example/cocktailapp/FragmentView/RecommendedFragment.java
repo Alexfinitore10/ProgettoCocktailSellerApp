@@ -377,7 +377,7 @@ public class RecommendedFragment extends Fragment {
                 });
                 localExecutor.shutdown();
             }
-            model.getResetRecommended().removeObservers(getViewLifecycleOwner());
+            model.getResetRecommended().removeObservers(lifecycleOwner);
         });
     }
 

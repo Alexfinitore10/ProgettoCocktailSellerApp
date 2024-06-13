@@ -180,7 +180,7 @@ public class CartFragment extends Fragment {
                 list.add(item);
                 adapter.notifyItemInserted(list.size() - 1);
             }
-            model.getToAddItems().removeObservers(getViewLifecycleOwner());
+            model.getToAddItems().removeObservers(lifecycleOwner);
         });
 
         model.getToUpdateItem().observe(lifecycleOwner, queue -> {
@@ -195,7 +195,7 @@ public class CartFragment extends Fragment {
                     Log.e("CartFragment", "Item not found in list");
                 }
             }
-            model.getToUpdateItem().removeObservers(getViewLifecycleOwner());
+            model.getToUpdateItem().removeObservers(lifecycleOwner);
         });
 
         model.getResetCart().observe(lifecycleOwner, resetCart -> {
@@ -206,7 +206,7 @@ public class CartFragment extends Fragment {
                 adapter.notifyItemRangeRemoved(0, listSize);
                 model.setResetCart(false);
             }
-            model.getResetCart().removeObservers(getViewLifecycleOwner());
+            model.getResetCart().removeObservers(lifecycleOwner);
         });
 
         model.getIsLoggedIn().observe(lifecycleOwner, loggedIn -> {
@@ -215,7 +215,7 @@ public class CartFragment extends Fragment {
                 list.clear();
                 adapter.notifyItemRangeRemoved(0, listSize);
             }
-            model.getIsLoggedIn().removeObservers(getViewLifecycleOwner());
+            model.getIsLoggedIn().removeObservers(lifecycleOwner);
         });
     }
     private String getAllCocktails() throws IOException, InterruptedException {

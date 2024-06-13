@@ -226,7 +226,7 @@ public class CocktailFragment extends Fragment {
                 localExecutor.shutdown();
             }
             Log.i("CocktailFragment", "observerCall: rimozione observer");
-            model.getResetCocktails().removeObservers(getViewLifecycleOwner());
+            model.getResetCocktails().removeObservers(lifecycleOwner);
         });
 
     }
