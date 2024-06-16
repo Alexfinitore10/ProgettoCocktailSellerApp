@@ -58,44 +58,6 @@ public class Cocktail extends Bevanda {
         return new Cocktail(nome, prezzo, Arrays.asList(ingredientiArray), quantita, gradazioneAlcolica);
     }
 
-//    public static Cocktail parseString(String input) throws IndexOutOfBoundsException {
-//        String[] parts = input.split(", ");
-//        Log.d("Cocktail Parse String", "Parts size: " + parts.length);
-//        Log.d("Cocktail Parse String", "parse array: " + Arrays.toString(parts));
-//
-//        if(parts.length < 5) {
-//            Log.e("Cocktail parse String","Stringa che ha causato errore:" +input);
-//            throw new IndexOutOfBoundsException("Cocktail string has less than 5 parts");
-//        }
-//            String nome = parts[0].trim();
-//
-//            Log.d("Cocktail Parse string", "Nome: " + nome);
-//
-//            String ingredientiString = parts[1].substring(1, parts[1].length() - 1).trim();
-//            Log.d("Cocktail Parse String", "Ingredienti string: " + ingredientiString);
-//            String[] ingredientiArray = ingredientiString.split(";");
-//            Log.d("Cocktail Parse String", "Ingredienti array: " + Arrays.toString(ingredientiArray));
-//
-//            BigDecimal gradazioneAlcolica = new BigDecimal(parts[2].trim());
-//
-//            Log.d("Cocktail Parse String", "Gradazione alcolica: " + gradazioneAlcolica);
-//
-//            BigDecimal prezzo = new BigDecimal(parts[3].trim());
-//
-//            Log.d("Cocktail Parse String", "Prezzo: " + prezzo);
-//
-//            int quantita = Integer.parseInt(parts[4].trim());
-//
-//            Log.d("Cocktail Parse String", "Quantita: " + quantita);
-//
-//
-//            Cocktail cocktail = new Cocktail(nome, prezzo, Arrays.asList(ingredientiArray), quantita, gradazioneAlcolica);
-//
-//            Log.d("Cocktail Parse String", "Sto per stampare il Cocktail: " + cocktail);
-//
-//            return cocktail;
-//
-//    }
 
     public static ArrayList<Cocktail> setRecommendedCocktails(String buffer) {
         ArrayList<Cocktail> Cocktails = new ArrayList<>();

@@ -41,50 +41,6 @@ public class Shake extends Bevanda {
         return new Shake(nome, prezzo,ingredienti, quantita);
     }
 
-//    public static Shake parseString(String input) {
-//        String[] parts = input.split(", ");
-//        if(parts.length != 4) {
-//            Log.e("Shakes parse String","Stringa che ha causato errore:" +input);
-//            throw new IndexOutOfBoundsException("Shake string has number of parts = " +parts.length);
-//        }
-//        Log.d("Shake Parse String", "Parts size: " + parts.length);
-//        Log.d("Shake Parse String", "parse array: " + Arrays.toString(parts));
-//        String nome = parts[0].trim();
-//
-//        Log.d("Shake Parse string", "Nome: " + nome);
-//
-//        List<String> ingredienti = new ArrayList<>();
-//        Log.d("parseString Shakes","parts[1]: "+parts[1]);
-//        if (!parts[1].trim().equals("N/A")) {
-//            Log.d("Shake Parse string", "Sto nell'if");
-//
-//            String ingredientiString = parts[1].substring(1, parts[1].length() - 1).trim();
-//
-//            Log.d("Shake Parse string", "Ingredienti string: " + ingredientiString);
-//
-//            String[] ingredientiArray = ingredientiString.split(";");
-//
-//            Log.d("Shake Parse string", "Ingredienti Array: " + Arrays.toString(ingredientiArray));
-//
-//            ingredienti.addAll(Arrays.asList(ingredientiArray));
-//
-//            Log.d("Shake Parse string", "Ingredienti List: " + ingredienti);
-//
-//        }
-//
-//        BigDecimal prezzo = new BigDecimal(parts[2].trim());
-//
-//        Log.d("Shake Parse string", "Prezzo: " + prezzo);
-//
-//        int quantita = Integer.parseInt(parts[3].trim());
-//
-//        Log.d("Shake Parse string", "Quantita: " + quantita);
-//        Shake shake = new Shake(nome, prezzo,ingredienti, quantita);
-//
-//        return shake;
-//        //return new Shake(nome, prezzo,ingredienti, quantita);
-//    }
-
     public static ArrayList<Shake> setRecommendedShakes(String buffer) {
         ArrayList<Shake> Shakes = new ArrayList<>();
         String[] shakes = buffer.split("\n");

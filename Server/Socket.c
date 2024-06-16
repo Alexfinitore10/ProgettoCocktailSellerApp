@@ -247,6 +247,7 @@ void handle_signup(int client_fd, char *password, char *email) {
     status = send(client_fd, "NOK_Already\n", strlen("NOK_Already\n"), 0);
     break;
   case 'T':
+    insert_dictionary(dict, client_fd, email);
     status = send(client_fd, "OK\n", strlen("OK\n"), 0);
     break;
   case 'F':

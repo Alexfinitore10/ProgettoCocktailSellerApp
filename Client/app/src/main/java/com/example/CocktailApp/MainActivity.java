@@ -64,10 +64,7 @@ public class MainActivity extends AppCompatActivity {
         builder.setTitle("Esci")
                 .setMessage("Vuoi davvero uscire dall'applicazione?")
                 .setPositiveButton("Si", (dialog, which) -> {
-                    Intent intent = new Intent(Intent.ACTION_MAIN);
-                    intent.addCategory(Intent.CATEGORY_HOME);
-                    startActivity(intent);
-                    finish();
+                    android.os.Process.killProcess(android.os.Process.myPid());
                 })
                 .setNegativeButton("No", null);
 
