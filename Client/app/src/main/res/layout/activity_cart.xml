@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ActivityCart"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.CocktailApp.ActivityView.CartActivity"
+    >
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/CartRecyclerView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/payFloatingActionButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/payFloatingActionButton"
+        android:layout_width="216dp"
+        android:layout_height="51dp"
+        android:backgroundTint="@color/orange"
+        android:clickable="true"
+        android:text="Pagamento"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.994" />
+
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

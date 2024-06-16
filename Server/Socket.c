@@ -244,16 +244,16 @@ void handle_signup(int client_fd, char *password, char *email) {
   int status;
   switch (reg_status) {
   case 'A':
-    status = send(client_fd, "NOK_Already\n", 15, 0);
+    status = send(client_fd, "NOK_Already\n", strlen("NOK_Already\n"), 0);
     break;
   case 'T':
     status = send(client_fd, "OK\n", strlen("OK\n"), 0);
     break;
   case 'F':
-    status = send(client_fd, "NOK_Registration\n", 18, 0);
+    status = send(client_fd, "NOK_Registration\n", strlen("NOK_Registration\n"), 0);
     break;
   default:
-    status = send(client_fd, "NOK_Unknown\n", 18, 0);
+    status = send(client_fd, "NOK_Unknown\n", strlen("NOK_Unknown\n"), 0);
   }
   if (status > 0) {
     log_debug("Risposta inviata al client");

@@ -524,7 +524,7 @@ bool is_already_logged(char *email) {
 
 // Log-in Utente
 bool signin(char *email, char *password) {
-  if (are_credentials_correct(email, password) && !is_already_logged(email)) {
+  if (are_credentials_correct(email, password) && is_already_logged(email) == false) {
     char *isLogged = "UPDATE Cliente SET isLogged = true WHERE email = $1";
     const char *paramValues[1] = {email};
     int paramLengths[1] = {strlen(email)};

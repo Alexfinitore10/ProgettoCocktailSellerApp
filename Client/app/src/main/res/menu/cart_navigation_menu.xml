@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/uscita"
+        android:title="Esci"
+        android:icon="@drawable/arrow_back">
+    </item>
+
+    <item
+        android:id="@+id/pagamento"
+        android:title="Paga"
+        android:icon="@drawable/payments">
+    </item>
+
+</menu>

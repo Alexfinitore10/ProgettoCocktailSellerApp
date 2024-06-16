@@ -2,92 +2,44 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/ShopActivityConstraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ActivityView.ShopActivity">
 
-
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/NameTabLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#FD8700"
-
-        android:minHeight="80dp"
-        app:layout_constraintBottom_toTopOf="@+id/ViewPagerCategories"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tabIndicatorColor="#FFFFFF"
-        app:tabMode="scrollable"
-        app:tabTextColor="#FFFFFF">
-
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/CocktailTabItem"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Cocktail">
-
-        </com.google.android.material.tabs.TabItem>
-
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/ShakesTabItem"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Frullati">
-
-        </com.google.android.material.tabs.TabItem>
-
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/RecommendedtabItem"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Consigliati" />
-
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/CartTabItem"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Carrello">
-
-        </com.google.android.material.tabs.TabItem>
-
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/PayTabItem"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Pagamento" />
-
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/LogOutTabItem"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Log Out" />
-
-    </com.google.android.material.tabs.TabLayout>
-
-    <TextView
-        android:id="@+id/TotalTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/NameTabLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/NameTabLayout"
-        app:layout_constraintVertical_bias="0.821" />
-
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/ViewPagerCategories"
+    <FrameLayout
+        android:id="@+id/frameLayout"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/NameTabLayout" />
+        app:layout_constraintTop_toTopOf="parent" >
+
+    </FrameLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/toCartFloatingButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/orange"
+        android:src="@drawable/baseline_add_shopping_cart_24"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_view"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="SpeakableTextPresentCheck">
+
+    </com.google.android.material.floatingactionbutton.FloatingActionButton>
+
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation_view"
+        android:layout_width="match_parent"
+        android:layout_height="76dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/shop_navigation_menu"
+        app:itemHorizontalTranslationEnabled="true">
+    </com.google.android.material.bottomnavigation.BottomNavigationView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-

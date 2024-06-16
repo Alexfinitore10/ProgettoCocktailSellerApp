@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/cocktails"
+        android:title="Cocktail"
+        android:icon="@drawable/glass_cocktail">
+    </item>
+
+    <item
+        android:id="@+id/shakes"
+        android:title="Frullati"
+        android:icon="@drawable/cup">
+    </item>
+
+    <item
+        android:id="@+id/recommended"
+        android:title="Consigliati"
+        android:icon="@drawable/lightbulb">
+    </item>
+
+    <item
+        android:id="@+id/logOut"
+        android:title="LogOut"
+        android:icon="@drawable/logout">
+    </item>
+
+
+
+</menu>
