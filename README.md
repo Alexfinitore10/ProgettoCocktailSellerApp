@@ -1,4 +1,4 @@
-#Welcome to Cocktail Seller App!
+# Welcome to Cocktail Seller App!
 This is a university project where we created a front-end application with *Android Studio*
 communicating with a *C* low lever *Server*. In this project used:
 - Socket Programming
