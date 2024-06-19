@@ -329,6 +329,7 @@ char *get_all_cocktails() { // TODO da rifare
   } else {
     printf("Errore nel recupero dei cocktail\n");
   }
+  return "";
 }
 
 char *get_all_shakes() {
@@ -342,6 +343,7 @@ char *get_all_shakes() {
   } else {
     printf("Errore nel recupero dei frullati\n");
   }
+  return "";
 }
 
 int get_cocktail_amount(char *nome) {
@@ -524,7 +526,8 @@ bool is_already_logged(char *email) {
 
 // Log-in Utente
 bool signin(char *email, char *password) {
-  if (are_credentials_correct(email, password) && is_already_logged(email) == false) {
+  if (are_credentials_correct(email, password) &&
+      is_already_logged(email) == false) {
     char *isLogged = "UPDATE Cliente SET isLogged = true WHERE email = $1";
     const char *paramValues[1] = {email};
     int paramLengths[1] = {strlen(email)};
@@ -662,6 +665,7 @@ char *get_recommended_drinks() {
   } else {
     printf("Errore nel recupero dei cocktail\n");
   }
+  return "";
 }
 
 char *get_recommended_shakes() {
@@ -703,6 +707,7 @@ char *get_recommended_shakes() {
   } else {
     printf("Errore nel recupero dei shakes\n");
   }
+  return "";
 }
 
 int get_shake_amount(char *nome) {

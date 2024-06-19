@@ -2,14 +2,16 @@
 #include "Database.h"
 #include "dictionary.h"
 #include "log.h"
+#include <netinet/in.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
 
-#define PORT 5978            // Porta del server
-#define MAX_BUFFER_SIZE 1024 // Dimensione massima del buffer
-#define IP "127.0.0.1"       // Indirizzo IP del server
+#define PORT 5978              // Porta del server
+#define MAX_BUFFER_SIZE 1024   // Dimensione massima del buffer
+#define IP_vecchio "127.0.0.1" // Indirizzo IP del server
+#define IP "192.168.43.85"
 
 Dictionary *dict;
 
@@ -39,7 +41,8 @@ void startSocket() {
   // Impostazione dell'indirizzo del server
   server_addr.sin_family = AF_INET;
   server_addr.sin_port = htons(PORT);
-  server_addr.sin_addr.s_addr = inet_addr(IP); // Ascolto su tutte le interfacce
+  server_addr.sin_addr.s_addr =
+      INADDR_ANY; // inet_addr(IP); // Ascolto su tutte le interfacce
 
   // Bind del socket all'indirizzo
   if (bind(sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
@@ -251,7 +254,8 @@ void handle_signup(int client_fd, char *password, char *email) {
     status = send(client_fd, "OK\n", strlen("OK\n"), 0);
     break;
   case 'F':
-    status = send(client_fd, "NOK_Registration\n", strlen("NOK_Registration\n"), 0);
+    status =
+        send(client_fd, "NOK_Registration\n", strlen("NOK_Registration\n"), 0);
     break;
   default:
     status = send(client_fd, "NOK_Unknown\n", strlen("NOK_Unknown\n"), 0);
@@ -327,7 +331,9 @@ void handle_get_all_shakes(int client_fd) {
 }
 
 void handle_get_recommended_drinks(int client_fd) {
+  connection_lock();
   char *risposta = get_recommended_drinks();
+  connection_unlock();
   if (risposta == NULL) {
     log_error("C'è stato un errore nella raccolta dei cocktail consigliati");
     int status = send(client_fd, "NOKERR\n", strlen("NOKERR\n"), 0);
@@ -365,7 +371,9 @@ void handle_get_recommended_drinks(int client_fd) {
 }
 
 void handle_get_recommended_shakes(int client_fd) {
+  connection_lock();
   char *risposta = get_recommended_shakes();
+  connection_unlock();
   if (risposta == NULL) {
     log_error("C'è stato un errore nella raccolta dei shake consigliati");
     int status = send(client_fd, "NOKERR\n", strlen("NOKERR\n"), 0);
@@ -408,6 +416,7 @@ void handle_remove_drink_and_shake(const int client_fd) {
   char buffer[MAX_BUFFER_SIZE] = {0};
 
   while (strcmp(buffer, "Fine\n") != 0) {
+
     int res = recv(client_fd, buffer, MAX_BUFFER_SIZE, 0);
     if (res > 0) {
       if (strcmp(buffer, "Fine\n") == 0) {
@@ -423,7 +432,7 @@ void handle_remove_drink_and_shake(const int client_fd) {
       log_debug("quantita: %s", quantita);
 
       // distinguo se è un drink (1) o un shake (2)
-      tipo = strtok(tipo, " ");
+      // tipo = strtok(tipo, " ");
 
       if (strcmp(tipo, "1") == 0) {
         log_debug("Ricevuto un drink: %s, %d ", name, atoi(quantita));

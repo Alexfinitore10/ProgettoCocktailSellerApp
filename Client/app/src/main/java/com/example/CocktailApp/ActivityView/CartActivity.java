@@ -39,7 +39,7 @@ import java.util.concurrent.Future;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
-public class CartActivity extends AppCompatActivity  {
+public class CartActivity extends AppCompatActivity {
     private ArrayList<CartLayoutClass> cartItems;
     private CartRecyclerViewAdapter adapter;
     private RecyclerView recyclerView;
@@ -51,10 +51,9 @@ public class CartActivity extends AppCompatActivity  {
     private ExtendedFloatingActionButton payButton;
     private Carrello carrello;
     private Client client;
-    private SweetAlertDialog waitingDialog,questionDialog;
+    private SweetAlertDialog waitingDialog, questionDialog;
     private CustomSharedPreferences exportString;
     private boolean paymentSuccess = false;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,12 +70,11 @@ public class CartActivity extends AppCompatActivity  {
             cartItems.add(new CartLayoutClass(bevanda));
         }
 
-
         recyclerView = findViewById(R.id.CartRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         exportString = CustomSharedPreferences.getInstance(this);
-        allCocktailsString = exportString.read(COCKTAILS,"");
-        allShakesString = exportString.read(SHAKES,"");
+        allCocktailsString = exportString.read(COCKTAILS, "");
+        allShakesString = exportString.read(SHAKES, "");
 
         Log.v(TAG, "la stringa dei cocktails e':" + allCocktailsString);
         Log.v(TAG, "la stringa dei shakes e':" + allShakesString);
@@ -84,20 +82,20 @@ public class CartActivity extends AppCompatActivity  {
         try {
             cocktailArrayList = Cocktail.parseCocktails(allCocktailsString);
         } catch (IndexOutOfBoundsException e) {
-            Log.e(TAG, "Stringa dei cocktail non conforme all'arraylist:" +e.getMessage());
-        } catch(Exception e) {
-            Log.e(TAG, "Errore parsing cocktails:" +e.getMessage());
+            Log.e(TAG, "Stringa dei cocktail non conforme all'arraylist:" + e.getMessage());
+        } catch (Exception e) {
+            Log.e(TAG, "Errore parsing cocktails:" + e.getMessage());
         }
 
         try {
             shakeArrayList = Shake.parseShakes(allShakesString);
         } catch (IndexOutOfBoundsException e) {
-            Log.e(TAG, "Stringa dei cocktail non conforme all'arraylist:" +e.getMessage());
-        } catch(Exception e) {
-            Log.e(TAG, "Errore parsing cocktails:" +e.getMessage());
+            Log.e(TAG, "Stringa dei cocktail non conforme all'arraylist:" + e.getMessage());
+        } catch (Exception e) {
+            Log.e(TAG, "Errore parsing cocktails:" + e.getMessage());
         }
 
-        adapter = new CartRecyclerViewAdapter(cartItems,this,cocktailArrayList,shakeArrayList);
+        adapter = new CartRecyclerViewAdapter(cartItems, this, cocktailArrayList, shakeArrayList);
         recyclerView.setAdapter(adapter);
 
         waitingDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
@@ -105,68 +103,69 @@ public class CartActivity extends AppCompatActivity  {
         waitingDialog.setTitleText("Attendere prego...");
         waitingDialog.setCancelable(false);
 
-
-
-
         payButton.setOnClickListener(v -> {
-            if(carrello.getBeverages().isEmpty()){
+            if (carrello.getBeverages().isEmpty()) {
                 Toast.makeText(this, "Il carrello è vuoto", Toast.LENGTH_SHORT).show();
-            }else{
+            } else {
                 questionDialog = new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE);
                 questionDialog.setTitleText("Pagamento");
-                questionDialog.setContentText("Il totale del carrello è:" + carrello.calculateTotal().toString() + "€.\nVuoi davvero procedere col pagamento?");
+                questionDialog.setContentText("Il totale del carrello è:" + carrello.calculateTotal().toString()
+                        + "€.\nVuoi davvero procedere col pagamento?");
                 questionDialog.setConfirmText("Sì");
                 questionDialog.setCancelText("No");
                 questionDialog.show();
 
-                //Se premo sì
+                // Se premo sì
                 questionDialog.setConfirmClickListener(sweetAlertDialog -> {
                     questionDialog.dismiss();
                     waitingDialog.show();
 
-                     // Crea un nuovo ExecutorService con un singolo thread
-                        ExecutorService executor = Executors.newSingleThreadExecutor();
+                    // Crea un nuovo ExecutorService con un singolo thread
+                    ExecutorService executor = Executors.newSingleThreadExecutor();
 
-                        // Invia un'operazione al ExecutorService e ottieni un Future
-                        Future<Boolean> future = executor.submit(new Callable<Boolean>() {
-                            @Override
-                            public Boolean call() {
-                                return sendBeveragesToServer();
+                    // Invia un'operazione al ExecutorService e ottieni un Future
+                    Future<Boolean> future = executor.submit(new Callable<Boolean>() {
+                        @Override
+                        public Boolean call() {
+                            return sendBeveragesToServer();
+                        }
+                    });
+
+                    // Crea un nuovo Handler per inviare il risultato al thread dell'interfaccia
+                    // utente
+                    Handler handler = new Handler(Looper.getMainLooper());
+
+                    // Esegui un altro task sul ExecutorService per ottenere il risultato del Future
+                    executor.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                // Ottieni il risultato del Future
+                                final boolean result = future.get();
+
+                                // Invia il risultato al thread dell'interfaccia utente
+                                handler.post(() -> {
+                                    if (result) {
+                                        cartItems.clear();
+                                        adapter.notifyDataSetChanged();
+                                        paymentSuccess = true;
+                                        waitingDialog.dismiss();
+                                        Toast.makeText(CartActivity.this, "Pagamento effettuato con successo",
+                                                Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        cartItems.clear();
+                                        adapter.notifyDataSetChanged();
+                                        paymentSuccess = false;
+                                        waitingDialog.dismiss();
+                                        Toast.makeText(CartActivity.this, "Pagamento fallito", Toast.LENGTH_SHORT)
+                                                .show();
+                                    }
+                                });
+                            } catch (InterruptedException | ExecutionException e) {
+                                Log.e(TAG, "Errore durante l'invio dei prodotti nel carrello: " + e.getMessage());
                             }
-                        });
-
-                        // Crea un nuovo Handler per inviare il risultato al thread dell'interfaccia utente
-                        Handler handler = new Handler(Looper.getMainLooper());
-
-                        // Esegui un altro task sul ExecutorService per ottenere il risultato del Future
-                        executor.execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    // Ottieni il risultato del Future
-                                    final boolean result = future.get();
-
-                                    // Invia il risultato al thread dell'interfaccia utente
-                                    handler.post(() -> {
-                                        if (result) {
-                                            cartItems.clear();
-                                            adapter.notifyDataSetChanged();
-                                            paymentSuccess = true;
-                                            waitingDialog.dismiss();
-                                            Toast.makeText(CartActivity.this, "Pagamento effettuato con successo", Toast.LENGTH_SHORT).show();
-                                        } else {
-                                            cartItems.clear();
-                                            adapter.notifyDataSetChanged();
-                                            paymentSuccess = false;
-                                            waitingDialog.dismiss();
-                                            Toast.makeText(CartActivity.this, "Pagamento fallito", Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                                } catch (InterruptedException | ExecutionException e) {
-                                    Log.e(TAG, "Errore durante l'invio dei prodotti nel carrello: " + e.getMessage());
-                                }
-                            }
-                        });
+                        }
+                    });
                 });
 
                 questionDialog.setCancelClickListener(sweetAlertDialog -> {
@@ -176,8 +175,8 @@ public class CartActivity extends AppCompatActivity  {
                 getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
                     @Override
                     public void handleOnBackPressed() {
-                        Intent onPayment = new Intent(CartActivity.this,ShopActivity.class);
-                        onPayment.putExtra("paymentSuccess",paymentSuccess);
+                        Intent onPayment = new Intent(CartActivity.this, ShopActivity.class);
+                        onPayment.putExtra("paymentSuccess", paymentSuccess);
                         startActivity(onPayment);
                     }
                 });
@@ -185,48 +184,43 @@ public class CartActivity extends AppCompatActivity  {
 
         });
 
-
-
     }
 
-
-
-
-    private boolean sendBeveragesToServer(){
+    private boolean sendBeveragesToServer() {
         try {
             ArrayList<String> cocktails = new ArrayList<>();
-            ArrayList<String> shakes =  new ArrayList<>();
-
+            ArrayList<String> shakes = new ArrayList<>();
 
             for (int i = 0; i < carrello.getBeverages().size(); i++) {
-                if(carrello.getBeverages().get(i) instanceof Cocktail){
-                    cocktails.add("1`" + carrello.getBeverages().get(i).getNome() + "`" + carrello.getBeverages().get(i).getQuantita());
-                }else{
-                    shakes.add("2`" + carrello.getBeverages().get(i).getNome() + "`" + carrello.getBeverages().get(i).getQuantita());
+                if (carrello.getBeverages().get(i) instanceof Cocktail) {
+                    cocktails.add("1`" + carrello.getBeverages().get(i).getNome() + "`"
+                            + carrello.getBeverages().get(i).getQuantita());
+                } else {
+                    shakes.add("2`" + carrello.getBeverages().get(i).getNome() + "`"
+                            + carrello.getBeverages().get(i).getQuantita());
                 }
             }
 
             client.sendData("8");
             for (String c : cocktails) {
-                Log.d("sendBeveragesToServer","Sto per inviare il cocktail: " +c);
+                Log.d("sendBeveragesToServer", "Sto per inviare il cocktail: " + c);
                 client.sendData(c);
                 try {
-                    Log.d("sendBeveragesToServer","Sto dormendo");
+                    Log.d("sendBeveragesToServer", "Sto dormendo");
                     Thread.sleep(500);
                 } catch (InterruptedException e) {
                     Log.e("sendBeveragesToServer", "Errore sleep durante l'invio dei cocktail: " + e.getMessage());
                 }
             }
             for (String c : shakes) {
-                Log.d("sendBeveragesToServer","Sto per inviare il frullato: " +c);
+                Log.d("sendBeveragesToServer", "Sto per inviare il frullato: " + c);
                 client.sendData(c);
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException e) {
-                    Log.e("sendBeveragesToServer", "Errore sleep durante l'invio dei frullati: " +e.getMessage());
+                    Log.e("sendBeveragesToServer", "Errore sleep durante l'invio dei frullati: " + e.getMessage());
                 }
             }
-
 
             try {
                 client.sendData("Fine");
@@ -241,20 +235,22 @@ public class CartActivity extends AppCompatActivity  {
                     Thread.sleep(1000);
                     return true;
                 } else {
-                    Log.e("sendBeveragesToServer","Il server ha riscontrato un errore nella cancellazione dei drink e dei frullati");
+                    Log.e("sendBeveragesToServer",
+                            "Il server ha riscontrato un errore nella cancellazione dei drink e dei frullati");
                     carrello.emptyCarrello();
                     return false;
                 }
-            }catch (IOException e) {
+            } catch (IOException e) {
                 Log.e("sendBeveragesToServer", "Errore durante l'invio/ricezione dei dati: " + e.getMessage());
-            }catch(Exception e) {
-                Log.e("sendBeveragesToServer", "Errore durante la ricezione della risposta al comando di cancellazione dei drink e dei frullati, impossibile cancellare: " + e.getMessage());
+            } catch (Exception e) {
+                Log.e("sendBeveragesToServer",
+                        "Errore durante la ricezione della risposta al comando di cancellazione dei drink e dei frullati, impossibile cancellare: "
+                                + e.getMessage());
             }
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             Log.e("PaymentFragment", "Errore durante l'invio dei drink e dei frullati: " + e.getMessage());
         }
-
 
         return false;
     }

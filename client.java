@@ -70,7 +70,7 @@ public class client {
 
     // Socket for client communication
     Socket clientSocket;
-    String address = "127.0.0.1";
+    String address = "192.168.43.85";
     int port = 5978;
 
     // Buffer for input and output streams
