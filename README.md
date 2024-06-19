@@ -9,4 +9,4 @@ communicating with a *C* low lever *Server*. In this project used:
 
 Vote of the presentation/Demo Project: 30
 
-Documentation / Instructions to use: 
+Documentation / Instructions to use: https://github.com/Alexfinitore10/ProgettoCocktailSellerApp/blob/main/Documentazione_CocktailSeller.pdf
